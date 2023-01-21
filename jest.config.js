@@ -1,4 +1,4 @@
-export default {
+const config = {
   roots: ['<rootDir>/src'],
   collectCoverage: false,
   collectCoverageFrom: ['<rootDir>/src/**/*.ts'],
@@ -7,3 +7,5 @@ export default {
     '.+\\.ts$': 'ts-jest'
   }
 }
+
+module.exports = config
