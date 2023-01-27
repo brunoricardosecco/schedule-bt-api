@@ -4,8 +4,7 @@ const config = {
   collectCoverageFrom: ['<rootDir>/src/**/*.ts'],
   transform: {
     '.+\\.ts$': 'ts-jest'
-  },
-  preset: '@shelf/jest-postgres'
+  }
 }
 
 module.exports = config
