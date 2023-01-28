@@ -1,3 +1,10 @@
-## Acronyms
+# Agenda Beach
 
-- SUT: System Under Test
+---
+
+## Docs
+### Acronyms
+
+| Acronym | Meaning           |
+|---------|-------------------|
+| SUT     | System Under Test |

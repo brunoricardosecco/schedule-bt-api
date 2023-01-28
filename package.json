@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "sucrase-node src/main/server.ts",
+    "start:dev": "npx dotenv -e .env.test -- sucrase-node src/main/server.ts",
     "test": "dotenv -e .env.test -- jest --passWithNoTests --silent --noStackTrace --runInBand -i",
     "test:verbose": "dotenv -e .env.test -- jest --passWithNoTests --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
