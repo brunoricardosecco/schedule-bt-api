@@ -14,6 +14,13 @@ describe('Account Postgres Repository', () => {
     await db.$disconnect()
   })
 
+  afterEach(async () => {
+    const deleteAccounts = db.account.deleteMany()
+    await db.$transaction([
+      deleteAccounts
+    ])
+  })
+
   it('should return an account on success', async () => {
     const sut = makeSut()
     const account = await sut.add({
