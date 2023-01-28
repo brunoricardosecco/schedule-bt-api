@@ -1,11 +1,11 @@
 import { db } from '../../orm/prisma'
 import { AccountPostgresRepository } from './account'
 
+const makeSut = (): AccountPostgresRepository => {
+  return new AccountPostgresRepository()
+}
+
 describe('Account Postgres Repository', () => {
-  beforeAll(async () => {
-
-  })
-
   afterAll(async () => {
     const deleteAccounts = db.account.deleteMany()
     await db.$transaction([
@@ -15,7 +15,7 @@ describe('Account Postgres Repository', () => {
   })
 
   it('should return an account on success', async () => {
-    const sut = new AccountPostgresRepository()
+    const sut = makeSut()
     const account = await sut.add({
       name: 'any_name',
       email: 'any_email@mail.com',
