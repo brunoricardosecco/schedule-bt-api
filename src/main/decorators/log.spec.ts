@@ -16,11 +16,31 @@ class ControllerStub implements Controller {
   }
 }
 
+const makeControllerStub = (): Controller => {
+  return new ControllerStub()
+}
+
+interface SutTypes {
+  controllerStub: Controller
+  sut: LogControllerDecorator
+}
+
+const makeSut = (): SutTypes => {
+  const controllerStub = makeControllerStub()
+
+  const sut = new LogControllerDecorator(controllerStub)
+
+  return {
+    controllerStub,
+    sut
+  }
+}
+
 describe('LogControllerDecorator', () => {
   it('should call controller handle', async () => {
-    const controllerStub = new ControllerStub()
+    const { controllerStub, sut } = makeSut()
+
     const handleSpy = jest.spyOn(controllerStub, 'handle')
-    const sut = new LogControllerDecorator(controllerStub)
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -32,5 +52,28 @@ describe('LogControllerDecorator', () => {
 
     await sut.handle(httpRequest)
     expect(handleSpy).toHaveBeenCalledWith(httpRequest)
+  })
+
+  it('should returns the correct values', async () => {
+    const { sut } = makeSut()
+
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    }
+
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    })
   })
 })
