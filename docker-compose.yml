@@ -13,3 +13,13 @@ services:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: prisma
       POSTGRES_DB: tests
+  db-dev:
+    image: postgres:14
+    restart: always
+    container_name: dev
+    ports:
+      - '5434:5432'
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: dev
