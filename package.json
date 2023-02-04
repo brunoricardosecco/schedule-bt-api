@@ -13,7 +13,8 @@
     "test:ci": "npm test -- --coverage",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "migrate:dev": "dotenv -e .env.test -- npx prisma migrate dev"
   },
   "keywords": [],
   "author": "",

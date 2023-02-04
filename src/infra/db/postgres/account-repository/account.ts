@@ -5,7 +5,7 @@ import { db } from '../../orm/prisma'
 
 export class AccountPostgresRepository implements AddAccountRepository {
   async add (accountData: AddAccountModel): Promise<AccountModel> {
-    const account = await db.account.create({
+    const account = await db.accounts.create({
       data: accountData
     })
     return account

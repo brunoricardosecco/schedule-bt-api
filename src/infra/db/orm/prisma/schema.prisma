@@ -10,9 +10,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Account {
+model Accounts {
   id       String @id @default(uuid())
   name     String
   email    String @unique
   password String
+
+  create_at DateTime @default(now()) @map("create_at")
+  update_at DateTime @default(now()) @map("update_at")
+}
+
+model Errors {
+  id    String @id @default(uuid())
+  stack String
+
+  createAt DateTime @default(now()) @map("create_at")
+  updateAt DateTime @default(now()) @map("update_at")
 }
