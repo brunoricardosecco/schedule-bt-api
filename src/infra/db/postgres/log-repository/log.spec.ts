@@ -6,7 +6,7 @@ const makeSut = (): LogPostgresRepository => {
 }
 
 describe('Log Postgres Repository', () => {
-  afterAll(async () => {
+  beforeAll(async () => {
     const deleteAccounts = db.errors.deleteMany()
     await db.$transaction([
       deleteAccounts

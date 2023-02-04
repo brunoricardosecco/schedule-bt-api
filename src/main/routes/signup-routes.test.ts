@@ -4,7 +4,7 @@ import app from '../config/app'
 
 describe('SingUp Routes', () => {
   afterAll(async () => {
-    const deleteAccounts = db.account.deleteMany()
+    const deleteAccounts = db.accounts.deleteMany()
     await db.$transaction([
       deleteAccounts
     ])
@@ -12,7 +12,7 @@ describe('SingUp Routes', () => {
   })
 
   afterEach(async () => {
-    const deleteAccounts = db.account.deleteMany()
+    const deleteAccounts = db.accounts.deleteMany()
     await db.$transaction([
       deleteAccounts
     ])
