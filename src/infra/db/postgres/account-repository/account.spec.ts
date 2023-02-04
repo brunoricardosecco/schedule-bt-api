@@ -7,7 +7,7 @@ const makeSut = (): AccountPostgresRepository => {
 
 describe('Account Postgres Repository', () => {
   afterAll(async () => {
-    const deleteAccounts = db.account.deleteMany()
+    const deleteAccounts = db.accounts.deleteMany()
     await db.$transaction([
       deleteAccounts
     ])
@@ -15,7 +15,7 @@ describe('Account Postgres Repository', () => {
   })
 
   afterEach(async () => {
-    const deleteAccounts = db.account.deleteMany()
+    const deleteAccounts = db.accounts.deleteMany()
     await db.$transaction([
       deleteAccounts
     ])

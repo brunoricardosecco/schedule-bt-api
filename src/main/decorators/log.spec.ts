@@ -24,7 +24,7 @@ const makeFakeAccount = (): AccountModel => ({
 
 const makeLogErrorRepository = (): LogErrorRepository => {
   class LogErrorRepositoryStub implements LogErrorRepository {
-    async log (stack: string): Promise<void> {
+    async logError (stack: string): Promise<void> {
       await new Promise(resolve => { resolve(null) })
     }
   }
@@ -89,7 +89,7 @@ describe('LogControllerDecorator', () => {
     jest.spyOn(controllerStub, 'handle').mockReturnValueOnce(new Promise(resolve => {
       resolve(makeServerError())
     }))
-    const logSpy = jest.spyOn(logErrorRepositoryStub, 'log')
+    const logSpy = jest.spyOn(logErrorRepositoryStub, 'logError')
 
     await sut.handle(makeFakeRequest())
     expect(logSpy)
