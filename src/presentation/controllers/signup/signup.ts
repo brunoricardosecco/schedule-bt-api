@@ -1,5 +1,5 @@
 import { Controller, HttpRequest, HttpResponse, AddAccount, Validation } from './signup.protocols'
-import { badRequest, ok, serverError } from '../../helpers/httpHelper'
+import { badRequest, ok, serverError } from '../../helpers/http/httpHelper'
 
 export class SignUpController implements Controller {
   private readonly addAccount: AddAccount
