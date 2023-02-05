@@ -53,7 +53,7 @@ const makeSut = (): SutTypes => {
 }
 
 describe('Authentication Usecase', () => {
-  it('should call loadAccountByEmailRepository with correct email', async () => {
+  it('should call LoadAccountByEmailRepository with correct email', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     const loadSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'load')
 
@@ -61,7 +61,7 @@ describe('Authentication Usecase', () => {
     expect(loadSpy).toHaveBeenCalledWith('any_email@mail.com')
   })
 
-  it('should throw if loadAccountByEmailRepository throws', async () => {
+  it('should throw if LoadAccountByEmailRepository throws', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     jest.spyOn(loadAccountByEmailRepositoryStub, 'load').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
 
@@ -69,7 +69,7 @@ describe('Authentication Usecase', () => {
     await expect(promise).rejects.toThrow()
   })
 
-  it('should returns null if loadAccountByEmailRepository returns null', async () => {
+  it('should returns null if LoadAccountByEmailRepository returns null', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     jest.spyOn(loadAccountByEmailRepositoryStub, 'load').mockReturnValueOnce(new Promise(resolve => { resolve(null) }))
 
@@ -83,5 +83,13 @@ describe('Authentication Usecase', () => {
 
     await sut.auth(makeFakeAuthentication())
     expect(isEqualSpy).toHaveBeenCalledWith('any_password', 'hashed_password')
+  })
+
+  it('should throw if HashComparer throws', async () => {
+    const { sut, hashComparerStub } = makeSut()
+    jest.spyOn(hashComparerStub, 'isEqual').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+
+    const promise = sut.auth(makeFakeAuthentication())
+    await expect(promise).rejects.toThrow()
   })
 })
