@@ -50,4 +50,11 @@ describe('Bcrypt Adapter', () => {
     await sut.isEqual('any_value', 'hashed_value')
     expect(hashSpy).toHaveBeenCalledWith('any_value', 'hashed_value')
   })
+
+  it('should return true when isEqual succeeds', async () => {
+    const sut = makeSut()
+
+    const isEqual = await sut.isEqual('any_value', 'hashed_value')
+    expect(isEqual).toBe(true)
+  })
 })
