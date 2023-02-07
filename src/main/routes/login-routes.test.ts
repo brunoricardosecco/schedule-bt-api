@@ -2,7 +2,7 @@ import request from 'supertest'
 import { db } from '../../infra/db/orm/prisma'
 import app from '../config/app'
 
-describe('SingUp Routes', () => {
+describe('Login Routes', () => {
   afterAll(async () => {
     const deleteAccounts = db.accounts.deleteMany()
     await db.$transaction([
@@ -18,15 +18,17 @@ describe('SingUp Routes', () => {
     ])
   })
 
-  it('should return an account on success', async () => {
-    await request(app)
-      .post('/api/signup')
-      .send({
-        name: 'any_name',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      })
-      .expect(200)
+  describe('POST /signup', () => {
+    it('should return 200 on signup', async () => {
+      await request(app)
+        .post('/api/signup')
+        .send({
+          name: 'any_name',
+          email: 'any_email@mail.com',
+          password: 'any_password',
+          passwordConfirmation: 'any_password'
+        })
+        .expect(200)
+    })
   })
 })
