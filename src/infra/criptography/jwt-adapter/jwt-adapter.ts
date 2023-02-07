@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-confusing-void-expression */
 import jwt from 'jsonwebtoken'
 
 import { Encrypter } from '../../../data/protocols/cryptography/encrypter'
@@ -10,7 +11,6 @@ export class JWTAdapter implements Encrypter {
   }
 
   async encrypt (value: string): Promise<string> {
-    await jwt.sign({ id: value }, this.secret)
-    return await new Promise(resolve => { resolve('') })
+    return jwt.sign({ id: value }, this.secret)
   }
 }
