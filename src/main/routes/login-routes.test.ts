@@ -51,5 +51,23 @@ describe('Login Routes', () => {
         })
         .expect(200)
     })
+
+    it('should return 401 on login', async () => {
+      const password = await hash('any_password', 12)
+      await db.accounts.create({
+        data: {
+          name: 'any_name',
+          email: 'any_email@mail.com',
+          password
+        }
+      })
+      await request(app)
+        .post('/api/login')
+        .send({
+          email: 'any_email@mail.com',
+          password: 'wrong_password'
+        })
+        .expect(401)
+    })
   })
 })
