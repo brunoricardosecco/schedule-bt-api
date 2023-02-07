@@ -1,11 +1,11 @@
 import { DbAddAccount } from '../../../data/usecases/add-account/db-add-account'
 import { BcryptAdapter } from '../../../infra/criptography/bcrypt-adapter/bcrypt-adapter'
-import { AccountPostgresRepository } from '../../../infra/db/postgres/account-repository/account'
-import { LogPostgresRepository } from '../../../infra/db/postgres/log-repository/log'
-import { SignUpController } from '../../../presentation/controllers/signup/signup'
+import { AccountPostgresRepository } from '../../../infra/db/postgres/account/account-prostgres-repository'
+import { LogPostgresRepository } from '../../../infra/db/postgres/log/log-postgres-repository'
+import { SignUpController } from '../../../presentation/controllers/signup/signup-controller'
 import { Controller } from '../../../presentation/protocols'
-import { LogControllerDecorator } from '../../decorators/log'
-import { makeSignUpValidation } from './signup-validation'
+import { LogControllerDecorator } from '../../decorators/log-controller-decorator'
+import { makeSignUpValidation } from './signup-validation-factory'
 
 export const makeSignUpController = (): Controller => {
   const salt = 12

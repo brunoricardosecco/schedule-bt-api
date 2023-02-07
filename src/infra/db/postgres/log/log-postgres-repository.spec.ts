@@ -1,5 +1,5 @@
 import { db } from '../../orm/prisma'
-import { LogPostgresRepository } from './log'
+import { LogPostgresRepository } from './log-postgres-repository'
 
 const makeSut = (): LogPostgresRepository => {
   return new LogPostgresRepository()
