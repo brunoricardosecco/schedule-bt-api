@@ -53,4 +53,11 @@ describe('Account Postgres Repository', () => {
     expect(account?.email).toBe('any_email@mail.com')
     expect(account?.password).toBe('any_password')
   })
+
+  it('should return null on loadByEmail fails', async () => {
+    const sut = makeSut()
+    const account = await sut.loadByEmail('any_email@mail.com')
+
+    expect(account).toBeFalsy()
+  })
 })
