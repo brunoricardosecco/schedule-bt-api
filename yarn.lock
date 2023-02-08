@@ -2167,7 +2167,7 @@
   "resolved" "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
   "version" "3.1.3"
 
-"fast-glob@^3.2.12", "fast-glob@^3.2.9":
+"fast-glob@^3.2.9":
   "integrity" "sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w=="
   "resolved" "https://registry.npmjs.org/fast-glob/-/fast-glob-3.2.12.tgz"
   "version" "3.2.12"
@@ -4159,6 +4159,11 @@
   "version" "3.0.2"
   dependencies:
     "glob" "^7.1.3"
+
+"rimraf@^4.1.2":
+  "integrity" "sha512-BlIbgFryTbw3Dz6hyoWFhKk+unCcHMSkZGrTFVAx2WmttdBSonsdtRlwiuTbDqTKr+UlXIUqJVS4QT5tUzGENQ=="
+  "resolved" "https://registry.npmjs.org/rimraf/-/rimraf-4.1.2.tgz"
+  "version" "4.1.2"
 
 "run-parallel@^1.1.9":
   "integrity" "sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA=="

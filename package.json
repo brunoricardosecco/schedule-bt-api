@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node dist/main/server.js",
+    "build": "rimraf dist && tsc",
     "start:dev": "dotenv -e .env.dev -- node -r sucrase/register src/main/server.ts",
     "test": "dotenv -e .env.test -- jest --passWithNoTests --silent --noStackTrace --runInBand -i",
     "test:verbose": "dotenv -e .env.test -- jest --passWithNoTests --runInBand",
@@ -43,6 +45,7 @@
     "lint-staged": "^13.1.0",
     "pg": "^8.8.0",
     "prisma": "^4.9.0",
+    "rimraf": "^4.1.2",
     "sucrase": "^3.29.0",
     "supertest": "^6.3.3",
     "ts-jest": "^29.0.3",
@@ -53,7 +56,6 @@
     "@prisma/client": "^4.9.0",
     "bcrypt": "^5.1.0",
     "express": "^4.18.2",
-    "fast-glob": "^3.2.12",
     "jsonwebtoken": "^9.0.0",
     "validator": "^13.7.0"
   },
