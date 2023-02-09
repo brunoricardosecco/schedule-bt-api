@@ -61,5 +61,8 @@
   },
   "prisma": {
     "schema": "src/infra/db/orm/prisma/schema.prisma"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
