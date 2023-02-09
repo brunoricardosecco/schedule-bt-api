@@ -15,7 +15,6 @@
     "test:ci": "npm test -- --coverage",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "prepare": "husky install",
     "migrate:dev": "npx prisma migrate dev",
     "studio:dev": "npx prisma studio dev"
   },
@@ -63,6 +62,6 @@
     "schema": "src/infra/db/orm/prisma/schema.prisma"
   },
   "engines": {
-    "node": "18.x"
+    "node": "19.x"
   }
 }
