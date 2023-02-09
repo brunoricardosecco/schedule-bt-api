@@ -33,7 +33,7 @@ services:
     command: npm start
     volumes:
       - ./dist:/usr/src/agenda-beach/dist
-    port: 
+    ports: 
       - "3000:3000"
     links:
       - db-dev
