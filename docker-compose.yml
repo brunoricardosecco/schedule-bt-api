@@ -23,3 +23,17 @@ services:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: prisma
       POSTGRES_DB: dev
+    volumes:
+      - ./data:/var/lib/postgresql/data
+  api:
+    container_name: api-container
+    build: .
+    image: agenda-beach
+    restart: always
+    command: npm start
+    volumes:
+      - ./dist:/usr/src/agenda-beach/dist
+    port: 
+      - "3000:3000"
+    links:
+      - db-dev
