@@ -4,13 +4,16 @@
     "module": "CommonJS",
     "target": "ES2021",
     "esModuleInterop": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
   },
   "include": [
-    "src"
+    "src/**/*",
+    "**/*.prisma",
+    "**/*.sql"
   ],
   "exclude": [
     "**/*.spec.ts",
     "**/*.test.ts"
-  ]
+  ],
+
 }

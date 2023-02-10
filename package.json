@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/main/server.js",
-    "build": "rimraf dist && tsc",
-    "start:dev": "dotenv -e .env.dev -- node -r sucrase/register src/main/server.ts",
+    "start": "npm run generate && node dist/main/server.js",
+    "build": "rimraf dist && tsc && npm run copy-files",
+    "up": "npm run build && docker-compose up -d",
+    "down": "docker-compose down",
+    "copy-files": "copyfiles -u 1 src/**/*.prisma src/**/*.sql dist/",
     "test": "dotenv -e .env.test -- jest --passWithNoTests --silent --noStackTrace --runInBand -i",
     "test:verbose": "dotenv -e .env.test -- jest --passWithNoTests --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
@@ -16,6 +18,7 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "migrate:dev": "npx prisma migrate dev",
+    "generate": "npx prisma generate --schema=dist/infra/db/orm/prisma/schema.prisma",
     "studio:dev": "npx prisma studio dev"
   },
   "keywords": [],
@@ -32,6 +35,7 @@
     "@types/supertest": "^2.0.12",
     "@types/validator": "^13.7.10",
     "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.31.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-config-standard-with-typescript": "^26.0.0",
@@ -45,7 +49,6 @@
     "pg": "^8.8.0",
     "prisma": "^4.9.0",
     "rimraf": "^4.1.2",
-    "sucrase": "^3.29.0",
     "supertest": "^6.3.3",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
@@ -59,7 +62,7 @@
     "validator": "^13.7.0"
   },
   "prisma": {
-    "schema": "src/infra/db/orm/prisma/schema.prisma"
+    "schema": "./src/infra/db/orm/prisma/schema.prisma"
   },
   "engines": {
     "node": "19.x"
