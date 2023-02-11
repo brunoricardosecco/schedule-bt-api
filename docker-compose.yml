@@ -31,9 +31,9 @@ services:
     working_dir: /usr/src/agenda-beach
     env_file: .env.dev
     restart: always
-    command: bash -c "npm install --only=prod && npm run debug"
+    command: bash -c "npm install --only=prod && npm install -D nodemon && npm run debug"
     volumes:
-      - ./dist:/usr/src/agenda-beach/dist
+      - ./dist/:/usr/src/agenda-beach/dist/
       - ./package.json:/usr/src/agenda-beach/package.json
     ports: 
       - "3001:3001"
