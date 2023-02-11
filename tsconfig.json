@@ -5,11 +5,10 @@
     "target": "ES2021",
     "esModuleInterop": true,
     "strictNullChecks": true,
+    "sourceMap": true
   },
   "include": [
-    "src/**/*",
-    "**/*.prisma",
-    "**/*.sql"
+    "src/**/*"
   ],
   "exclude": [
     "**/*.spec.ts",

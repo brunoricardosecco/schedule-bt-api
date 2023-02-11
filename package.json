@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run generate && node dist/main/server.js",
+    "debug": "npm run generate && node --inspect=0.0.0.0:9222 --nolazy dist/main/server.js",
     "build": "rimraf dist && tsc && npm run copy-files",
     "up": "npm run build && docker-compose up -d",
     "down": "docker-compose down",
