@@ -5,6 +5,12 @@ import { Middleware } from '../protocols/middleware'
 
 export class AuthMiddleware implements Middleware {
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-    return forbidden(new AccessDeniedError())
+    if (!httpRequest.headers?.Authorization) {
+      return forbidden(new AccessDeniedError())
+    }
+    return {
+      body: {},
+      statusCode: 200
+    }
   }
 }
