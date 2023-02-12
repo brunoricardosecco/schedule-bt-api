@@ -1,5 +1,5 @@
-import { AccessDeniedError } from '../errors'
-import { forbidden } from '../helpers/http/httpHelper'
+import { AccessDeniedError } from '@/presentation/errors'
+import { forbidden } from '@/presentation/helpers/http/httpHelper'
 import { AuthMiddleware } from './auth-middleware'
 
 describe('Auth Middleware', () => {

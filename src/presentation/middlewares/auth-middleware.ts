@@ -1,7 +1,7 @@
-import { AccessDeniedError } from '../errors'
-import { forbidden } from '../helpers/http/httpHelper'
-import { HttpRequest, HttpResponse } from '../protocols'
-import { Middleware } from '../protocols/middleware'
+import { AccessDeniedError } from '@/presentation/errors'
+import { forbidden } from '@/presentation/helpers/http/httpHelper'
+import { HttpRequest, HttpResponse } from '@/presentation/protocols'
+import { Middleware } from '@/presentation/protocols/middleware'
 
 export class AuthMiddleware implements Middleware {
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {

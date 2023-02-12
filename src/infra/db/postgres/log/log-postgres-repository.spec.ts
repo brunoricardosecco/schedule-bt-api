@@ -1,4 +1,4 @@
-import { db } from '../../orm/prisma'
+import { db } from '@/infra/db/orm/prisma'
 import { LogPostgresRepository } from './log-postgres-repository'
 
 const makeSut = (): LogPostgresRepository => {

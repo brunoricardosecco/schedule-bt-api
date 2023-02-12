@@ -1,7 +1,7 @@
-import { Authentication, AuthenticationModel } from '../../../domain/usecases/authentication'
-import { MissingParamError } from '../../errors'
-import { badRequest, ok, serverError, unauthorized } from '../../helpers/http/httpHelper'
-import { Validation, HttpRequest } from '../signup/signup-controller.protocols'
+import { Authentication, AuthenticationModel } from '@/domain/usecases/authentication'
+import { MissingParamError } from '@/presentation/errors'
+import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
+import { Validation, HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { LoginController } from './login-controller'
 
 const makeFakeRequest = (): HttpRequest => {

@@ -1,7 +1,7 @@
 import request from 'supertest'
-import { db } from '../../infra/db/orm/prisma'
+import { db } from '@/infra/db/orm/prisma'
 import { hash } from 'bcrypt'
-import app from '../config/app'
+import app from '@/main/config/app'
 
 describe('Login Routes', () => {
   afterAll(async () => {

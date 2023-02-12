@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-confusing-void-expression */
 import jwt from 'jsonwebtoken'
 
-import { Encrypter } from '../../../data/protocols/cryptography/encrypter'
+import { Encrypter } from '@/data/protocols/cryptography/encrypter'
 
 export class JWTAdapter implements Encrypter {
   constructor (

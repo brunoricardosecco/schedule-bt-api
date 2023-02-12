@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run migrate:dev && node dist/main/server.js",
     "debug": "npm run migrate:dev --schema=dist/infra/db/orm/prisma/schema.prisma && nodemon -L --watch ./dist --inspect=0.0.0.0:9222 --nolazy ./dist/main/server.js",
-    "build": "rimraf dist && tsc && npm run copy-files",
+    "build": "rimraf dist && tsc -p tsconfig-build.json && npm run copy-files",
     "up": "npm run build && docker-compose up -d",
     "down": "docker-compose down",
     "copy-files": "copyfiles -u 1 src/**/*.prisma src/**/*.sql dist/",
@@ -61,6 +61,7 @@
     "bcrypt": "^5.1.0",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
+    "module-alias": "^2.2.2",
     "validator": "^13.7.0"
   },
   "prisma": {
@@ -68,5 +69,8 @@
   },
   "engines": {
     "node": "19.x"
+  },
+  "_moduleAliases": {
+    "@"      : "dist"
   }
 }

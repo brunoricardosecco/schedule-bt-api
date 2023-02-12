@@ -1,4 +1,4 @@
-import { db } from '../../orm/prisma'
+import { db } from '@/infra/db/orm/prisma'
 import { AccountPostgresRepository } from './account-prostgres-repository'
 
 const makeSut = (): AccountPostgresRepository => {
