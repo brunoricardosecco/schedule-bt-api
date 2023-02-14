@@ -11,13 +11,50 @@ datasource db {
 }
 
 model Accounts {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
+  id              String         @id @default(uuid())
+  name            String
+  email           String         @unique
+  companyId       String?        @map("company_id")
+  token           String?
+  tokenExpiration DateTime?      @map("token_expiration")
+  role            Role           @default(USER)
+  company         Companies?     @relation(fields: [companyId], references: [id])
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @default(now()) @map("updated_at")
+  Reservation     Reservations[]
+}
 
-  create_at DateTime @default(now()) @map("create_at")
-  update_at DateTime @default(now()) @map("update_at")
+model Companies {
+  id               String         @id @default(uuid())
+  name             String
+  reservationPrice Decimal        @map("reservation_price") @db.Decimal(10, 2)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @default(now()) @map("updated_at")
+  Accounts         Accounts[]
+  Court            Courts[]
+  Reservation      Reservations[]
+}
+
+model Courts {
+  id        String    @id @default(uuid())
+  name      String
+  companyId String    @map("company_id")
+  company   Companies @relation(fields: [companyId], references: [id])
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @map("updated_at")
+}
+
+model Reservations {
+  id                String            @id @default(uuid())
+  reservationPrice  Decimal           @map("reservation_price") @db.Decimal(10, 2)
+  reservationStatus ReservationStatus @default(NOT_PAID) @map("reservation_status")
+  reservationDate   DateTime
+  accountId         String            @map("account_id")
+  account           Accounts          @relation(fields: [accountId], references: [id])
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @default(now()) @map("updated_at")
+  Companies         Companies?        @relation(fields: [companiesId], references: [id])
+  companiesId       String?
 }
 
 model Errors {
@@ -26,4 +63,16 @@ model Errors {
 
   createAt DateTime @default(now()) @map("create_at")
   updateAt DateTime @default(now()) @map("update_at")
+}
+
+enum Role {
+  USER
+  GENERAL_ADMIN
+  COMPANY_ADMIN
+  EMPLOYEE
+}
+
+enum ReservationStatus {
+  PAID
+  NOT_PAID
 }
