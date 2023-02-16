@@ -11,29 +11,41 @@ datasource db {
 }
 
 model Accounts {
-  id              String         @id @default(uuid())
-  name            String
-  email           String         @unique
-  companyId       String?        @map("company_id")
-  token           String?
-  tokenExpiration DateTime?      @map("token_expiration")
-  role            Role           @default(USER)
-  isConfirmed     Boolean        @default(false) @map("is_confirmed")
-  company         Companies?     @relation(fields: [companyId], references: [id])
-  createdAt       DateTime       @default(now()) @map("created_at")
-  updatedAt       DateTime       @default(now()) @map("updated_at")
-  Reservation     Reservations[]
+  id                             String         @id @default(uuid())
+  name                           String
+  email                          String         @unique
+  companyId                      String?        @map("company_id")
+  emailValidationToken           String?        @map("email_validation_token")
+  emailValidationTokenExpiration DateTime?      @map("email_validation_token_expiration")
+  hashedPassword                 String?        @map("hashed_password")
+  role                           Role           @default(USER)
+  isConfirmed                    Boolean        @default(false) @map("is_confirmed")
+  company                        Companies?     @relation(fields: [companyId], references: [id])
+  createdAt                      DateTime       @default(now()) @map("created_at")
+  updatedAt                      DateTime       @default(now()) @map("updated_at")
+  reservations                   Reservations[]
 }
 
 model Companies {
-  id               String         @id @default(uuid())
-  name             String
-  reservationPrice Decimal        @map("reservation_price") @db.Decimal(10, 2)
-  createdAt        DateTime       @default(now()) @map("created_at")
-  updatedAt        DateTime       @default(now()) @map("updated_at")
-  Accounts         Accounts[]
-  Court            Courts[]
-  Reservation      Reservations[]
+  id                       String         @id @default(uuid())
+  name                     String
+  reservationPrice         Decimal        @map("reservation_price") @db.Decimal(10, 2)
+  createdAt                DateTime       @default(now()) @map("created_at")
+  updatedAt                DateTime       @default(now()) @map("updated_at")
+  accounts                 Accounts[]
+  courts                   Courts[]
+  reservation              Reservations[]
+  serviceHours             ServiceHours[]
+  reservationTimeInMinutes String         @map("reservation_time_in_minutes")
+}
+
+model ServiceHours {
+  id        String    @id @default(uuid())
+  weekday   Int
+  startTime String    @map("start_time")
+  endTime   String    @map("end_time")
+  company   Companies @relation(fields: [companyId], references: [id])
+  companyId String
 }
 
 model Courts {
@@ -50,20 +62,20 @@ model Reservations {
   reservationPrice  Decimal           @map("reservation_price") @db.Decimal(10, 2)
   reservationStatus ReservationStatus @default(NOT_PAID) @map("reservation_status")
   reservationDate   DateTime
-  accountId         String            @map("account_id")
-  account           Accounts          @relation(fields: [accountId], references: [id])
+  description       String?
+  accountId         String?           @map("account_id")
+  account           Accounts?         @relation(fields: [accountId], references: [id])
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @default(now()) @map("updated_at")
-  Companies         Companies?        @relation(fields: [companiesId], references: [id])
-  companiesId       String?
+  company           Companies?        @relation(fields: [companyId], references: [id])
+  companyId         String?
 }
 
 model Errors {
-  id    String @id @default(uuid())
-  stack String
-
-  createAt DateTime @default(now()) @map("create_at")
-  updateAt DateTime @default(now()) @map("update_at")
+  id        String   @id @default(uuid())
+  stack     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
 }
 
 enum Role {
