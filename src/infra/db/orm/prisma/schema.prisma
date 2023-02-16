@@ -88,4 +88,5 @@ enum Role {
 enum ReservationStatus {
   PAID
   NOT_PAID
+  PENDING
 }
