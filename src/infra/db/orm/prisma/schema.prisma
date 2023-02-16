@@ -34,7 +34,7 @@ model Companies {
   updatedAt                DateTime       @default(now()) @map("updated_at")
   accounts                 Accounts[]
   courts                   Courts[]
-  reservation              Reservations[]
+  reservations             Reservations[]
   serviceHours             ServiceHours[]
   reservationTimeInMinutes String         @map("reservation_time_in_minutes")
 }
@@ -60,7 +60,7 @@ model Courts {
 model Reservations {
   id                String            @id @default(uuid())
   reservationPrice  Decimal           @map("reservation_price") @db.Decimal(10, 2)
-  reservationStatus ReservationStatus @default(NOT_PAID) @map("reservation_status")
+  reservationStatus ReservationStatus @default(AWAITING_PAYMENT) @map("reservation_status")
   reservationDate   DateTime
   description       String?
   accountId         String?           @map("account_id")
@@ -87,6 +87,6 @@ enum Role {
 
 enum ReservationStatus {
   PAID
-  NOT_PAID
+  AWAITING_PAYMENT
   PENDING
 }
