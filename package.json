@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run migrate:dev && node dist/main/server.js",
-    "debug": "npm run migrate:dev && npm run build && nodemon -L --watch ./dist --inspect=0.0.0.0:9222 --nolazy ./dist/main/server.js",
+    "start": "npm run migrate:build && node dist/main/server.js",
+    "debug": "npm run migrate:build && nodemon -L --watch ./dist --inspect=0.0.0.0:9222 --nolazy ./dist/main/server.js",
     "build": "rimraf dist && tsc -p tsconfig-build.json && npm run copy-files",
     "docker:up": "npm run build && docker-compose up -d",
     "docker:down": "docker-compose down",
@@ -13,9 +13,10 @@
     "test": "npx dotenv -e .env.test -- npm run migrate:dev && jest --passWithNoTests --silent --noStackTrace --runInBand -i",
     "test:verbose": "dotenv -e .env.test -- jest --passWithNoTests --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
-    "test:integration": "npm run docker:up && npx dotenv -e .env.test -- npx prisma migrate dev && npm test -- --watch -c jest-integration-config.js",
+    "test:integration": "npm run docker:up && npx dotenv -e .env.test -- npx prisma migrate:dev && npm test -- --watch -c jest-integration-config.js",
     "test:staged": "dotenv -e .env.test npm test -- --findRelatedTests",
     "test:ci": "dotenv -e .env.test npm test -- --coverage",
+    "migrate:build": "npx prisma migrate dev --schema=dist/infra/db/orm/prisma/schema.prisma",
     "migrate:dev": "npx prisma migrate dev --schema=src/infra/db/orm/prisma/schema.prisma",
     "generate": "npx prisma generate --schema=src/infra/db/orm/prisma/schema.prisma",
     "studio:dev": "npx prisma studio dev"
