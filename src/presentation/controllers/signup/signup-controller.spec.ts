@@ -7,7 +7,15 @@ const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
   name: 'valid_name',
   email: 'valid_email@mail.com',
-  hashedPassword: 'valid_password'
+  hashedPassword: 'valid_password',
+  role: 'USER',
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
 })
 
 const makeFakeRequest = (): HttpRequest => {
