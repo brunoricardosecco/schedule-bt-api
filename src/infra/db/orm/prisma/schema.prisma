@@ -36,7 +36,7 @@ model Companies {
   courts                   Courts[]
   reservations             Reservations[]
   serviceHours             ServiceHours[]
-  reservationTimeInMinutes String         @map("reservation_time_in_minutes")
+  reservationTimeInMinutes Int            @map("reservation_time_in_minutes")
 }
 
 model ServiceHours {
