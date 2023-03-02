@@ -6,7 +6,7 @@ const makeFakeAccount = (): AccountModel => ({
   name: 'valid_name',
   email: 'valid_email@mail.com',
   hashedPassword: 'hashed_password',
-  role: 'USER',
+  role: 'CLIENT',
   companyId: null,
   company: null,
   emailValidationToken: null,

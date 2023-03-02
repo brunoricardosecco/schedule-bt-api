@@ -18,7 +18,7 @@ model Accounts {
   emailValidationToken           String?        @map("email_validation_token")
   emailValidationTokenExpiration DateTime?      @map("email_validation_token_expiration")
   hashedPassword                 String?        @map("hashed_password")
-  role                           Role           @default(USER)
+  role                           Role           @default(CLIENT)
   isConfirmed                    Boolean        @default(false) @map("is_confirmed")
   company                        Companies?     @relation(fields: [companyId], references: [id])
   createdAt                      DateTime       @default(now()) @map("created_at")
@@ -79,7 +79,7 @@ model Errors {
 }
 
 enum Role {
-  USER
+  CLIENT
   GENERAL_ADMIN
   COMPANY_ADMIN
   EMPLOYEE
