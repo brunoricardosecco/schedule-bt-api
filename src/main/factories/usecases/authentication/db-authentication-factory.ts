@@ -2,7 +2,7 @@ import { DbAuthentication } from '@/data/usecases/authentication/db-authenticati
 import { Authentication } from '@/domain/usecases/authentication'
 import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
 import { JWTAdapter } from '@/infra/criptography/jwt-adapter/jwt-adapter'
-import { AccountPostgresRepository } from '@/infra/db/postgres/account/account-prostgres-repository'
+import { AccountPostgresRepository } from '@/infra/db/postgres/account/account-postgres-repository'
 
 export const makeDbAuthentication = (): Authentication => {
   const salt = 12

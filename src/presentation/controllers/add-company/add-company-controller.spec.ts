@@ -1,5 +1,5 @@
 import { MissingParamError, ServerError } from '@/presentation/errors'
-import { Company, AddCompany, AddCompanyModel, HttpRequest, Validation } from './add-company-controller.protocols'
+import { Company, AddCompany, HttpRequest, Validation, AddCompanyModel } from './add-company-controller.protocols'
 import { AddCompanyController } from './add-company-controller'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 
@@ -12,20 +12,25 @@ const makeFakeCompany = (): Company => ({
   updatedAt: new Date()
 })
 
+const makeFakeCompanyData = (): AddCompanyModel => ({
+  name: 'verona',
+  reservationPrice: '60.00',
+  reservationTimeInMinutes: 60
+})
+
+const company = makeFakeCompany()
+const addCompanyData = makeFakeCompanyData()
+
 const makeFakeRequest = (): HttpRequest => {
   return {
-    body: {
-      name: 'any_name',
-      reservationPrice: '60.00',
-      reservationTimeInMinutes: 80
-    }
+    body: addCompanyData
   }
 }
 
 const makeAddCompany = (): AddCompany => {
   class AddCompanyStub implements AddCompany {
-    async add (account: AddCompanyModel): Promise<Company> {
-      return await new Promise(resolve => { resolve(makeFakeCompany()) })
+    async add (): Promise<Company> {
+      return await new Promise(resolve => { resolve(company) })
     }
   }
 
@@ -68,11 +73,7 @@ describe('AddCompany Controller', () => {
 
     await sut.handle(makeFakeRequest())
 
-    expect(addSpy).toHaveBeenCalledWith({
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'any_password'
-    })
+    expect(addSpy).toHaveBeenCalledWith(addCompanyData)
   })
 
   it('should return 500 if AddCompany throws', async () => {
@@ -89,7 +90,7 @@ describe('AddCompany Controller', () => {
     const httpResponse = await sut.handle(makeFakeRequest())
 
     expect(httpResponse).toEqual(ok({
-      account: makeFakeCompany()
+      company
     }))
   })
 

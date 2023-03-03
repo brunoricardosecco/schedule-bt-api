@@ -1,73 +1,36 @@
 import request from 'supertest'
 import { db } from '@/infra/db/orm/prisma'
-import { hash } from 'bcrypt'
 import app from '@/main/config/app'
+import { AddCompanyModel } from '@/domain/usecases/add-company'
 
-describe('Login Routes', () => {
+const makeFakeCompanyData = (): AddCompanyModel => ({
+  name: 'verona',
+  reservationPrice: '60.00',
+  reservationTimeInMinutes: 60
+})
+
+describe('Company Routes', () => {
   afterAll(async () => {
-    const deleteAccounts = db.accounts.deleteMany()
+    const deleteCompanies = db.companies.deleteMany()
     await db.$transaction([
-      deleteAccounts
+      deleteCompanies
     ])
     await db.$disconnect()
   })
 
   afterEach(async () => {
-    const deleteAccounts = db.accounts.deleteMany()
+    const deleteCompanies = db.companies.deleteMany()
     await db.$transaction([
-      deleteAccounts
+      deleteCompanies
     ])
   })
 
-  describe('POST /signup', () => {
-    it('should return 200 on signup', async () => {
+  describe('POST /company', () => {
+    it('should return 200 on POST /company', async () => {
       await request(app)
-        .post('/api/signup')
-        .send({
-          name: 'any_name',
-          email: 'any_email@mail.com',
-          password: 'any_password',
-          passwordConfirmation: 'any_password'
-        })
+        .post('/api/company')
+        .send(makeFakeCompanyData())
         .expect(200)
-    })
-  })
-
-  describe('POST /login', () => {
-    it('should return 200 on login', async () => {
-      const password = await hash('any_password', 12)
-      await db.accounts.create({
-        data: {
-          name: 'any_name',
-          email: 'any_email@mail.com',
-          hashedPassword: password
-        }
-      })
-      await request(app)
-        .post('/api/login')
-        .send({
-          email: 'any_email@mail.com',
-          password: 'any_password'
-        })
-        .expect(200)
-    })
-
-    it('should return 401 on login', async () => {
-      const password = await hash('any_password', 12)
-      await db.accounts.create({
-        data: {
-          name: 'any_name',
-          email: 'any_email@mail.com',
-          hashedPassword: password
-        }
-      })
-      await request(app)
-        .post('/api/login')
-        .send({
-          email: 'any_email@mail.com',
-          password: 'wrong_password'
-        })
-        .expect(401)
     })
   })
 })

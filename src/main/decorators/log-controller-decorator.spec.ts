@@ -16,10 +16,18 @@ const makeFakeRequest = (): HttpRequest => {
 }
 
 const makeFakeAccount = (): AccountModel => ({
-  id: 'any_id',
-  name: 'any_name',
-  email: 'any_email@mail.com',
-  hashedPassword: 'any_password'
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  hashedPassword: 'hashed_password',
+  role: 'CLIENT',
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
 })
 
 const makeLogErrorRepository = (): LogErrorRepository => {

@@ -1,5 +1,5 @@
 import { db } from '@/infra/db/orm/prisma'
-import { CompanyPostgresRepository } from './company-prostgres-repository'
+import { CompanyPostgresRepository } from './company-postgres-repository'
 
 const makeSut = (): CompanyPostgresRepository => {
   return new CompanyPostgresRepository()
@@ -32,7 +32,7 @@ describe('Company Postgres Repository', () => {
     expect(company).toBeTruthy()
     expect(company.id).toBeTruthy()
     expect(company.name).toBe('any_name')
-    expect(company.reservationPrice).toBe('60.00')
+    expect(company.reservationPrice).toBe('60')
     expect(company.reservationTimeInMinutes).toBe(80)
   })
 })

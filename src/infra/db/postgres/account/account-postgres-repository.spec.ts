@@ -1,5 +1,5 @@
 import { db } from '@/infra/db/orm/prisma'
-import { AccountPostgresRepository } from './account-prostgres-repository'
+import { AccountPostgresRepository } from './account-postgres-repository'
 
 const makeSut = (): AccountPostgresRepository => {
   return new AccountPostgresRepository()
@@ -26,7 +26,7 @@ describe('Account Postgres Repository', () => {
     const account = await sut.add({
       name: 'any_name',
       email: 'any_email@mail.com',
-      password: 'any_password'
+      hashedPassword: 'any_password'
     })
 
     expect(account).toBeTruthy()

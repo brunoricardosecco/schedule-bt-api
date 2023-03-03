@@ -1,7 +1,12 @@
 
 import { AccountModel } from '@/domain/models/account'
-import { AddAccountModel } from '@/domain/usecases/add-account'
+
+export type AddAccountToRepository = {
+  name: string
+  email: string
+  hashedPassword: string
+}
 
 export interface AddAccountRepository {
-  add: (accountData: AddAccountModel) => Promise<AccountModel>
+  add: (accountData: AddAccountToRepository) => Promise<AccountModel>
 }

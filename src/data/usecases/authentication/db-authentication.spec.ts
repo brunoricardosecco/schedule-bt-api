@@ -8,10 +8,18 @@ import {
 } from './db-authentication.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
-  id: 'any_id',
-  name: 'any_name',
-  email: 'any_email@mail.com',
-  hashedPassword: 'hashed_password'
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  hashedPassword: 'hashed_password',
+  role: 'CLIENT',
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
 })
 
 const makeFakeAuthentication = (): AuthenticationModel => ({
@@ -126,7 +134,7 @@ describe('Authentication Usecase', () => {
     const encryptSpy = jest.spyOn(EncrypterStub, 'encrypt')
 
     await sut.auth(makeFakeAuthentication())
-    expect(encryptSpy).toHaveBeenCalledWith('any_id')
+    expect(encryptSpy).toHaveBeenCalledWith('valid_id')
   })
 
   it('should throw if Encrypter throws', async () => {

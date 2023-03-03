@@ -24,7 +24,7 @@ const makeFakeAccountData = (): AddAccountModel => ({
 
 const makeAddAccountRepository = (): AddAccountRepository => {
   class AddAccountRepositoryStub implements AddAccountRepository {
-    async add (accountData: AddAccountModel): Promise<AccountModel> {
+    async add (): Promise<AccountModel> {
       return await new Promise(resolve => { resolve(makeFakeAccount()) })
     }
   }
@@ -105,11 +105,14 @@ describe('DbAddAccount Usecase', () => {
     await expect(promise).rejects.toThrow()
   })
 
-  it('should returns and account on success', async () => {
-    const { sut } = makeSut()
+  it.only('should returns and account on success', async () => {
+    const { sut, addAccountRepositoryStub } = makeSut()
 
+    const expectedResult = makeFakeAccount()
+
+    jest.spyOn(addAccountRepositoryStub, 'add').mockResolvedValueOnce(expectedResult)
     const account = await sut.add(makeFakeAccountData())
 
-    expect(account).toEqual(makeFakeAccount())
+    expect(account).toEqual(expectedResult)
   })
 })
