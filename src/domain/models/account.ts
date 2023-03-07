@@ -11,7 +11,7 @@ export type AccountModel = {
   emailValidationTokenExpiration: Date | null
   role: Role
   isConfirmed: boolean
-  company: Company | null
+  company?: Company | null
   createdAt: Date
   updatedAt: Date
 }

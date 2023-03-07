@@ -9,10 +9,7 @@ export class AccountPostgresRepository implements AddAccountRepository, LoadAcco
       data: accountData
     })
 
-    return {
-      ...account,
-      company: null
-    }
+    return account
   }
 
   async loadByEmail (email: string): Promise<AccountModel | null> {
@@ -22,13 +19,6 @@ export class AccountPostgresRepository implements AddAccountRepository, LoadAcco
       }
     })
 
-    if (!account) {
-      return null
-    }
-
-    return {
-      ...account,
-      company: null
-    }
+    return account
   }
 }
