@@ -91,7 +91,8 @@ describe('DbAddAccount Usecase', () => {
     expect(addSpy).toHaveBeenCalledWith({
       name: 'valid_name',
       email: 'valid_email@mail.com',
-      password: 'hashed_password'
+      hashedPassword: 'hashed_password',
+      password: 'valid_password'
     })
   })
 
@@ -105,7 +106,7 @@ describe('DbAddAccount Usecase', () => {
     await expect(promise).rejects.toThrow()
   })
 
-  it.only('should returns and account on success', async () => {
+  it('should returns an account on success', async () => {
     const { sut, addAccountRepositoryStub } = makeSut()
 
     const expectedResult = makeFakeAccount()
