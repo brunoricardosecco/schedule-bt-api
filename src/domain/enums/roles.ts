@@ -1,1 +1,0 @@
-export type Role = 'CLIENT' | 'GENERAL_ADMIN' | 'COMPANY_ADMIN' | 'EMPLOYEE'

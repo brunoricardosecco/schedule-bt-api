@@ -1,5 +1,5 @@
-import { Role } from './../enums/roles'
 import { Company } from './company'
+import { Role } from './role'
 
 export type AccountModel = {
   id: string

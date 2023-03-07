@@ -1,3 +1,4 @@
+import { RoleEnum } from '@/domain/enums/role-enum'
 import { DbAuthentication } from './db-authentication'
 import {
   AuthenticationModel,
@@ -12,7 +13,7 @@ const makeFakeAccount = (): AccountModel => ({
   name: 'valid_name',
   email: 'valid_email@mail.com',
   hashedPassword: 'hashed_password',
-  role: 'CLIENT',
+  role: RoleEnum.CLIENT,
   companyId: null,
   company: null,
   emailValidationToken: null,
