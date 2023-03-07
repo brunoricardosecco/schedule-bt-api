@@ -6,7 +6,7 @@ import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHel
 const makeFakeCompany = (): Company => ({
   id: 'valid_id',
   name: 'any_name',
-  reservationPrice: '60.00',
+  reservationPrice: 60,
   reservationTimeInMinutes: 80,
   createdAt: new Date(),
   updatedAt: new Date()
@@ -14,7 +14,7 @@ const makeFakeCompany = (): Company => ({
 
 const makeFakeCompanyData = (): AddCompanyModel => ({
   name: 'verona',
-  reservationPrice: '60.00',
+  reservationPrice: 60,
   reservationTimeInMinutes: 60
 })
 

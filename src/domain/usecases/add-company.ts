@@ -2,7 +2,7 @@ import { Company } from '@/domain/models/company'
 
 export type AddCompanyModel = {
   name: string
-  reservationPrice: string
+  reservationPrice: number
   reservationTimeInMinutes: number
 }
 

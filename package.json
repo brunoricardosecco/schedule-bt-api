@@ -18,7 +18,7 @@
     "test:staged": "dotenv -e .env.test npm test -- --findRelatedTests",
     "test:ci": "dotenv -e .env.test npm test -- --coverage",
     "migrate:build": "npx prisma migrate dev --schema=dist/infra/db/orm/prisma/schema.prisma",
-    "migrate:dev": "npx prisma migrate dev --schema=src/infra/db/orm/prisma/schema.prisma",
+    "d": "npx prisma migrate dev --schema=src/infra/db/orm/prisma/schema.prisma",
     "generate": "npx prisma generate --schema=src/infra/db/orm/prisma/schema.prisma",
     "studio:dev": "npx prisma studio dev"
   },

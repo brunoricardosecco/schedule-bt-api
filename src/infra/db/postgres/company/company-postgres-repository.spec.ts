@@ -23,16 +23,17 @@ describe('Company Postgres Repository', () => {
 
   it('should return an company on add success', async () => {
     const sut = makeSut()
-    const company = await sut.add({
+    const params = {
       name: 'any_name',
-      reservationPrice: '60.00',
+      reservationPrice: 60,
       reservationTimeInMinutes: 80
-    })
+    }
+    const company = await sut.add(params)
 
     expect(company).toBeTruthy()
     expect(company.id).toBeTruthy()
-    expect(company.name).toBe('any_name')
-    expect(company.reservationPrice).toBe('60')
-    expect(company.reservationTimeInMinutes).toBe(80)
+    expect(company.name).toBe(params.name)
+    expect(company.reservationPrice).toBe(params.reservationPrice)
+    expect(company.reservationTimeInMinutes).toBe(params.reservationTimeInMinutes)
   })
 })

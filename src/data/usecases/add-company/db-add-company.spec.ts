@@ -4,7 +4,7 @@ import { DbAddCompany } from './db-add-company'
 const makeFakeCompany = (): Company => ({
   id: 'valid_id',
   name: 'verona',
-  reservationPrice: '60.00',
+  reservationPrice: 60,
   reservationTimeInMinutes: 60,
   createdAt: new Date(),
   updatedAt: new Date()
@@ -12,7 +12,7 @@ const makeFakeCompany = (): Company => ({
 
 const makeFakeCompanyData = (): AddCompanyModel => ({
   name: 'verona',
-  reservationPrice: '60.00',
+  reservationPrice: 60,
   reservationTimeInMinutes: 60
 })
 

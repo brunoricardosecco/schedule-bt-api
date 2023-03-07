@@ -9,9 +9,6 @@ export class CompanyPostgresRepository implements AddCompanyRepository {
       data: companyData
     })
 
-    return {
-      ...company,
-      reservationPrice: company.reservationPrice.toString()
-    }
+    return company
   }
 }

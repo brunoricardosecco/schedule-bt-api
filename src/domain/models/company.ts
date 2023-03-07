@@ -1,7 +1,7 @@
 export type Company = {
   id: string
   name: string
-  reservationPrice: string
+  reservationPrice: number
   reservationTimeInMinutes: number
   createdAt: Date
   updatedAt: Date

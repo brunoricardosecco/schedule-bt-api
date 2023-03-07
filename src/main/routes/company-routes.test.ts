@@ -5,7 +5,7 @@ import { AddCompanyModel } from '@/domain/usecases/add-company'
 
 const makeFakeCompanyData = (): AddCompanyModel => ({
   name: 'verona',
-  reservationPrice: '60.00',
+  reservationPrice: 60,
   reservationTimeInMinutes: 60
 })
 
