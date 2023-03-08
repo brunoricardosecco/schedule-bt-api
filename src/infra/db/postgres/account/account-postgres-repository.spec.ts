@@ -7,6 +7,25 @@ const makeSut = (): AccountPostgresRepository => {
 }
 
 describe('Account Postgres Repository', () => {
+  let createdCompany
+
+  beforeAll(async () => {
+    const deleteAccounts = db.accounts.deleteMany()
+
+    await db.$transaction([
+      deleteAccounts
+    ])
+    await db.$disconnect()
+
+    createdCompany = await db.companies.create({
+      data: {
+        name: 'Empresa X',
+        reservationPrice: 70,
+        reservationTimeInMinutes: 60
+      }
+    })
+  })
+
   afterAll(async () => {
     const deleteAccounts = db.accounts.deleteMany()
 
@@ -16,22 +35,7 @@ describe('Account Postgres Repository', () => {
     await db.$disconnect()
   })
 
-  afterEach(async () => {
-    const deleteAccounts = db.accounts.deleteMany()
-    await db.$transaction([
-      deleteAccounts
-    ])
-  })
-
   it('should return an account on add success', async () => {
-    const createdCompany = await db.companies.create({
-      data: {
-        name: 'Empresa X',
-        reservationPrice: 70,
-        reservationTimeInMinutes: 60
-      }
-    })
-
     const sut = makeSut()
     const params = {
       name: 'any_name',
@@ -56,23 +60,25 @@ describe('Account Postgres Repository', () => {
     const sut = makeSut()
     await db.accounts.create({
       data: {
-        email: 'any_email@mail.com',
+        email: 'any_email2@mail.com',
         name: 'any_name',
-        hashedPassword: 'any_password'
+        hashedPassword: 'any_password',
+        companyId: createdCompany.id,
+        role: RoleEnum.EMPLOYEE
       }
     })
-    const account = await sut.loadByEmail('any_email@mail.com')
+    const account = await sut.loadByEmail('any_email2@mail.com')
 
     expect(account).toBeTruthy()
     expect(account?.id).toBeTruthy()
     expect(account?.name).toBe('any_name')
-    expect(account?.email).toBe('any_email@mail.com')
+    expect(account?.email).toBe('any_email2@mail.com')
     expect(account?.hashedPassword).toBe('any_password')
   })
 
   it('should return null on loadByEmail fails', async () => {
     const sut = makeSut()
-    const account = await sut.loadByEmail('any_email@mail.com')
+    const account = await sut.loadByEmail('invalid_email@mail.com')
 
     expect(account).toBeFalsy()
   })
