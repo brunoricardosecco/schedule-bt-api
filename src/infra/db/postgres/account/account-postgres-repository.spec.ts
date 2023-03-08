@@ -10,13 +10,6 @@ describe('Account Postgres Repository', () => {
   let createdCompany
 
   beforeAll(async () => {
-    const deleteAccounts = db.accounts.deleteMany()
-
-    await db.$transaction([
-      deleteAccounts
-    ])
-    await db.$disconnect()
-
     createdCompany = await db.companies.create({
       data: {
         name: 'Empresa X',
@@ -26,10 +19,25 @@ describe('Account Postgres Repository', () => {
     })
   })
 
-  afterAll(async () => {
+  beforeEach(async () => {
     const deleteAccounts = db.accounts.deleteMany()
 
     await db.$transaction([
+      deleteAccounts
+    ])
+    await db.$disconnect()
+  })
+
+  afterAll(async () => {
+    const deleteAccounts = db.accounts.deleteMany()
+    const deleteCompanyId = db.companies.delete({
+      where: {
+        id: createdCompany.id
+      }
+    })
+
+    await db.$transaction([
+      deleteCompanyId,
       deleteAccounts
     ])
     await db.$disconnect()
