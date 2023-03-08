@@ -1,3 +1,4 @@
+import { RoleEnum } from '@/domain/enums/role-enum'
 import { db } from '@/infra/db/orm/prisma'
 import { AccountPostgresRepository } from './account-postgres-repository'
 
@@ -8,6 +9,7 @@ const makeSut = (): AccountPostgresRepository => {
 describe('Account Postgres Repository', () => {
   afterAll(async () => {
     const deleteAccounts = db.accounts.deleteMany()
+
     await db.$transaction([
       deleteAccounts
     ])
@@ -22,18 +24,32 @@ describe('Account Postgres Repository', () => {
   })
 
   it('should return an account on add success', async () => {
+    const createdCompany = await db.companies.create({
+      data: {
+        name: 'Empresa X',
+        reservationPrice: 70,
+        reservationTimeInMinutes: 60
+      }
+    })
+
     const sut = makeSut()
-    const account = await sut.add({
+    const params = {
       name: 'any_name',
       email: 'any_email@mail.com',
-      hashedPassword: 'any_password'
-    })
+      hashedPassword: 'any_password',
+      companyId: createdCompany.id,
+      role: RoleEnum.EMPLOYEE
+    }
+
+    const account = await sut.add(params)
 
     expect(account).toBeTruthy()
     expect(account.id).toBeTruthy()
-    expect(account.name).toBe('any_name')
-    expect(account.email).toBe('any_email@mail.com')
-    expect(account.hashedPassword).toBe('any_password')
+    expect(account.name).toBe(params.name)
+    expect(account.email).toBe(params.email)
+    expect(account.hashedPassword).toBe(params.hashedPassword)
+    expect(account.companyId).toBe(params.companyId)
+    expect(account.role).toBe(params.role)
   })
 
   it('should return an account on loadByEmail success', async () => {

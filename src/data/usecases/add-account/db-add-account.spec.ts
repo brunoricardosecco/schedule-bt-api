@@ -7,7 +7,7 @@ const makeFakeAccount = (): AccountModel => ({
   name: 'valid_name',
   email: 'valid_email@mail.com',
   hashedPassword: 'hashed_password',
-  role: RoleEnum.CLIENT,
+  role: RoleEnum.EMPLOYEE,
   companyId: null,
   company: null,
   emailValidationToken: null,
@@ -20,7 +20,9 @@ const makeFakeAccount = (): AccountModel => ({
 const makeFakeAccountData = (): AddAccountModel => ({
   name: 'valid_name',
   email: 'valid_email@mail.com',
-  password: 'valid_password'
+  password: 'valid_password',
+  companyId: 'valid_company_id',
+  role: RoleEnum.EMPLOYEE
 })
 
 const makeAddAccountRepository = (): AddAccountRepository => {
@@ -93,7 +95,8 @@ describe('DbAddAccount Usecase', () => {
       name: 'valid_name',
       email: 'valid_email@mail.com',
       hashedPassword: 'hashed_password',
-      password: 'valid_password'
+      companyId: 'valid_company_id',
+      role: RoleEnum.EMPLOYEE
     })
   })
 

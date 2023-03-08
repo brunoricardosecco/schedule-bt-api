@@ -1,5 +1,5 @@
 import { MissingParamError, ServerError } from '@/presentation/errors'
-import { AccountModel, AddAccount, AddAccountModel, HttpRequest, Validation, Authentication, AuthenticationModel } from './signup-controller.protocols'
+import { AccountModel, AddAccount, AddAccountModel, HttpRequest, Validation, Authentication } from './signup-controller.protocols'
 import { SignUpController } from './signup-controller'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { RoleEnum } from '@/domain/enums/role-enum'
@@ -25,14 +25,15 @@ const makeFakeRequest = (): HttpRequest => {
       name: 'any_name',
       email: 'any_email@mail.com',
       password: 'any_password',
-      passwordConfirmation: 'any_password'
+      companyId: 'any_company_id',
+      role: RoleEnum.EMPLOYEE
     }
   }
 }
 
 const makeAuthentication = (): Authentication => {
   class AuthenticationStub implements Authentication {
-    async auth (authenticationModel: AuthenticationModel): Promise<string> {
+    async auth (): Promise<string> {
       return await new Promise(resolve => { resolve('any_token') })
     }
   }
@@ -91,7 +92,9 @@ describe('SignUp Controller', () => {
     expect(addSpy).toHaveBeenCalledWith({
       name: 'any_name',
       email: 'any_email@mail.com',
-      password: 'any_password'
+      password: 'any_password',
+      companyId: 'any_company_id',
+      role: RoleEnum.EMPLOYEE
     })
   })
 
