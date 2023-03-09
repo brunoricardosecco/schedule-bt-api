@@ -64,6 +64,18 @@ const makeSut = (): SutTypes => {
 }
 
 describe('DbAddAccount Usecase', () => {
+  it('should return error if role is different than EMPLOYEE or COMPANY_ADMIN', async () => {
+    const { sut } = makeSut()
+
+    const error = await sut.add({
+      ...makeFakeAccountData(),
+      role: RoleEnum.CLIENT
+    }) as Error
+
+    expect(error).toBeInstanceOf(Error)
+    expect(error.message).toBe('Role must be EMPLOYEE or COMPANY_ADMIN')
+  })
+
   it('should call Hasher with correct password', async () => {
     const { sut, HasherStub } = makeSut()
 
