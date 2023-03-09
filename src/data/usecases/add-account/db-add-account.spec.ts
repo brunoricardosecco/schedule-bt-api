@@ -1,11 +1,20 @@
 import { AddAccountModel, Hasher, AccountModel, AddAccountRepository } from './db-add-account.protocols'
 import { DbAddAccount } from './db-add-account'
+import { RoleEnum } from '@/domain/enums/role-enum'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
   name: 'valid_name',
   email: 'valid_email@mail.com',
-  password: 'hashed_password'
+  hashedPassword: 'hashed_password',
+  role: RoleEnum.CLIENT,
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
 })
 
 const makeFakeAccountData = (): AddAccountModel => ({
@@ -16,7 +25,7 @@ const makeFakeAccountData = (): AddAccountModel => ({
 
 const makeAddAccountRepository = (): AddAccountRepository => {
   class AddAccountRepositoryStub implements AddAccountRepository {
-    async add (accountData: AddAccountModel): Promise<AccountModel> {
+    async add (): Promise<AccountModel> {
       return await new Promise(resolve => { resolve(makeFakeAccount()) })
     }
   }
@@ -83,7 +92,8 @@ describe('DbAddAccount Usecase', () => {
     expect(addSpy).toHaveBeenCalledWith({
       name: 'valid_name',
       email: 'valid_email@mail.com',
-      password: 'hashed_password'
+      hashedPassword: 'hashed_password',
+      password: 'valid_password'
     })
   })
 
@@ -97,11 +107,14 @@ describe('DbAddAccount Usecase', () => {
     await expect(promise).rejects.toThrow()
   })
 
-  it('should returns and account on success', async () => {
-    const { sut } = makeSut()
+  it('should returns an account on success', async () => {
+    const { sut, addAccountRepositoryStub } = makeSut()
 
+    const expectedResult = makeFakeAccount()
+
+    jest.spyOn(addAccountRepositoryStub, 'add').mockResolvedValueOnce(expectedResult)
     const account = await sut.add(makeFakeAccountData())
 
-    expect(account).toEqual(makeFakeAccount())
+    expect(account).toEqual(expectedResult)
   })
 })

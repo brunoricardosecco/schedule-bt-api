@@ -2,12 +2,21 @@ import { MissingParamError, ServerError } from '@/presentation/errors'
 import { AccountModel, AddAccount, AddAccountModel, HttpRequest, Validation, Authentication, AuthenticationModel } from './signup-controller.protocols'
 import { SignUpController } from './signup-controller'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { RoleEnum } from '@/domain/enums/role-enum'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
   name: 'valid_name',
   email: 'valid_email@mail.com',
-  password: 'valid_password'
+  hashedPassword: 'valid_password',
+  role: RoleEnum.CLIENT,
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
 })
 
 const makeFakeRequest = (): HttpRequest => {

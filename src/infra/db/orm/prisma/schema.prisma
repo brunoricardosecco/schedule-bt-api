@@ -18,7 +18,7 @@ model Accounts {
   emailValidationToken           String?        @map("email_validation_token")
   emailValidationTokenExpiration DateTime?      @map("email_validation_token_expiration")
   hashedPassword                 String?        @map("hashed_password")
-  role                           Role           @default(USER)
+  role                           Role           @default(CLIENT)
   isConfirmed                    Boolean        @default(false) @map("is_confirmed")
   company                        Companies?     @relation(fields: [companyId], references: [id])
   createdAt                      DateTime       @default(now()) @map("created_at")
@@ -29,14 +29,14 @@ model Accounts {
 model Companies {
   id                       String         @id @default(uuid())
   name                     String
-  reservationPrice         Decimal        @map("reservation_price") @db.Decimal(10, 2)
+  reservationPrice         Int            @map("reservation_price")
   createdAt                DateTime       @default(now()) @map("created_at")
   updatedAt                DateTime       @default(now()) @map("updated_at")
   accounts                 Accounts[]
   courts                   Courts[]
   reservations             Reservations[]
   serviceHours             ServiceHours[]
-  reservationTimeInMinutes String         @map("reservation_time_in_minutes")
+  reservationTimeInMinutes Int            @map("reservation_time_in_minutes")
 }
 
 model ServiceHours {
@@ -59,7 +59,7 @@ model Courts {
 
 model Reservations {
   id                String            @id @default(uuid())
-  reservationPrice  Decimal           @map("reservation_price") @db.Decimal(10, 2)
+  reservationPrice  Int               @map("reservation_price")
   reservationStatus ReservationStatus @default(AWAITING_PAYMENT) @map("reservation_status")
   reservationDate   DateTime
   description       String?
@@ -79,7 +79,7 @@ model Errors {
 }
 
 enum Role {
-  USER
+  CLIENT
   GENERAL_ADMIN
   COMPANY_ADMIN
   EMPLOYEE
