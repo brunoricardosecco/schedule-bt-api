@@ -1,6 +1,7 @@
 import { AddAccountModel, Hasher, AccountModel, AddAccountRepository } from './db-add-account.protocols'
 import { DbAddAccount } from './db-add-account'
 import { RoleEnum } from '@/domain/enums/role-enum'
+import { LoadAccountByEmailRepository } from '../authentication/db-authentication.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -25,10 +26,14 @@ const makeFakeAccountData = (): AddAccountModel => ({
   role: RoleEnum.EMPLOYEE
 })
 
-const makeAddAccountRepository = (): AddAccountRepository => {
-  class AddAccountRepositoryStub implements AddAccountRepository {
+const makeAccountRepository = (): AddAccountRepository & LoadAccountByEmailRepository => {
+  class AddAccountRepositoryStub implements AddAccountRepository, LoadAccountByEmailRepository {
     async add (): Promise<AccountModel> {
       return await new Promise(resolve => { resolve(makeFakeAccount()) })
+    }
+
+    async loadByEmail (): Promise<AccountModel | null> {
+      return await new Promise(resolve => { resolve(null) })
     }
   }
 
@@ -48,18 +53,18 @@ const makeHasher = (): Hasher => {
 type SutTypes = {
   sut: DbAddAccount
   HasherStub: Hasher
-  addAccountRepositoryStub: AddAccountRepository
+  accountRepositoryStub: AddAccountRepository & LoadAccountByEmailRepository
 }
 
 const makeSut = (): SutTypes => {
   const HasherStub = makeHasher()
-  const addAccountRepositoryStub = makeAddAccountRepository()
-  const sut = new DbAddAccount(HasherStub, addAccountRepositoryStub)
+  const accountRepositoryStub = makeAccountRepository()
+  const sut = new DbAddAccount(HasherStub, accountRepositoryStub)
 
   return {
     sut,
     HasherStub,
-    addAccountRepositoryStub
+    accountRepositoryStub
   }
 }
 
@@ -74,6 +79,21 @@ describe('DbAddAccount Usecase', () => {
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('Role must be EMPLOYEE or COMPANY_ADMIN')
+  })
+
+  it('should return error if email is already being used', async () => {
+    const { sut, accountRepositoryStub } = makeSut()
+
+    jest
+      .spyOn(accountRepositoryStub, 'loadByEmail')
+      .mockReturnValueOnce(
+        new Promise((resolve, reject) => { resolve(makeFakeAccount()) })
+      )
+
+    const error = await sut.add(makeFakeAccountData()) as Error
+
+    expect(error).toBeInstanceOf(Error)
+    expect(error.message).toBe('Email already being used')
   })
 
   it('should call Hasher with correct password', async () => {
@@ -97,9 +117,9 @@ describe('DbAddAccount Usecase', () => {
   })
 
   it('should call AddAccountRepository with correct values', async () => {
-    const { sut, addAccountRepositoryStub } = makeSut()
+    const { sut, accountRepositoryStub } = makeSut()
 
-    const addSpy = jest.spyOn(addAccountRepositoryStub, 'add')
+    const addSpy = jest.spyOn(accountRepositoryStub, 'add')
 
     await sut.add(makeFakeAccountData())
 
@@ -113,9 +133,9 @@ describe('DbAddAccount Usecase', () => {
   })
 
   it('should throw if AddAccountRepository throws', async () => {
-    const { sut, addAccountRepositoryStub } = makeSut()
+    const { sut, accountRepositoryStub } = makeSut()
 
-    jest.spyOn(addAccountRepositoryStub, 'add').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(accountRepositoryStub, 'add').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
 
     const promise = sut.add(makeFakeAccountData())
 
@@ -123,11 +143,11 @@ describe('DbAddAccount Usecase', () => {
   })
 
   it('should returns an account on success', async () => {
-    const { sut, addAccountRepositoryStub } = makeSut()
+    const { sut, accountRepositoryStub } = makeSut()
 
     const expectedResult = makeFakeAccount()
 
-    jest.spyOn(addAccountRepositoryStub, 'add').mockResolvedValueOnce(expectedResult)
+    jest.spyOn(accountRepositoryStub, 'add').mockResolvedValueOnce(expectedResult)
     const account = await sut.add(makeFakeAccountData())
 
     expect(account).toEqual(expectedResult)
