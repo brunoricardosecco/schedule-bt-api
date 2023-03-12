@@ -59,4 +59,13 @@ describe('DbAddCompanyServiceHour Usecase', () => {
 
     expect(addSpy).toHaveBeenCalledWith(makeFakeServiceHourData())
   })
+  it('should throw if AddCompanyServiceHourRepository throws', async () => {
+    const { addCompanyRepository, sut } = makeSut()
+
+    jest.spyOn(addCompanyRepository, 'add').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+
+    const promise = sut.add(makeFakeServiceHourData())
+
+    await expect(promise).rejects.toThrow()
+  })
 })
