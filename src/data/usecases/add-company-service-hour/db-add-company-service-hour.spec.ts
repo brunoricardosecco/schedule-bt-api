@@ -1,8 +1,6 @@
-import { AddCompanyServiceHourRepository, AddCompanyServiceHourRepositoryModel } from '@/data/protocols/db/service-hour/add-company-service-hour'
-import { ServiceHour } from '@/domain/models/serviceHour'
-import { AddCompanyServiceHour } from '@/domain/usecases/add-company-service-hour'
 import { Company } from '../add-company/db-add-company.protocols'
 import { DbAddCompanyServiceHour } from './db-add-company-service-hour'
+import { AddCompanyServiceHourRepository, AddCompanyServiceHourRepositoryModel, ServiceHour, AddCompanyServiceHour } from './db-add-company-service-hour.protocols'
 
 const makeFakeCompany = (): Company => ({
   id: 'valid_id',

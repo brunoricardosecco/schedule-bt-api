@@ -1,6 +1,4 @@
-import { AddCompanyServiceHourRepository } from '@/data/protocols/db/service-hour/add-company-service-hour'
-import { ServiceHour } from '@/domain/models/serviceHour'
-import { AddCompanyServiceHour, AddCompanyServiceHourModel } from '@/domain/usecases/add-company-service-hour'
+import { AddCompanyServiceHourRepository, ServiceHour, AddCompanyServiceHour, AddCompanyServiceHourModel } from './db-add-company-service-hour.protocols'
 
 export class DbAddCompanyServiceHour implements AddCompanyServiceHour {
   constructor (
