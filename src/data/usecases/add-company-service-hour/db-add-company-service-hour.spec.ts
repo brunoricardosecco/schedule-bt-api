@@ -68,4 +68,11 @@ describe('DbAddCompanyServiceHour Usecase', () => {
 
     await expect(promise).rejects.toThrow()
   })
+  it('should returns an service hour on success', async () => {
+    const { sut } = makeSut()
+
+    const serviceHour = await sut.add(makeFakeServiceHourData())
+
+    expect(serviceHour).toEqual(makeFakeServiceHour())
+  })
 })
