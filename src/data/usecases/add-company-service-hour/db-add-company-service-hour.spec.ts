@@ -1,3 +1,5 @@
+import { TimeConflictChecker } from '@/data/protocols/date/time-conflict-checker'
+import { LoadServiceHoursByCompanyIdRepository } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id'
 import { Company } from '../add-company/db-add-company.protocols'
 import { DbAddCompanyServiceHour } from './db-add-company-service-hour'
 import { AddCompanyServiceHourRepository, AddCompanyServiceHourRepositoryModel, ServiceHour, AddCompanyServiceHour } from './db-add-company-service-hour.protocols'
@@ -16,34 +18,64 @@ const makeFakeServiceHour = (): ServiceHour => ({
   company: makeFakeCompany(),
   companyId: 'company_id',
   startTime: '09:00',
-  endTime: '22:00',
+  endTime: '12:00',
   weekday: 0
 })
 
 const makeFakeServiceHourData = (): AddCompanyServiceHourRepositoryModel => ({
   weekday: 0,
   startTime: '09:00',
-  endTime: '22:00',
+  endTime: '12:00',
   companyId: 'company_id'
 })
 
-class AddCompanyServiceHourRepositoryStub implements AddCompanyServiceHourRepository {
-  async add (serviceHourData: AddCompanyServiceHourRepositoryModel): Promise<ServiceHour> {
-    return await new Promise(resolve => { resolve(makeFakeServiceHour()) })
+const makeAddCompanyServiceHourRepository = (): AddCompanyServiceHourRepository => {
+  class AddCompanyServiceHourRepositoryStub implements AddCompanyServiceHourRepository {
+    async add (serviceHourData: AddCompanyServiceHourRepositoryModel): Promise<ServiceHour> {
+      return await new Promise(resolve => { resolve(makeFakeServiceHour()) })
+    }
   }
+
+  return new AddCompanyServiceHourRepositoryStub()
+}
+
+const makeLoadServiceHoursByCompanyId = (): LoadServiceHoursByCompanyIdRepository => {
+  class LoadServiceHoursByCompanyIdRepositoryStub implements LoadServiceHoursByCompanyIdRepository {
+    async load (companyId: string): Promise<ServiceHour[]> {
+      return await new Promise(resolve => { resolve([makeFakeServiceHour()]) })
+    }
+  }
+
+  return new LoadServiceHoursByCompanyIdRepositoryStub()
+}
+
+const makeTimeConflictChecker = (): TimeConflictChecker => {
+  class TimeConflictCheckerStub implements TimeConflictChecker {
+    hasConflicts ({ newDateTime, storedDateTimes }: any): boolean {
+      return false
+    }
+  }
+
+  return new TimeConflictCheckerStub()
 }
 
 type SutTypes = {
   addCompanyRepository: AddCompanyServiceHourRepository
+  loadServiceHoursByCompanyIdRepository: LoadServiceHoursByCompanyIdRepository
+  timeConflictChecker: TimeConflictChecker
   sut: AddCompanyServiceHour
 }
 
 const makeSut = (): SutTypes => {
-  const addCompanyRepository = new AddCompanyServiceHourRepositoryStub()
-  const sut = new DbAddCompanyServiceHour(addCompanyRepository)
+  const addCompanyRepository = makeAddCompanyServiceHourRepository()
+  const loadServiceHoursByCompanyIdRepository = makeLoadServiceHoursByCompanyId()
+  const timeConflictChecker = makeTimeConflictChecker()
+  const sut = new DbAddCompanyServiceHour(addCompanyRepository, loadServiceHoursByCompanyIdRepository, timeConflictChecker)
 
   return {
     addCompanyRepository,
+    loadServiceHoursByCompanyIdRepository,
+    timeConflictChecker,
     sut
   }
 }
@@ -60,7 +92,7 @@ describe('DbAddCompanyServiceHour Usecase', () => {
   it('should throw if AddCompanyServiceHourRepository throws', async () => {
     const { addCompanyRepository, sut } = makeSut()
 
-    jest.spyOn(addCompanyRepository, 'add').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(addCompanyRepository, 'add').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
 
     const promise = sut.add(makeFakeServiceHourData())
 
@@ -72,5 +104,21 @@ describe('DbAddCompanyServiceHour Usecase', () => {
     const serviceHour = await sut.add(makeFakeServiceHourData())
 
     expect(serviceHour).toEqual(makeFakeServiceHour())
+  })
+  it('should returns an error on trying to add a schedule that conflicts with another one on the same day', async () => {
+    const { sut, timeConflictChecker } = makeSut()
+
+    jest.spyOn(timeConflictChecker, 'hasConflicts').mockReturnValueOnce(true)
+
+    const conflictingServiceHour: AddCompanyServiceHourRepositoryModel = {
+      companyId: 'company_id',
+      startTime: '10:00',
+      endTime: '14:00',
+      weekday: 0
+    }
+
+    const error = await sut.add(conflictingServiceHour)
+
+    expect(error).toEqual(new Error('New service hour is conflicting with another'))
   })
 })
