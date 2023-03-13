@@ -1,8 +1,8 @@
-import { Authentication, AuthenticationModel } from '@/domain/usecases/authentication'
+import { IAuthenticationByPassword } from '@/domain/usecases/authentication-by-password'
 import { MissingParamError } from '@/presentation/errors'
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
 import { Validation, HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
-import { LoginController } from './login-controller'
+import { AuthenticationByPasswordController } from './authentication-by-password-controller'
 
 const makeFakeRequest = (): HttpRequest => {
   return ({
@@ -13,9 +13,9 @@ const makeFakeRequest = (): HttpRequest => {
   })
 }
 
-const makeAuthentication = (): Authentication => {
-  class AuthenticationStub implements Authentication {
-    async auth (authenticationModel: AuthenticationModel): Promise<string> {
+const makeAuthentication = (): IAuthenticationByPassword => {
+  class AuthenticationStub implements IAuthenticationByPassword {
+    async auth (): Promise<string> {
       return await new Promise(resolve => { resolve('any_token') })
     }
   }
@@ -34,15 +34,15 @@ const makeValidation = (): Validation => {
 }
 
 type SutTypes = {
-  sut: LoginController
+  sut: AuthenticationByPasswordController
   validationStub: Validation
-  authenticationStub: Authentication
+  authenticationStub: IAuthenticationByPassword
 }
 
 const makeSut = (): SutTypes => {
   const validationStub = makeValidation()
   const authenticationStub = makeAuthentication()
-  const sut = new LoginController(authenticationStub, validationStub)
+  const sut = new AuthenticationByPasswordController(authenticationStub, validationStub)
 
   return {
     sut,
@@ -51,8 +51,8 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('Login Controller', () => {
-  it('should call Authentication with correct values', async () => {
+describe('AuthenticationByPasswordController', () => {
+  it('should call AuthenticationByPassword with correct values', async () => {
     const { sut, authenticationStub } = makeSut()
 
     const authSpy = jest.spyOn(authenticationStub, 'auth')

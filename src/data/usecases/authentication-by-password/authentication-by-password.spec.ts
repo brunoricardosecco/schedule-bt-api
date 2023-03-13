@@ -1,12 +1,12 @@
 import { RoleEnum } from '@/domain/enums/role-enum'
-import { DbAuthentication } from './db-authentication'
+import { AuthenticationByPassword } from './authentication-by-password'
 import {
-  AuthenticationModel,
+  TAuthenticationByPasswordParams,
   HashComparer,
   Encrypter,
   LoadAccountByEmailRepository,
   AccountModel
-} from './db-authentication.protocols'
+} from './authentication-by-password.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -23,7 +23,7 @@ const makeFakeAccount = (): AccountModel => ({
   updatedAt: new Date()
 })
 
-const makeFakeAuthentication = (): AuthenticationModel => ({
+const makeFakeAuthentication = (): TAuthenticationByPasswordParams => ({
   email: 'any_email@mail.com',
   password: 'any_password'
 })
@@ -57,7 +57,7 @@ const makeEncrypter = (): Encrypter => {
 }
 
 type SutTypes = {
-  sut: DbAuthentication
+  sut: AuthenticationByPassword
   loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
   hashComparerStub: HashComparer
   EncrypterStub: Encrypter
@@ -67,7 +67,7 @@ const makeSut = (): SutTypes => {
   const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepository()
   const hashComparerStub = makeHashComparer()
   const EncrypterStub = makeEncrypter()
-  const sut = new DbAuthentication(
+  const sut = new AuthenticationByPassword(
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
     EncrypterStub
@@ -81,7 +81,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('Authentication Usecase', () => {
+describe('AuthenticationByPassword Usecase', () => {
   it('should call LoadAccountByEmailRepository with correct email', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     const loadSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')

@@ -1,5 +1,5 @@
 import { MissingParamError, ServerError } from '@/presentation/errors'
-import { AccountModel, AddAccount, AddAccountModel, HttpRequest, Validation, Authentication } from './signup-controller.protocols'
+import { AccountModel, AddAccount, AddAccountModel, HttpRequest, Validation, IAuthenticationByPassword } from './signup-controller.protocols'
 import { SignUpController } from './signup-controller'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { RoleEnum } from '@/domain/enums/role-enum'
@@ -31,8 +31,8 @@ const makeFakeRequest = (): HttpRequest => {
   }
 }
 
-const makeAuthentication = (): Authentication => {
-  class AuthenticationStub implements Authentication {
+const makeAuthentication = (): IAuthenticationByPassword => {
+  class AuthenticationStub implements IAuthenticationByPassword {
     async auth (): Promise<string> {
       return await new Promise(resolve => { resolve('any_token') })
     }
@@ -65,7 +65,7 @@ type SutTypes = {
   sut: SignUpController
   addAccountStub: AddAccount
   validationStub: Validation
-  authenticationStub: Authentication
+  authenticationStub: IAuthenticationByPassword
 }
 
 const makeSut = (): SutTypes => {
