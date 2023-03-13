@@ -5,5 +5,5 @@ import { makeAuthenticationByPasswordController } from '@/main/factories/control
 
 export default (router: Router): void => {
   router.post('/signup', routeAdapter(makeSignUpController()))
-  router.post('/login', routeAdapter(makeAuthenticationByPasswordController()))
+  router.post('/authenticate-by-password', routeAdapter(makeAuthenticationByPasswordController()))
 }

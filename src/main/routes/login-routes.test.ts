@@ -44,8 +44,8 @@ describe('Login Routes', () => {
     })
   })
 
-  describe('POST /login', () => {
-    it('should return 200 on login', async () => {
+  describe('POST /authenticate-by-password', () => {
+    it('should return 200 on authenticate by password', async () => {
       const password = await hash('any_password', 12)
       await db.accounts.create({
         data: {
@@ -55,7 +55,7 @@ describe('Login Routes', () => {
         }
       })
       await request(app)
-        .post('/api/login')
+        .post('/api/authenticate-by-password')
         .send({
           email: 'any_email@mail.com',
           password: 'any_password'
@@ -63,7 +63,7 @@ describe('Login Routes', () => {
         .expect(200)
     })
 
-    it('should return 401 on login', async () => {
+    it('should return 401 on authenticate by password', async () => {
       const password = await hash('any_password', 12)
       await db.accounts.create({
         data: {
@@ -73,7 +73,7 @@ describe('Login Routes', () => {
         }
       })
       await request(app)
-        .post('/api/login')
+        .post('/api/authenticate-by-password')
         .send({
           email: 'any_email@mail.com',
           password: 'wrong_password'
