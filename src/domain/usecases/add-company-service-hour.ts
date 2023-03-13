@@ -8,5 +8,5 @@ export type AddCompanyServiceHourModel = {
 }
 
 export interface AddCompanyServiceHour {
-  add: (serviceHour: AddCompanyServiceHourModel) => Promise<ServiceHour>
+  add: (serviceHour: AddCompanyServiceHourModel) => Promise<ServiceHour | Error>
 }
