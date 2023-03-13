@@ -1,7 +1,7 @@
 import { AddAccountModel, Hasher, AccountModel, AddAccountRepository } from './db-add-account.protocols'
 import { DbAddAccount } from './db-add-account'
 import { RoleEnum } from '@/domain/enums/role-enum'
-import { LoadAccountByEmailRepository } from '../authentication-by-password/authentication-by-password.protocols'
+import { LoadAccountByEmailRepository } from '../authenticate-by-password/authenticate-by-password.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',

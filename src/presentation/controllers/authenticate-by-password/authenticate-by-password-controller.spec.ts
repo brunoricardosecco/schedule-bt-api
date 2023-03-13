@@ -1,8 +1,8 @@
-import { IAuthenticationByPassword } from '@/domain/usecases/authentication-by-password'
+import { IAuthenticateByPassword } from '@/domain/usecases/authenticate-by-password'
 import { MissingParamError } from '@/presentation/errors'
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
 import { Validation, HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
-import { AuthenticationByPasswordController } from './authentication-by-password-controller'
+import { AuthenticateByPasswordController } from './authenticate-by-password-controller'
 
 const makeFakeRequest = (): HttpRequest => {
   return ({
@@ -13,14 +13,14 @@ const makeFakeRequest = (): HttpRequest => {
   })
 }
 
-const makeAuthentication = (): IAuthenticationByPassword => {
-  class AuthenticationStub implements IAuthenticationByPassword {
+const makeAuthenticate = (): IAuthenticateByPassword => {
+  class AuthenticateStub implements IAuthenticateByPassword {
     async auth (): Promise<string> {
       return await new Promise(resolve => { resolve('any_token') })
     }
   }
 
-  return new AuthenticationStub()
+  return new AuthenticateStub()
 }
 
 const makeValidation = (): Validation => {
@@ -34,28 +34,28 @@ const makeValidation = (): Validation => {
 }
 
 type SutTypes = {
-  sut: AuthenticationByPasswordController
+  sut: AuthenticateByPasswordController
   validationStub: Validation
-  authenticationStub: IAuthenticationByPassword
+  authenticateStub: IAuthenticateByPassword
 }
 
 const makeSut = (): SutTypes => {
   const validationStub = makeValidation()
-  const authenticationStub = makeAuthentication()
-  const sut = new AuthenticationByPasswordController(authenticationStub, validationStub)
+  const authenticateStub = makeAuthenticate()
+  const sut = new AuthenticateByPasswordController(authenticateStub, validationStub)
 
   return {
     sut,
     validationStub,
-    authenticationStub
+    authenticateStub
   }
 }
 
-describe('AuthenticationByPasswordController', () => {
-  it('should call AuthenticationByPassword with correct values', async () => {
-    const { sut, authenticationStub } = makeSut()
+describe('AuthenticateByPasswordController', () => {
+  it('should call AuthenticateByPassword with correct values', async () => {
+    const { sut, authenticateStub } = makeSut()
 
-    const authSpy = jest.spyOn(authenticationStub, 'auth')
+    const authSpy = jest.spyOn(authenticateStub, 'auth')
 
     const httpRequest = makeFakeRequest()
 
@@ -67,9 +67,9 @@ describe('AuthenticationByPasswordController', () => {
   })
 
   it('should returns 401 if invalid credentials are provided', async () => {
-    const { sut, authenticationStub } = makeSut()
+    const { sut, authenticateStub } = makeSut()
 
-    jest.spyOn(authenticationStub, 'auth').mockImplementationOnce(async () => await new Promise(resolve => { resolve('') }))
+    jest.spyOn(authenticateStub, 'auth').mockImplementationOnce(async () => await new Promise(resolve => { resolve('') }))
 
     const httpRequest = makeFakeRequest()
 
@@ -78,10 +78,10 @@ describe('AuthenticationByPasswordController', () => {
     expect(httpResponse).toEqual(unauthorized())
   })
 
-  it('should returns 500 if Authentication throws', async () => {
-    const { sut, authenticationStub } = makeSut()
+  it('should returns 500 if Authenticate throws', async () => {
+    const { sut, authenticateStub } = makeSut()
 
-    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(
+    jest.spyOn(authenticateStub, 'auth').mockReturnValueOnce(
       new Promise((resolve, reject) => { reject(new Error()) })
     )
 

@@ -1,4 +1,4 @@
-export * from '@/domain/usecases/authentication-by-password'
+export * from '@/domain/usecases/authenticate-by-password'
 export * from '@/data/usecases/add-account/db-add-account.protocols'
 export * from '@/data/protocols/db/account/load-account-by-email-repository'
 export * from '@/data/protocols/cryptography/hash-comparer'

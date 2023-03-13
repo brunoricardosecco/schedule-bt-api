@@ -1,12 +1,12 @@
 import { RoleEnum } from '@/domain/enums/role-enum'
-import { AuthenticationByPassword } from './authentication-by-password'
+import { AuthenticateByPassword } from './authenticate-by-password'
 import {
-  TAuthenticationByPasswordParams,
+  TAuthenticateByPasswordParams,
   HashComparer,
   Encrypter,
   LoadAccountByEmailRepository,
   AccountModel
-} from './authentication-by-password.protocols'
+} from './authenticate-by-password.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -23,7 +23,7 @@ const makeFakeAccount = (): AccountModel => ({
   updatedAt: new Date()
 })
 
-const makeFakeAuthentication = (): TAuthenticationByPasswordParams => ({
+const makeFakeAuthenticate = (): TAuthenticateByPasswordParams => ({
   email: 'any_email@mail.com',
   password: 'any_password'
 })
@@ -57,7 +57,7 @@ const makeEncrypter = (): Encrypter => {
 }
 
 type SutTypes = {
-  sut: AuthenticationByPassword
+  sut: AuthenticateByPassword
   loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
   hashComparerStub: HashComparer
   EncrypterStub: Encrypter
@@ -67,7 +67,7 @@ const makeSut = (): SutTypes => {
   const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepository()
   const hashComparerStub = makeHashComparer()
   const EncrypterStub = makeEncrypter()
-  const sut = new AuthenticationByPassword(
+  const sut = new AuthenticateByPassword(
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
     EncrypterStub
@@ -81,12 +81,12 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('AuthenticationByPassword Usecase', () => {
+describe('AuthenticateByPassword Usecase', () => {
   it('should call LoadAccountByEmailRepository with correct email', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     const loadSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
 
-    await sut.auth(makeFakeAuthentication())
+    await sut.auth(makeFakeAuthenticate())
     expect(loadSpy).toHaveBeenCalledWith('any_email@mail.com')
   })
 
@@ -94,7 +94,7 @@ describe('AuthenticationByPassword Usecase', () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
 
-    const promise = sut.auth(makeFakeAuthentication())
+    const promise = sut.auth(makeFakeAuthenticate())
     await expect(promise).rejects.toThrow()
   })
 
@@ -102,7 +102,7 @@ describe('AuthenticationByPassword Usecase', () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(new Promise(resolve => { resolve(null) }))
 
-    const accessToken = await sut.auth(makeFakeAuthentication())
+    const accessToken = await sut.auth(makeFakeAuthenticate())
     expect(accessToken).toBe(null)
   })
 
@@ -110,7 +110,7 @@ describe('AuthenticationByPassword Usecase', () => {
     const { sut, hashComparerStub } = makeSut()
     const isEqualSpy = jest.spyOn(hashComparerStub, 'isEqual')
 
-    await sut.auth(makeFakeAuthentication())
+    await sut.auth(makeFakeAuthenticate())
     expect(isEqualSpy).toHaveBeenCalledWith('any_password', 'hashed_password')
   })
 
@@ -118,7 +118,7 @@ describe('AuthenticationByPassword Usecase', () => {
     const { sut, hashComparerStub } = makeSut()
     jest.spyOn(hashComparerStub, 'isEqual').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
 
-    const promise = sut.auth(makeFakeAuthentication())
+    const promise = sut.auth(makeFakeAuthenticate())
     await expect(promise).rejects.toThrow()
   })
 
@@ -126,7 +126,7 @@ describe('AuthenticationByPassword Usecase', () => {
     const { sut, hashComparerStub } = makeSut()
     jest.spyOn(hashComparerStub, 'isEqual').mockReturnValueOnce(new Promise(resolve => { resolve(false) }))
 
-    const accessToken = await sut.auth(makeFakeAuthentication())
+    const accessToken = await sut.auth(makeFakeAuthenticate())
     expect(accessToken).toBe(null)
   })
 
@@ -134,7 +134,7 @@ describe('AuthenticationByPassword Usecase', () => {
     const { sut, EncrypterStub } = makeSut()
     const encryptSpy = jest.spyOn(EncrypterStub, 'encrypt')
 
-    await sut.auth(makeFakeAuthentication())
+    await sut.auth(makeFakeAuthenticate())
     expect(encryptSpy).toHaveBeenCalledWith('valid_id')
   })
 
@@ -142,14 +142,14 @@ describe('AuthenticationByPassword Usecase', () => {
     const { sut, EncrypterStub } = makeSut()
     jest.spyOn(EncrypterStub, 'encrypt').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
 
-    const promise = sut.auth(makeFakeAuthentication())
+    const promise = sut.auth(makeFakeAuthenticate())
     await expect(promise).rejects.toThrow()
   })
 
   it('should call Encrypter with correct id', async () => {
     const { sut } = makeSut()
 
-    const accessToken = await sut.auth(makeFakeAuthentication())
+    const accessToken = await sut.auth(makeFakeAuthenticate())
     expect(accessToken).toBe('any_token')
   })
 })
