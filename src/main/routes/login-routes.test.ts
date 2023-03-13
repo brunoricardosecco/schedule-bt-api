@@ -2,6 +2,7 @@ import request from 'supertest'
 import { db } from '@/infra/db/orm/prisma'
 import { hash } from 'bcrypt'
 import app from '@/main/config/app'
+import { RoleEnum } from '@/domain/enums/role-enum'
 
 describe('Login Routes', () => {
   afterAll(async () => {
@@ -21,13 +22,23 @@ describe('Login Routes', () => {
 
   describe('POST /signup', () => {
     it('should return 200 on signup', async () => {
+      const createdCompany = await db.companies.create({
+        data: {
+          name: 'Empresa X',
+          reservationPrice: 70,
+          reservationTimeInMinutes: 60
+        }
+      })
+
       await request(app)
         .post('/api/signup')
         .send({
           name: 'any_name',
           email: 'any_email@mail.com',
           password: 'any_password',
-          passwordConfirmation: 'any_password'
+          passwordConfirmation: 'any_password',
+          companyId: createdCompany.id,
+          role: RoleEnum.EMPLOYEE
         })
         .expect(200)
     })
