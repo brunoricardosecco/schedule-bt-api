@@ -1,5 +1,10 @@
 import { ServiceHour } from '@/domain/models/serviceHour'
 
+export type LoadServiceHoursByCompanyIdRepositoryModel = {
+  companyId: string
+  weekday: number
+}
+
 export interface LoadServiceHoursByCompanyIdRepository {
-  load: (companyId: string) => Promise<ServiceHour[]>
+  load: ({ companyId, weekday }: LoadServiceHoursByCompanyIdRepositoryModel) => Promise<ServiceHour[]>
 }

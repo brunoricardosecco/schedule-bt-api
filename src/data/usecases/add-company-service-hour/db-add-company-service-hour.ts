@@ -10,7 +10,10 @@ export class DbAddCompanyServiceHour implements AddCompanyServiceHour {
   ) {}
 
   async add (serviceHourData: AddCompanyServiceHourModel): Promise<ServiceHour | Error> {
-    const serviceHours = await this.dbLoadServiceHoursByCompanyIdRepository.load(serviceHourData.companyId)
+    const serviceHours = await this.dbLoadServiceHoursByCompanyIdRepository.load({
+      companyId: serviceHourData.companyId,
+      weekday: serviceHourData.weekday
+    })
 
     const storedTimes = serviceHours.map(({ startTime, endTime }) => ({
       startTime,

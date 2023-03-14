@@ -1,5 +1,5 @@
 import { TimeConflictChecker } from '@/data/protocols/date/time-conflict-checker'
-import { LoadServiceHoursByCompanyIdRepository } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id'
+import { LoadServiceHoursByCompanyIdRepository, LoadServiceHoursByCompanyIdRepositoryModel } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id'
 import { Company } from '../add-company/db-add-company.protocols'
 import { DbAddCompanyServiceHour } from './db-add-company-service-hour'
 import { AddCompanyServiceHourRepository, AddCompanyServiceHourRepositoryModel, ServiceHour, AddCompanyServiceHour } from './db-add-company-service-hour.protocols'
@@ -41,7 +41,7 @@ const makeAddCompanyServiceHourRepository = (): AddCompanyServiceHourRepository 
 
 const makeLoadServiceHoursByCompanyId = (): LoadServiceHoursByCompanyIdRepository => {
   class LoadServiceHoursByCompanyIdRepositoryStub implements LoadServiceHoursByCompanyIdRepository {
-    async load (companyId: string): Promise<ServiceHour[]> {
+    async load ({ companyId, weekday }: LoadServiceHoursByCompanyIdRepositoryModel): Promise<ServiceHour[]> {
       return await new Promise(resolve => { resolve([makeFakeServiceHour()]) })
     }
   }
