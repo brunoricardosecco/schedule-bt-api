@@ -1,4 +1,4 @@
-import { Authenticate } from '@/data/usecases/authenticate/authenticate'
+import { IAuthenticate } from '@/domain/usecases/authenticate'
 import { AccessDeniedError } from '@/presentation/errors'
 import { forbidden, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, HttpResponse } from '@/presentation/protocols'
@@ -6,16 +6,16 @@ import { Middleware } from '@/presentation/protocols/middleware'
 
 export class AuthMiddleware implements Middleware {
   constructor (
-    private readonly authenticate: Authenticate
+    private readonly authenticate: IAuthenticate
   ) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      if (!httpRequest.headers?.Authorization) {
+      if (!httpRequest.headers?.authorization) {
         return forbidden(new AccessDeniedError())
       }
 
-      const [, token] = httpRequest.headers.Authorization.split('Bearer ')
+      const [, token] = httpRequest.headers.authorization.split('Bearer ')
 
       if (!token) {
         return forbidden(new AccessDeniedError())
