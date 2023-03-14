@@ -4,7 +4,7 @@ import { forbidden, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Middleware } from '@/presentation/protocols/middleware'
 
-export class AuthMiddleware implements Middleware {
+export class AuthenticateMiddleware implements Middleware {
   constructor (
     private readonly authenticate: IAuthenticate
   ) {}
