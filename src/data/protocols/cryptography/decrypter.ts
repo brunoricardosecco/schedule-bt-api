@@ -3,5 +3,5 @@ export type TokenPayload = {
 }
 
 export interface Decrypter {
-  decrypt: (token: string) => Promise<TokenPayload>
+  decrypt: (token: string) => Promise<TokenPayload | null>
 }
