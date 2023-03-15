@@ -42,7 +42,7 @@ describe('Authenticate Middleware', () => {
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
-        authorization: ''
+        authorization: 'Bearer'
       }
     })
 
