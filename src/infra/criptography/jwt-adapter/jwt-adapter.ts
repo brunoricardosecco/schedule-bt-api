@@ -18,7 +18,7 @@ export class JWTAdapter implements Encrypter, Decrypter {
       const payload = (await jwt.verify(token, this.secret)) as JwtPayload
 
       return {
-        userId: payload.id
+        userId: payload.userId
       }
     } catch (error) {
       return null
