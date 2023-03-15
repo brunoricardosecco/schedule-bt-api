@@ -1,4 +1,4 @@
-import { TimeConflictChecker } from '@/data/protocols/date/time-conflict-checker'
+import { ServiceHourTimeModel, TimeConflictChecker } from '@/data/protocols/date/time-conflict-checker'
 import { LoadServiceHoursByCompanyIdRepository, LoadServiceHoursByCompanyIdRepositoryModel } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id'
 import { Company } from '../add-company/db-add-company.protocols'
 import { DbAddCompanyServiceHour } from './db-add-company-service-hour'
@@ -53,6 +53,10 @@ const makeTimeConflictChecker = (): TimeConflictChecker => {
   class TimeConflictCheckerStub implements TimeConflictChecker {
     hasConflicts ({ newDateTime, storedDateTimes }: any): boolean {
       return false
+    }
+
+    isEndTimeGraterThanStartTime ({ startTime, endTime }: ServiceHourTimeModel): boolean {
+      return true
     }
   }
 
@@ -120,5 +124,21 @@ describe('DbAddCompanyServiceHour Usecase', () => {
     const error = await sut.add(conflictingServiceHour)
 
     expect(error).toEqual(new Error('New service hour is conflicting with another'))
+  })
+  it('should returns an error on trying to add an service hour with the start time greater than the end time', async () => {
+    const { sut, timeConflictChecker } = makeSut()
+
+    jest.spyOn(timeConflictChecker, 'isEndTimeGraterThanStartTime').mockReturnValueOnce(false)
+
+    const conflictingServiceHour: AddCompanyServiceHourRepositoryModel = {
+      companyId: 'company_id',
+      startTime: '10:00',
+      endTime: '14:00',
+      weekday: 0
+    }
+
+    const error = await sut.add(conflictingServiceHour)
+
+    expect(error).toEqual(new Error('Start time must be lower than end time'))
   })
 })
