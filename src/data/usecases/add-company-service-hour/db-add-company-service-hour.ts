@@ -10,23 +10,34 @@ export class DbAddCompanyServiceHour implements AddCompanyServiceHour {
   ) {}
 
   async add (serviceHourData: AddCompanyServiceHourModel): Promise<ServiceHour | Error> {
+    const { companyId, endTime, startTime, weekday } = serviceHourData
+
     const serviceHours = await this.dbLoadServiceHoursByCompanyIdRepository.load({
-      companyId: serviceHourData.companyId,
-      weekday: serviceHourData.weekday
+      companyId,
+      weekday
     })
 
-    const storedTimes = serviceHours.map(({ startTime, endTime }) => ({
-      startTime,
-      endTime
+    const storedTimes = serviceHours.map(({ startTime: storedStartTime, endTime: storedEndTime }) => ({
+      startTime: storedStartTime,
+      endTime: storedEndTime
     }))
 
     const hasConflict = this.timeConflictChecker.hasConflicts({
       existingTimes: storedTimes,
       newTime: {
-        startTime: serviceHourData.startTime,
-        endTime: serviceHourData.endTime
+        startTime,
+        endTime
       }
     })
+
+    const isValidTimes = this.timeConflictChecker.isEndTimeGraterThanStartTime({
+      startTime,
+      endTime
+    })
+
+    if (!isValidTimes) {
+      return new Error('Start time must be lower than end time')
+    }
 
     if (hasConflict) {
       return new Error('New service hour is conflicting with another')
