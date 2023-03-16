@@ -16,11 +16,12 @@
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
     "test:integration": "npm run docker:up && dotenv -e .env.test -- npx prisma migrate:dev && npm test -- --watch -c jest-integration-config.js",
     "test:staged": "dotenv -e .env.test npm test -- --findRelatedTests",
-    "test:ci": "dotenv -e .env.test npm test -- --coverage",
+    "test:ci": "dotenv -e .env.test -- npm test -- --coverage",
     "migrate:build": "npx prisma migrate dev --schema=dist/infra/db/orm/prisma/schema.prisma",
     "migrate:dev": "npx prisma migrate dev --schema=src/infra/db/orm/prisma/schema.prisma",
     "generate": "npx prisma generate --schema=src/infra/db/orm/prisma/schema.prisma",
-    "studio:dev": "npx prisma studio dev"
+    "studio:dev": "npx prisma studio dev",
+    "tsc:watch": "npx tsc"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +29,7 @@
   "dependencies": {
     "@prisma/client": "^4.9.0",
     "bcrypt": "^5.1.0",
+    "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
