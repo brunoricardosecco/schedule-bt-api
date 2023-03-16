@@ -1,3 +1,5 @@
 export * from '@/domain/usecases/authorize'
 export * from '@/domain/models/role'
+export * from '@/domain/models/account'
+export * from '@/domain/enums/role-enum'
 export * from '@/data/protocols/db/account/load-account-by-id-repository'
