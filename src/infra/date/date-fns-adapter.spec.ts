@@ -26,7 +26,14 @@ describe('date-fns Adapter', () => {
 
     expect(value).toBeTruthy()
   })
-  it('should returns false on wrong service hour times', async () => {
+  it('should returns false on wrong service hour times', () => {
+    const sut = makeSut()
+
+    const value = sut.isEndTimeGraterThanStartTime(makeFakeWrongServiceHourTimes())
+
+    expect(value).toBeFalsy()
+  })
+  it('should returns false on same service hour times', () => {
     const sut = makeSut()
 
     const value = sut.isEndTimeGraterThanStartTime(makeFakeWrongServiceHourTimes())
