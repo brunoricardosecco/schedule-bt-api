@@ -1,4 +1,3 @@
-import { compareAsc } from 'date-fns'
 import {
   ServiceHourTimeModel,
   TimeConflictChecker,
@@ -20,8 +19,7 @@ export class DateFnsAdapter implements TimeConflictChecker {
     const endDateTime = new Date()
     endDateTime.setHours(splittedEndTime[0], splittedEndTime[1])
 
-    // compareAsc returns -1 if the first date is before the second date
-    return compareAsc(startDateTime, endDateTime) === -1
+    return endDateTime.getTime() > startDateTime.getTime()
   }
 
   hasConflicts: ({
