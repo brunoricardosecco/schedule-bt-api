@@ -3,6 +3,7 @@ import {
   TimeConflictChecker,
   TimeConflictCheckerModel
 } from '@/data/protocols/date/time-conflict-checker'
+import { areIntervalsOverlapping as areIntervalsOverlappingFunc } from 'date-fns'
 
 export class DateFnsAdapter implements TimeConflictChecker {
   isEndTimeGraterThanStartTime ({
@@ -26,6 +27,44 @@ export class DateFnsAdapter implements TimeConflictChecker {
     newTime,
     existingTimes
   }: TimeConflictCheckerModel): boolean {
-    return true
+    let areIntervalsOverlapping = false
+
+    const formattedExistingTimes = existingTimes.map(interval => {
+      const intervalStartTime = new Date()
+      const intervalEndTime = new Date()
+
+      const startTimes = interval.startTime.split(':').map(value => Number(value))
+      const endTimes = interval.endTime.split(':').map(value => Number(value))
+
+      intervalStartTime.setHours(startTimes[0], startTimes[1], 0, 0)
+      intervalEndTime.setHours(endTimes[0], endTimes[1], 0, 0)
+
+      return {
+        start: intervalStartTime,
+        end: intervalEndTime
+      }
+    })
+
+    const intervalNewStartTime = new Date()
+    const intervalNewEndTime = new Date()
+
+    const startTimes = newTime.startTime.split(':').map(value => Number(value))
+    const endTimes = newTime.endTime.split(':').map(value => Number(value))
+
+    intervalNewStartTime.setHours(startTimes[0], startTimes[1], 0, 0)
+    intervalNewEndTime.setHours(endTimes[0], endTimes[1], 0, 0)
+
+    const formattedNewInterval = {
+      start: intervalNewStartTime,
+      end: intervalNewEndTime
+    }
+
+    formattedExistingTimes.forEach((storedInterval) => {
+      if (areIntervalsOverlappingFunc(formattedNewInterval, storedInterval, { inclusive: true })) {
+        areIntervalsOverlapping = true
+      }
+    })
+
+    return areIntervalsOverlapping
   }
 }
