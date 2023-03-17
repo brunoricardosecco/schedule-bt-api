@@ -16,9 +16,9 @@ export class DateFnsAdapter implements TimeConflictChecker {
     const splittedEndTime = endTime.split(':').map((piece) => Number(piece))
 
     const startDateTime = new Date()
-    startDateTime.setHours(splittedStartTime[0], splittedStartTime[1])
+    startDateTime.setHours(splittedStartTime[0], splittedStartTime[1], 0, 0)
     const endDateTime = new Date()
-    endDateTime.setHours(splittedEndTime[0], splittedEndTime[1])
+    endDateTime.setHours(splittedEndTime[0], splittedEndTime[1], 0, 0)
 
     return endDateTime.getTime() > startDateTime.getTime()
   }
