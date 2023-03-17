@@ -38,17 +38,23 @@ const makeSut = (): DateFnsAdapter => {
 }
 
 describe('date-fns Adapter', () => {
-  describe('compareAsc', () => {
-    it('should call compareAsc with correct values', () => {
-      const sut = makeSut()
+  it('should call compareAsc with correct values', () => {
+    const sut = makeSut()
 
-      const compareAscSpy = jest.spyOn(dateFns, 'compareAsc')
+    const compareAscSpy = jest.spyOn(dateFns, 'compareAsc')
 
-      sut.isEndTimeGraterThanStartTime(makeFakeServiceHourTimes())
+    sut.isEndTimeGraterThanStartTime(makeFakeServiceHourTimes())
 
-      const convertedTimesToDateTimes = makeFakeConvertedDateTime()
+    const convertedTimesToDateTimes = makeFakeConvertedDateTime()
 
-      expect(compareAscSpy).toHaveBeenCalledWith(convertedTimesToDateTimes.startTime, convertedTimesToDateTimes.endTime)
-    })
+    expect(compareAscSpy).toHaveBeenCalledWith(convertedTimesToDateTimes.startTime, convertedTimesToDateTimes.endTime)
+  })
+
+  it('should returns true on success', async () => {
+    const sut = makeSut()
+
+    const value = sut.isEndTimeGraterThanStartTime(makeFakeServiceHourTimes())
+
+    expect(value).toBeTruthy()
   })
 })
