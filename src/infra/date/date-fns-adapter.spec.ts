@@ -67,6 +67,19 @@ describe('date-fns Adapter', () => {
 
       expect(value).toBeTruthy()
     })
+    it('should returns true if the new service hour is overlapping all of the stored service hours', () => {
+      const sut = makeSut()
+
+      const value = sut.hasConflicts({
+        newTime: {
+          startTime: '07:00',
+          endTime: '23:00'
+        },
+        existingTimes: makeFakeStoredServiceHours()
+      })
+
+      expect(value).toBeTruthy()
+    })
     it('should returns false if the new service hour is not conflicting with any stored', () => {
       const sut = makeSut()
 
