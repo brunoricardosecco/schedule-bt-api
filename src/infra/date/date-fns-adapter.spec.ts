@@ -67,5 +67,18 @@ describe('date-fns Adapter', () => {
 
       expect(value).toBeTruthy()
     })
+    it('should returns false if the new service hour is not conflicting with any stored', () => {
+      const sut = makeSut()
+
+      const value = sut.hasConflicts({
+        newTime: {
+          startTime: '19:00',
+          endTime: '20:00'
+        },
+        existingTimes: makeFakeStoredServiceHours()
+      })
+
+      expect(value).toBeFalsy()
+    })
   })
 })
