@@ -14,30 +14,58 @@ const makeFakeWrongServiceHourTimes = (): ServiceHourTimeModel => ({
   endTime: '08:00'
 })
 
+const makeFakeStoredServiceHours = (): ServiceHourTimeModel[] => ([
+  {
+    startTime: '09:00',
+    endTime: '12:00'
+  },
+  {
+    startTime: '13:00',
+    endTime: '18:00'
+  }
+])
+
 const makeSut = (): DateFnsAdapter => {
   return new DateFnsAdapter()
 }
 
 describe('date-fns Adapter', () => {
-  it('should returns true on success', async () => {
-    const sut = makeSut()
+  describe('isEndTimeGraterThanStartTime', () => {
+    it('should returns true on success', async () => {
+      const sut = makeSut()
 
-    const value = sut.isEndTimeGraterThanStartTime(makeFakeServiceHourTimes())
+      const value = sut.isEndTimeGraterThanStartTime(makeFakeServiceHourTimes())
 
-    expect(value).toBeTruthy()
+      expect(value).toBeTruthy()
+    })
+    it('should returns false on wrong service hour times', () => {
+      const sut = makeSut()
+
+      const value = sut.isEndTimeGraterThanStartTime(makeFakeWrongServiceHourTimes())
+
+      expect(value).toBeFalsy()
+    })
+    it('should returns false on same service hour times', () => {
+      const sut = makeSut()
+
+      const value = sut.isEndTimeGraterThanStartTime(makeFakeWrongServiceHourTimes())
+
+      expect(value).toBeFalsy()
+    })
   })
-  it('should returns false on wrong service hour times', () => {
-    const sut = makeSut()
+  describe('hasConflicts', () => {
+    it('should returns true if the new service hour is conflicting with any stored', () => {
+      const sut = makeSut()
 
-    const value = sut.isEndTimeGraterThanStartTime(makeFakeWrongServiceHourTimes())
+      const value = sut.hasConflicts({
+        newTime: {
+          startTime: '17:00',
+          endTime: '20:00'
+        },
+        existingTimes: makeFakeStoredServiceHours()
+      })
 
-    expect(value).toBeFalsy()
-  })
-  it('should returns false on same service hour times', () => {
-    const sut = makeSut()
-
-    const value = sut.isEndTimeGraterThanStartTime(makeFakeWrongServiceHourTimes())
-
-    expect(value).toBeFalsy()
+      expect(value).toBeTruthy()
+    })
   })
 })
