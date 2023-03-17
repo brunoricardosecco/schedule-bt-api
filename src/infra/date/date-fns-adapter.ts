@@ -22,8 +22,10 @@ export class DateFnsAdapter implements TimeConflictChecker {
     return endDateTime.getTime() > startDateTime.getTime()
   }
 
-  hasConflicts: ({
+  hasConflicts ({
     newTime,
     existingTimes
-  }: TimeConflictCheckerModel) => boolean
+  }: TimeConflictCheckerModel): boolean {
+    return true
+  }
 }
