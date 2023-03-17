@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run migrate:build && node dist/main/server.js",
+    "start": "node dist/main/server.js",
     "start:dev": "npx nodemon",
     "debug": "npm run migrate:build && nodemon -L --watch ./dist --inspect=0.0.0.0:9222 --nolazy ./dist/main/server.js",
     "build": "rimraf dist && tsc -p tsconfig-build.json && npm run copy-files",
