@@ -27,7 +27,7 @@ services:
       - ./data:/var/lib/postgresql/data
   api:
     container_name: api-container
-    image: node:19
+    image: node:18
     working_dir: /usr/src/agenda-beach
     env_file: .env.dev
     restart: always

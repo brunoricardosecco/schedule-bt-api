@@ -69,7 +69,7 @@
     "schema": "./src/infra/db/orm/prisma/schema.prisma"
   },
   "engines": {
-    "node": "19.x"
+    "node": "18.x"
   },
   "_moduleAliases": {
     "@": "dist"

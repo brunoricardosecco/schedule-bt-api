@@ -1,9 +1,9 @@
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
-import { Authentication, Controller, HttpRequest, HttpResponse, Validation } from './login-controller.protocols'
+import { IAuthenticateByPassword, Controller, HttpRequest, HttpResponse, Validation } from './authenticate-by-password-controller.protocols'
 
-export class LoginController implements Controller {
+export class AuthenticateByPasswordController implements Controller {
   constructor (
-    private readonly authentication: Authentication,
+    private readonly authenticateByPassword: IAuthenticateByPassword,
     private readonly validation: Validation
   ) {}
 
@@ -17,7 +17,7 @@ export class LoginController implements Controller {
 
       const { email, password } = httpRequest.body
 
-      const accessToken = await this.authentication.auth({ email, password })
+      const accessToken = await this.authenticateByPassword.auth({ email, password })
 
       if (!accessToken) {
         return unauthorized()
