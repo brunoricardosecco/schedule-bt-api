@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { routeAdapter } from '@/main/adapters/express/express-route-adapter'
 import { makeAddCompanyController } from '@/main/factories/controllers/add-company/add-company-factory'
-import { makeAuthenticateMiddleware } from '../factories/middlewares/authenticate-middleware/authenticate-middleware-factory'
-import { expressMiddlewareAdapter } from '../adapters/express/express-middleware-adapter'
-import { makeAuthorizeMiddleware } from '../factories/middlewares/authorize-middleware/authorize-middleware-factory'
+import { makeAuthenticateMiddleware } from '@/main/factories/middlewares/authenticate-middleware/authenticate-middleware-factory'
+import { expressMiddlewareAdapter } from '@/main/adapters/express/express-middleware-adapter'
+import { makeAuthorizeMiddleware } from '@/main/factories/middlewares/authorize-middleware/authorize-middleware-factory'
 import { RoleEnum } from '@/domain/enums/role-enum'
 
 export default (router: Router): void => {

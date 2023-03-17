@@ -1,9 +1,8 @@
-import { unauthorized } from './../../helpers/http/httpHelper'
-import { RoleEnum } from './../../../domain/enums/role-enum'
+import { unauthorized, serverError, ok } from '@/presentation/helpers/http/httpHelper'
+import { RoleEnum } from '@/domain/enums/role-enum'
 import { Role } from '@/domain/models/role'
 import { IAuthorize } from '@/domain/usecases/authorize'
 import { ServerError } from '@/presentation/errors'
-import { serverError, ok } from '@/presentation/helpers/http/httpHelper'
 import { AuthorizeMiddleware } from './authorize-middleware'
 
 const defaultPayload = false
