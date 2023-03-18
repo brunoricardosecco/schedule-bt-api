@@ -15,9 +15,10 @@ export class CreateCourtsController implements Controller {
         return badRequest(error)
       }
 
-      const { courts, companyId } = httpRequest.body
+      const { userId } = httpRequest
+      const { courts } = httpRequest.body
 
-      const courtsCount = await this.createCourts.create(companyId, courts)
+      const courtsCount = await this.createCourts.create(userId as string, courts)
 
       return ok({
         courtsCount
