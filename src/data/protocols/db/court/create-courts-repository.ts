@@ -1,5 +1,8 @@
-import { CreateCourtModel } from '@/domain/usecases/create-courts'
+export type CreateCourtModelToRepository = {
+  name: string
+  companyId: string
+}
 
 export interface CreateCourtsRepository {
-  createMany: (courts: CreateCourtModel[]) => Promise<number>
+  createMany: (courts: CreateCourtModelToRepository[]) => Promise<number>
 }

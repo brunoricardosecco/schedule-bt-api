@@ -15,7 +15,7 @@ export class CreateCourts implements ICreateCourts {
 
     const courtsCount = await this.courtRepository.createMany(courts.map(court => ({
       ...court,
-      companyId: user.companyId
+      companyId: user.companyId as string
     })))
 
     return courtsCount
