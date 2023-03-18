@@ -4,7 +4,7 @@ import { makeLogControllerDecorator } from '@/main/factories/decorators/log-cont
 import { createCourtsValidation } from './create-courts-validation-factory'
 import { CreateCourtsController } from '@/presentation/controllers/create-courts/create-courts-controller'
 
-export const createCourtsController = (): Controller => {
+export const createCourtsControllerFactory = (): Controller => {
   const controller = new CreateCourtsController(createCourtsFactory(), createCourtsValidation())
   return makeLogControllerDecorator(controller)
 }
