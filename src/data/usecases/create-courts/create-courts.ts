@@ -5,8 +5,11 @@ export class CreateCourts implements ICreateCourts {
     private readonly courtRepository: CreateCourtsRepository
   ) {}
 
-  async create (createCourtModels: CreateCourtModel[]): CreateCourtReturn {
-    const courtsCount = await this.courtRepository.createMany(createCourtModels)
+  async create (companyId: string, courts: CreateCourtModel[]): CreateCourtReturn {
+    const courtsCount = await this.courtRepository.createMany(courts.map(court => ({
+      ...court,
+      companyId
+    })))
 
     return courtsCount
   }
