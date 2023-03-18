@@ -6,8 +6,8 @@ export class CreateCourts implements ICreateCourts {
   ) {}
 
   async create (createCourtModels: CreateCourtModel[]): CreateCourtReturn {
-    const courts = await this.courtRepository.createMany(createCourtModels)
+    const courtsCount = await this.courtRepository.createMany(createCourtModels)
 
-    return courts
+    return courtsCount
   }
 }
