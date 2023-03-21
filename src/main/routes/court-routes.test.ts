@@ -6,7 +6,7 @@ import { RoleEnum } from '@/domain/enums/role-enum'
 
 describe('Court Routes', () => {
   const password = 'password'
-  const email = 'email@mail.com'g
+  const email = 'email@mail.com'
   let createdCompany
   let createdAccount
 
