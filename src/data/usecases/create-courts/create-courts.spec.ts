@@ -39,18 +39,18 @@ const makeCreateCourtsRepository = (): CreateCourtsRepository => {
 
 type SutTypes = {
   sut: CreateCourts
-  addCompanyRepositoryStub: CreateCourtsRepository
+  createCourtsRepositoryStub: CreateCourtsRepository
   loadAccountByIdRepositoryStub: LoadAccountByIdRepository
 }
 
 const makeSut = (): SutTypes => {
-  const addCompanyRepositoryStub = makeCreateCourtsRepository()
+  const createCourtsRepositoryStub = makeCreateCourtsRepository()
   const loadAccountByIdRepositoryStub = makeLoadAccountByIdRepository()
-  const sut = new CreateCourts(loadAccountByIdRepositoryStub, addCompanyRepositoryStub)
+  const sut = new CreateCourts(loadAccountByIdRepositoryStub, createCourtsRepositoryStub)
 
   return {
     sut,
-    addCompanyRepositoryStub,
+    createCourtsRepositoryStub,
     loadAccountByIdRepositoryStub
   }
 }
@@ -74,13 +74,13 @@ describe('CreateCourts Usecase', () => {
   })
 
   it('should create courts', async () => {
-    const { sut, addCompanyRepositoryStub, loadAccountByIdRepositoryStub } = makeSut()
+    const { sut, createCourtsRepositoryStub, loadAccountByIdRepositoryStub } = makeSut()
 
     const account = makeFakeAccount()
     const courts = [{ name: 'Quadra 1' }]
 
     const loadAccountByIdSpy = jest.spyOn(loadAccountByIdRepositoryStub, 'loadById')
-    const createManySpy = jest.spyOn(addCompanyRepositoryStub, 'createMany')
+    const createManySpy = jest.spyOn(createCourtsRepositoryStub, 'createMany')
 
     loadAccountByIdSpy.mockReturnValueOnce(new Promise((resolve) => { resolve(account) }))
 
