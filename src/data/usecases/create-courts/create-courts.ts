@@ -1,4 +1,4 @@
-import { ICreateCourts, CreateCourtModel, CreateCourtsRepository, CreateCourtReturn, LoadAccountByIdRepository } from './create-courts.protocols'
+import { ICreateCourts, CreateCourtModel, CreateCourtsRepository, CreateCourtsReturn, LoadAccountByIdRepository } from './create-courts.protocols'
 
 export class CreateCourts implements ICreateCourts {
   constructor (
@@ -6,7 +6,7 @@ export class CreateCourts implements ICreateCourts {
     private readonly courtRepository: CreateCourtsRepository
   ) {}
 
-  async create (userId: string, courts: CreateCourtModel[]): CreateCourtReturn {
+  async create (userId: string, courts: CreateCourtModel[]): CreateCourtsReturn {
     const user = await this.accountRepository.loadById(userId)
 
     if (!user) {
