@@ -22,17 +22,17 @@ export class DbAddCompanyServiceHour implements AddCompanyServiceHour {
       endTime: storedEndTime
     }))
 
+    const isValidTimes = this.timeConflictChecker.isEndTimeGraterThanStartTime({
+      startTime,
+      endTime
+    })
+
     const hasConflict = this.timeConflictChecker.hasConflicts({
       existingTimes: storedTimes,
       newTime: {
         startTime,
         endTime
       }
-    })
-
-    const isValidTimes = this.timeConflictChecker.isEndTimeGraterThanStartTime({
-      startTime,
-      endTime
     })
 
     if (!isValidTimes) {

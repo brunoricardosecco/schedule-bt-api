@@ -5,20 +5,41 @@ import {
 } from '@/data/protocols/date/time-conflict-checker'
 import { areIntervalsOverlapping as areIntervalsOverlappingFunc } from 'date-fns'
 
+type FormattedTimes = {
+  startDateTime: Date
+  endDateTime: Date
+}
+
 export class DateFnsAdapter implements TimeConflictChecker {
-  isEndTimeGraterThanStartTime ({
+  private getFormattedTimes ({
     startTime,
     endTime
-  }: ServiceHourTimeModel): boolean {
+  }: ServiceHourTimeModel): FormattedTimes {
     const splittedStartTime = startTime
       .split(':')
       .map((piece) => Number(piece))
     const splittedEndTime = endTime.split(':').map((piece) => Number(piece))
 
     const startDateTime = new Date()
-    startDateTime.setHours(splittedStartTime[0], splittedStartTime[1], 0, 0)
     const endDateTime = new Date()
+
+    startDateTime.setHours(splittedStartTime[0], splittedStartTime[1], 0, 0)
     endDateTime.setHours(splittedEndTime[0], splittedEndTime[1], 0, 0)
+
+    return {
+      startDateTime,
+      endDateTime
+    }
+  }
+
+  isEndTimeGraterThanStartTime ({
+    startTime: receivedStartTime,
+    endTime: receivedEndTime
+  }: ServiceHourTimeModel): boolean {
+    const { startDateTime, endDateTime } = this.getFormattedTimes({
+      startTime: receivedStartTime,
+      endTime: receivedEndTime
+    })
 
     return endDateTime.getTime() > startDateTime.getTime()
   }
@@ -30,29 +51,21 @@ export class DateFnsAdapter implements TimeConflictChecker {
     let areIntervalsOverlapping = false
 
     const formattedExistingTimes = existingTimes.map(interval => {
-      const intervalStartTime = new Date()
-      const intervalEndTime = new Date()
-
-      const startTimes = interval.startTime.split(':').map(value => Number(value))
-      const endTimes = interval.endTime.split(':').map(value => Number(value))
-
-      intervalStartTime.setHours(startTimes[0], startTimes[1], 0, 0)
-      intervalEndTime.setHours(endTimes[0], endTimes[1], 0, 0)
+      const { startDateTime, endDateTime } = this.getFormattedTimes({
+        startTime: interval.startTime,
+        endTime: interval.endTime
+      })
 
       return {
-        start: intervalStartTime,
-        end: intervalEndTime
+        start: startDateTime,
+        end: endDateTime
       }
     })
 
-    const intervalNewStartTime = new Date()
-    const intervalNewEndTime = new Date()
-
-    const startTimes = newTime.startTime.split(':').map(value => Number(value))
-    const endTimes = newTime.endTime.split(':').map(value => Number(value))
-
-    intervalNewStartTime.setHours(startTimes[0], startTimes[1], 0, 0)
-    intervalNewEndTime.setHours(endTimes[0], endTimes[1], 0, 0)
+    const { startDateTime: intervalNewStartTime, endDateTime: intervalNewEndTime } = this.getFormattedTimes({
+      startTime: newTime.startTime,
+      endTime: newTime.endTime
+    })
 
     const formattedNewInterval = {
       start: intervalNewStartTime,
