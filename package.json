@@ -13,7 +13,7 @@
     "copy-files": "copyfiles -u 1 src/**/*.prisma src/**/*.sql dist/",
     "test": "dotenv -e .env.test -- npm run migrate:dev && jest --passWithNoTests --runInBand --no-cache",
     "test:verbose": "dotenv -e .env.test -- jest --passWithNoTests --runInBand",
-    "test:unit": "npm test -- --watch -c jest-unit-config.js",
+    "test:unit": "dotenv -e .env.test -- npm test -- --watch -c jest-unit-config.js",
     "test:integration": "npm run docker:up && dotenv -e .env.test -- npx prisma migrate:dev && npm test -- --watch -c jest-integration-config.js",
     "test:staged": "dotenv -e .env.test npm test -- --findRelatedTests",
     "test:ci": "dotenv -e .env.test -- npm test -- --coverage",

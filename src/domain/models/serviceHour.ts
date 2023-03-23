@@ -6,5 +6,5 @@ export type ServiceHour = {
   startTime: string
   endTime: string
   companyId: string
-  company: Company
+  company?: Company
 }

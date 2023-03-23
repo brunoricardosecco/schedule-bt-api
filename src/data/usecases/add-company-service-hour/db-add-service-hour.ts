@@ -1,15 +1,15 @@
 import { TimeConflictChecker } from '@/data/protocols/date/time-conflict-checker'
 import { LoadServiceHoursByCompanyIdRepository } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id'
-import { AddCompanyServiceHourRepository, ServiceHour, AddCompanyServiceHour, AddCompanyServiceHourModel } from './db-add-company-service-hour.protocols'
+import { AddServiceHourRepository, ServiceHour, AddServiceHour, AddServiceHourModel } from './db-add-service-hour.protocols'
 
-export class DbAddCompanyServiceHour implements AddCompanyServiceHour {
+export class DbAddServiceHour implements AddServiceHour {
   constructor (
-    private readonly dbAddCompanyServiceHourRepository: AddCompanyServiceHourRepository,
+    private readonly dbAddServiceHourRepository: AddServiceHourRepository,
     private readonly dbLoadServiceHoursByCompanyIdRepository: LoadServiceHoursByCompanyIdRepository,
     private readonly timeConflictChecker: TimeConflictChecker
   ) {}
 
-  async add (serviceHourData: AddCompanyServiceHourModel): Promise<ServiceHour | Error> {
+  async add (serviceHourData: AddServiceHourModel): Promise<ServiceHour | Error> {
     const { companyId, endTime, startTime, weekday } = serviceHourData
 
     const serviceHours = await this.dbLoadServiceHoursByCompanyIdRepository.load({
@@ -43,6 +43,6 @@ export class DbAddCompanyServiceHour implements AddCompanyServiceHour {
       return new Error('New service hour is conflicting with another')
     }
 
-    return await this.dbAddCompanyServiceHourRepository.add(serviceHourData)
+    return await this.dbAddServiceHourRepository.add(serviceHourData)
   }
 }
