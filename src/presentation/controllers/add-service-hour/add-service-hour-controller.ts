@@ -1,5 +1,5 @@
 import { AddServiceHour } from '@/domain/usecases/add-service-hour'
-import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { Controller, HttpRequest, HttpResponse, Validation } from '../add-company/add-company-controller.protocols'
 
 export class AddServiceHourController implements Controller {
@@ -10,7 +10,11 @@ export class AddServiceHourController implements Controller {
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      this.validation.validate(httpRequest.body)
+      const error = this.validation.validate(httpRequest.body)
+
+      if (error) {
+        return badRequest(error)
+      }
 
       const serviceHour = await this.addServiceHour.add(httpRequest.body)
 
