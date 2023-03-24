@@ -1,11 +1,11 @@
 import { ServiceHour } from '@/domain/models/serviceHour'
 import { AddServiceHour, AddServiceHourModel } from '@/domain/usecases/add-service-hour'
 import { ServerError } from '@/presentation/errors'
-import { serverError } from '@/presentation/helpers/http/httpHelper'
+import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest } from '@/presentation/protocols'
 import { AddServiceHourController } from './add-service-hour-controller'
 
-const makeAddServiceHourModel = (): ServiceHour => ({
+const makeFakeServiceHour = (): ServiceHour => ({
   companyId: 'any_company_id',
   endTime: 'any_start_time',
   startTime: 'any_end_time',
@@ -16,7 +16,7 @@ const makeAddServiceHourModel = (): ServiceHour => ({
 const makeAddServiceHour = (): AddServiceHour => {
   class AddServiceHourStub implements AddServiceHour {
     async add (serviceHour: AddServiceHourModel): Promise<ServiceHour | Error> {
-      return await new Promise(resolve => { resolve(makeAddServiceHourModel()) })
+      return await new Promise(resolve => { resolve(makeFakeServiceHour()) })
     }
   }
 
@@ -30,6 +30,7 @@ const makeFakeServiceHourData = (): AddServiceHourModel => ({
   weekday: 0
 })
 
+const serviceHour = makeFakeServiceHour()
 const addServiceHourData = makeFakeServiceHourData()
 
 const makeFakeRequest = (): HttpRequest => {
@@ -70,5 +71,15 @@ describe('AddServiceHour Controller', () => {
 
     const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(serverError(new ServerError()))
+  })
+
+  it('should return 200 if a valid data is provided', async () => {
+    const { sut } = makeSut()
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+
+    expect(httpResponse).toEqual(ok({
+      serviceHour
+    }))
   })
 })
