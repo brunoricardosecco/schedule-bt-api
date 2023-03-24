@@ -1,5 +1,7 @@
 import { ServiceHour } from '@/domain/models/serviceHour'
 import { AddServiceHour, AddServiceHourModel } from '@/domain/usecases/add-service-hour'
+import { ServerError } from '@/presentation/errors'
+import { serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest } from '@/presentation/protocols'
 import { AddServiceHourController } from './add-service-hour-controller'
 
@@ -61,5 +63,12 @@ describe('AddServiceHour Controller', () => {
     await sut.handle(makeFakeRequest())
 
     expect(addSpy).toHaveBeenCalledWith(addServiceHourData)
+  })
+  it('should return 500 if AddServiceHour throws', async () => {
+    const { sut, addServiceHour } = makeSut()
+    jest.spyOn(addServiceHour, 'add').mockImplementationOnce(async () => { return await new Promise((resolve, reject) => { reject(new Error()) }) })
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+    expect(httpResponse).toEqual(serverError(new ServerError()))
   })
 })
