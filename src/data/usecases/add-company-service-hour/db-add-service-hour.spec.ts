@@ -1,5 +1,5 @@
 import { ServiceHourTimeModel, TimeConflictChecker } from '@/data/protocols/date/time-conflict-checker'
-import { LoadServiceHoursByCompanyIdRepository, LoadServiceHoursByCompanyIdRepositoryModel } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id'
+import { LoadServiceHoursByCompanyIdAndWeekdayRepository, LoadServiceHoursByCompanyIdRepositoryModel } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id-and-weekday'
 import { DbAddServiceHour } from './db-add-service-hour'
 import { AddServiceHourRepository, AddServiceHourRepositoryModel, ServiceHour, AddServiceHour } from './db-add-service-hour.protocols'
 
@@ -28,14 +28,14 @@ const makeAddServiceHourRepository = (): AddServiceHourRepository => {
   return new AddServiceHourRepositoryStub()
 }
 
-const makeLoadServiceHoursByCompanyId = (): LoadServiceHoursByCompanyIdRepository => {
-  class LoadServiceHoursByCompanyIdRepositoryStub implements LoadServiceHoursByCompanyIdRepository {
-    async load ({ companyId, weekday }: LoadServiceHoursByCompanyIdRepositoryModel): Promise<ServiceHour[]> {
+const makeLoadServiceHoursByCompanyIdAndWeekday = (): LoadServiceHoursByCompanyIdAndWeekdayRepository => {
+  class LoadServiceHoursByCompanyIdAndWeekdayRepositoryStub implements LoadServiceHoursByCompanyIdAndWeekdayRepository {
+    async loadByCompanyIdAndWeekday ({ companyId, weekday }: LoadServiceHoursByCompanyIdRepositoryModel): Promise<ServiceHour[]> {
       return await new Promise(resolve => { resolve([makeFakeServiceHour()]) })
     }
   }
 
-  return new LoadServiceHoursByCompanyIdRepositoryStub()
+  return new LoadServiceHoursByCompanyIdAndWeekdayRepositoryStub()
 }
 
 const makeTimeConflictChecker = (): TimeConflictChecker => {
@@ -54,20 +54,20 @@ const makeTimeConflictChecker = (): TimeConflictChecker => {
 
 type SutTypes = {
   addServiceHourRepository: AddServiceHourRepository
-  loadServiceHoursByCompanyIdRepository: LoadServiceHoursByCompanyIdRepository
+  loadServiceHoursByCompanyIdAndWeekdayRepository: LoadServiceHoursByCompanyIdAndWeekdayRepository
   timeConflictChecker: TimeConflictChecker
   sut: AddServiceHour
 }
 
 const makeSut = (): SutTypes => {
   const addServiceHourRepository = makeAddServiceHourRepository()
-  const loadServiceHoursByCompanyIdRepository = makeLoadServiceHoursByCompanyId()
+  const loadServiceHoursByCompanyIdAndWeekdayRepository = makeLoadServiceHoursByCompanyIdAndWeekday()
   const timeConflictChecker = makeTimeConflictChecker()
-  const sut = new DbAddServiceHour(addServiceHourRepository, loadServiceHoursByCompanyIdRepository, timeConflictChecker)
+  const sut = new DbAddServiceHour(addServiceHourRepository, loadServiceHoursByCompanyIdAndWeekdayRepository, timeConflictChecker)
 
   return {
     addServiceHourRepository,
-    loadServiceHoursByCompanyIdRepository,
+    loadServiceHoursByCompanyIdAndWeekdayRepository,
     timeConflictChecker,
     sut
   }
