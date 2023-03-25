@@ -16,10 +16,14 @@ export class AddServiceHourController implements Controller {
         return badRequest(error)
       }
 
-      const serviceHour = await this.addServiceHour.add(httpRequest.body)
+      const serviceHourOrError = await this.addServiceHour.add(httpRequest.body)
+
+      if (serviceHourOrError instanceof Error) {
+        return badRequest(serviceHourOrError)
+      }
 
       return ok({
-        serviceHour
+        serviceHour: serviceHourOrError
       })
     } catch (error) {
       return serverError(error)
