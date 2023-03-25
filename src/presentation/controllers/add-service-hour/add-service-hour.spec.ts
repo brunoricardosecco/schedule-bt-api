@@ -113,4 +113,13 @@ describe('AddServiceHour Controller', () => {
 
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })
+  it('should return 400 if AddServiceHour returns an Error', async () => {
+    const { sut, addServiceHourStub } = makeSut()
+
+    jest.spyOn(addServiceHourStub, 'add').mockReturnValueOnce(new Promise((resolve) => { resolve(new Error('any_error')) }))
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+
+    expect(httpResponse).toEqual(badRequest(new Error('any_error')))
+  })
 })
