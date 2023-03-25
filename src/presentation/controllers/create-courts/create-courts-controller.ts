@@ -18,10 +18,14 @@ export class CreateCourtsController implements Controller {
       const { userId } = httpRequest
       const { courts } = httpRequest.body
 
-      const courtsCount = await this.createCourts.create(userId as string, courts)
+      const courtsCountOrError = await this.createCourts.create(userId as string, courts)
+
+      if (courtsCountOrError instanceof Error) {
+        return badRequest(courtsCountOrError)
+      }
 
       return ok({
-        courtsCount
+        courtsCount: courtsCountOrError
       })
     } catch (error) {
       return serverError(error)
