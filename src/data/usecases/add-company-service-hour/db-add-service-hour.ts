@@ -27,6 +27,10 @@ export class DbAddServiceHour implements AddServiceHour {
       endTime
     })
 
+    if (!isValidTimes) {
+      return new Error('Start time must be before end time')
+    }
+
     const hasConflict = this.timeConflictChecker.hasConflicts({
       existingTimes: storedTimes,
       newTime: {
@@ -34,10 +38,6 @@ export class DbAddServiceHour implements AddServiceHour {
         endTime
       }
     })
-
-    if (!isValidTimes) {
-      return new Error('Start time must be lower than end time')
-    }
 
     if (hasConflict) {
       return new Error('New service hour is conflicting with another')
