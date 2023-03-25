@@ -17,6 +17,10 @@ export class FindManyCourts implements IFindManyCourts {
       }
 
       companyId = user?.companyId
+
+      if (!companyId) {
+        return new Error('Usuário não está vinculado a uma empresa')
+      }
     }
 
     const courts = await this.courtRepository.findMany({
