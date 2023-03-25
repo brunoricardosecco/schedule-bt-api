@@ -9,6 +9,7 @@ export class FindManyCourts implements IFindManyCourts {
   async findMany ({ userId }: FindManyCourtsParams): FindManyCourtsReturn {
     let companyId
 
+    // TODO: Refactor to receive the `companyId` instead of `userId`
     if (userId) {
       const user = await this.accountRepository.loadById(userId)
 
