@@ -1,4 +1,4 @@
-import { ServiceHour } from '@/domain/models/serviceHour'
+import { ServiceHour } from '@/domain/models/service-hour'
 
 export type LoadServiceHoursByCompanyIdRepositoryModel = {
   companyId: string

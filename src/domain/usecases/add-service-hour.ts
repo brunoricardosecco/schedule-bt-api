@@ -1,4 +1,4 @@
-import { ServiceHour } from '../models/serviceHour'
+import { ServiceHour } from '../models/service-hour'
 
 export type AddServiceHourModel = {
   weekday: number
