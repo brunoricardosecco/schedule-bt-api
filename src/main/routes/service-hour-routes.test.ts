@@ -48,5 +48,10 @@ describe('ServiceHour Routes', () => {
         .send(makeFakeServiceHourData(company.id))
         .expect(200)
     })
+    it('should return 200 on GET /service-hour', async () => {
+      await request(app)
+        .get('/api/service-hour')
+        .expect(200)
+    })
   })
 })
