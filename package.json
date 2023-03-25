@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run migrate:build && node dist/main/server.js",
+    "start": "node dist/main/server.js",
     "start:dev": "npx nodemon",
     "debug": "npm run migrate:build && nodemon -L --watch ./dist --inspect=0.0.0.0:9222 --nolazy ./dist/main/server.js",
     "build": "rimraf dist && tsc -p tsconfig-build.json && npm run copy-files",
     "docker:up": "npm run build && docker-compose up -d",
     "docker:down": "docker-compose down",
     "copy-files": "copyfiles -u 1 src/**/*.prisma src/**/*.sql dist/",
-    "test": "dotenv -e .env.test -- npm run migrate:dev && jest --passWithNoTests --runInBand --no-cache",
+    "test": "dotenv -e .env.test -- npm run migrate:dev && jest --passWithNoTests --silent --noStackTrace --runInBand -i",
     "test:verbose": "dotenv -e .env.test -- jest --passWithNoTests --runInBand",
     "test:unit": "dotenv -e .env.test -- npm test -- --watch -c jest-unit-config.js",
     "test:integration": "dotenv -e .env.test -- npm test -- --watch -c jest-integration-config.js",
@@ -71,7 +71,7 @@
     "schema": "./src/infra/db/orm/prisma/schema.prisma"
   },
   "engines": {
-    "node": "19.x"
+    "node": "18.x"
   },
   "_moduleAliases": {
     "@": "dist"
