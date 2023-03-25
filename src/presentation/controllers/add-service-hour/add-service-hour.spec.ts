@@ -1,5 +1,4 @@
-import { ServiceHour } from '@/domain/models/serviceHour'
-import { AddServiceHour, AddServiceHourModel } from '@/domain/usecases/add-service-hour'
+import { AddServiceHour, AddServiceHourModel, ServiceHour } from './add-service-hour-controller.protocols'
 import { MissingParamError, ServerError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, Validation } from '@/presentation/protocols'

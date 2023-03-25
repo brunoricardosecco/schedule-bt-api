@@ -1,6 +1,5 @@
-import { AddServiceHour } from '@/domain/usecases/add-service-hour'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { Controller, HttpRequest, HttpResponse, Validation } from '../add-company/add-company-controller.protocols'
+import { Controller, HttpRequest, HttpResponse, Validation, AddServiceHour } from './add-service-hour-controller.protocols'
 
 export class AddServiceHourController implements Controller {
   constructor (

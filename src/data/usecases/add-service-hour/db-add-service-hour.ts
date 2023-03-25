@@ -1,6 +1,4 @@
-import { TimeConflictChecker } from '@/data/protocols/date/time-conflict-checker'
-import { LoadServiceHoursByCompanyIdAndWeekdayRepository } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id-and-weekday'
-import { AddServiceHourRepository, ServiceHour, AddServiceHour, AddServiceHourModel } from './db-add-service-hour.protocols'
+import { AddServiceHourRepository, ServiceHour, AddServiceHour, AddServiceHourModel, LoadServiceHoursByCompanyIdAndWeekdayRepository, TimeConflictChecker } from './db-add-service-hour.protocols'
 
 export class DbAddServiceHour implements AddServiceHour {
   constructor (
