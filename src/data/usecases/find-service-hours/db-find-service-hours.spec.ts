@@ -1,5 +1,4 @@
-import { FindServiceHoursRepository, FindServiceHoursRepositoryParams } from '@/data/protocols/db/service-hour/find-service-hours'
-import { ServiceHour } from '../add-service-hour/db-add-service-hour.protocols'
+import { ServiceHour, FindServiceHoursRepository, FindServiceHoursRepositoryParams } from './db-find-service-hours.protocols'
 import { DbFindServiceHours } from './db-find-service-hours'
 
 const makeFakeServiceHour = (): ServiceHour => ({

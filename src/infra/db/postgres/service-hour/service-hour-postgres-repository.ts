@@ -3,7 +3,6 @@ import { LoadServiceHoursByCompanyIdAndWeekdayRepository, LoadServiceHoursByComp
 import { AddServiceHourRepository, AddServiceHourRepositoryModel, ServiceHour } from '@/data/usecases/add-service-hour/db-add-service-hour.protocols'
 import { db } from '@/infra/db/orm/prisma'
 import { } from '@prisma/client'
-// import { composeFilters } from '@/infra/db/utils/compose-filters'
 
 export class ServiceHourPostgresRepository implements AddServiceHourRepository, LoadServiceHoursByCompanyIdAndWeekdayRepository, FindServiceHoursRepository {
   async add (serviceHourData: AddServiceHourRepositoryModel): Promise<ServiceHour> {
