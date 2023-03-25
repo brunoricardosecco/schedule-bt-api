@@ -18,8 +18,11 @@ describe('Court Postgres Repository', () => {
     })
   })
 
-  afterAll(async () => {
+  afterEach(async () => {
     await db.courts.deleteMany()
+  })
+
+  afterAll(async () => {
     await db.companies.delete({
       where: {
         id: createdCompany.id
@@ -42,5 +45,24 @@ describe('Court Postgres Repository', () => {
     const courtCount = await sut.createMany(params)
 
     expect(courtCount).toBe(params.length)
+  })
+
+  it('should find many courts', async () => {
+    const sut = makeSut()
+    const params = [
+      {
+        name: 'Quadra 1',
+        companyId: createdCompany.id
+      },
+      {
+        name: 'Quadra 2',
+        companyId: createdCompany.id
+      }
+    ]
+    const courtCount = await sut.createMany(params)
+    const courts = await sut.findMany({ companyId: createdCompany.id })
+
+    expect(courtCount).toBe(params.length)
+    expect(courts.length).toBe(courtCount)
   })
 })
