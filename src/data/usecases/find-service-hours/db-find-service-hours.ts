@@ -5,10 +5,7 @@ export class DbFindServiceHours implements FindServiceHours {
     private readonly findServiceHoursRepository: FindServiceHoursRepository
   ) {}
 
-  async find ({ companyId, weekday }: FindServiceHoursModel): Promise<ServiceHour[]> {
-    return await this.findServiceHoursRepository.findBy({
-      companyId,
-      weekday
-    })
+  async find (filters: FindServiceHoursModel): Promise<ServiceHour[]> {
+    return await this.findServiceHoursRepository.findBy(filters)
   }
 }
