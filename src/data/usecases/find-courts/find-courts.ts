@@ -1,12 +1,12 @@
-import { IFindManyCourts, FindManyCourtsRepository, FindManyCourtsReturn, FindManyCourtsParams, LoadAccountByIdRepository } from './find-many-courts.protocols'
+import { IFindCourts, FindCourtsRepository, FindCourtsReturn, FindCourtsParams, LoadAccountByIdRepository } from './find-courts.protocols'
 
-export class FindManyCourts implements IFindManyCourts {
+export class FindCourts implements IFindCourts {
   constructor (
     private readonly accountRepository: LoadAccountByIdRepository,
-    private readonly courtRepository: FindManyCourtsRepository
+    private readonly courtRepository: FindCourtsRepository
   ) {}
 
-  async findMany ({ userId }: FindManyCourtsParams): FindManyCourtsReturn {
+  async findMany ({ userId }: FindCourtsParams): FindCourtsReturn {
     let companyId
 
     // TODO: Refactor to receive the `companyId` instead of `userId`

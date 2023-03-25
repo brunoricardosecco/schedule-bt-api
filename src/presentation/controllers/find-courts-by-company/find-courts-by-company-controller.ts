@@ -1,9 +1,9 @@
-import { Controller, HttpRequest, HttpResponse, IFindManyCourts } from './find-many-courts-by-company.protocols'
+import { Controller, HttpRequest, HttpResponse, IFindCourts } from './find-courts-by-company.protocols'
 import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
 
-export class FindManyCourtsByCompanyController implements Controller {
+export class FindCourtsByCompanyController implements Controller {
   constructor (
-    private readonly findManyCourts: IFindManyCourts
+    private readonly findManyCourts: IFindCourts
   ) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {

@@ -47,7 +47,7 @@ describe('Court Postgres Repository', () => {
     expect(courtCount).toBe(params.length)
   })
 
-  it('should find many courts', async () => {
+  it('should find courts', async () => {
     const sut = makeSut()
     const params = [
       {

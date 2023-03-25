@@ -1,6 +1,6 @@
 
-import { FindManyCourtsRepository, LoadAccountByIdRepository, AccountModel, RoleEnum, Court } from './find-many-courts.protocols'
-import { FindManyCourts } from './find-many-courts'
+import { FindCourtsRepository, LoadAccountByIdRepository, AccountModel, RoleEnum, Court } from './find-courts.protocols'
+import { FindCourts } from './find-courts'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -27,26 +27,26 @@ const makeLoadAccountByIdRepository = (): LoadAccountByIdRepository => {
   return new LoadAccountByIdRepositoryStub()
 }
 
-const makeFindManyCourtsRepository = (): FindManyCourtsRepository => {
-  class FindManyCourtsRepositoryStub implements FindManyCourtsRepository {
+const makeFindCourtsRepository = (): FindCourtsRepository => {
+  class FindCourtsRepositoryStub implements FindCourtsRepository {
     async findMany (): Promise<Court[]> {
       return await new Promise(resolve => { resolve([]) })
     }
   }
 
-  return new FindManyCourtsRepositoryStub()
+  return new FindCourtsRepositoryStub()
 }
 
 type SutTypes = {
-  sut: FindManyCourts
-  findManyCourtsRepositoryStub: FindManyCourtsRepository
+  sut: FindCourts
+  findManyCourtsRepositoryStub: FindCourtsRepository
   loadAccountByIdRepositoryStub: LoadAccountByIdRepository
 }
 
 const makeSut = (): SutTypes => {
-  const findManyCourtsRepositoryStub = makeFindManyCourtsRepository()
+  const findManyCourtsRepositoryStub = makeFindCourtsRepository()
   const loadAccountByIdRepositoryStub = makeLoadAccountByIdRepository()
-  const sut = new FindManyCourts(loadAccountByIdRepositoryStub, findManyCourtsRepositoryStub)
+  const sut = new FindCourts(loadAccountByIdRepositoryStub, findManyCourtsRepositoryStub)
 
   return {
     sut,
@@ -55,7 +55,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('FindManyCourts Usecase', () => {
+describe('FindCourts Usecase', () => {
   it('should return error if user is not found', async () => {
     const { sut, loadAccountByIdRepositoryStub } = makeSut()
 

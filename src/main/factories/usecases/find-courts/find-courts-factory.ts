@@ -1,10 +1,10 @@
-import { FindManyCourts } from '@/data/usecases/find-many-courts/find-many-courts'
+import { FindCourts } from '@/data/usecases/find-courts/find-courts'
 import { CourtPostgresRepository } from '@/infra/db/postgres/court/court-postgres-repository'
 import { AccountPostgresRepository } from '@/infra/db/postgres/account/account-postgres-repository'
 
-export const findManyCourtsFactory = (): FindManyCourts => {
+export const findManyCourtsFactory = (): FindCourts => {
   const accountPostgresRepository = new AccountPostgresRepository()
   const courtPostgresRepository = new CourtPostgresRepository()
 
-  return new FindManyCourts(accountPostgresRepository, courtPostgresRepository)
+  return new FindCourts(accountPostgresRepository, courtPostgresRepository)
 }

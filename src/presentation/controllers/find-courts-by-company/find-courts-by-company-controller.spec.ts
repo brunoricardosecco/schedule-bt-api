@@ -1,8 +1,8 @@
 import { Court } from '@/domain/models/court'
-import { FindManyCourtsReturn, IFindManyCourts } from '@/domain/usecases/find-many-courts'
+import { FindCourtsReturn, IFindCourts } from '@/domain/usecases/find-courts'
 import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
-import { FindManyCourtsByCompanyController } from './find-many-courts-by-company-controller'
+import { FindCourtsByCompanyController } from './find-courts-by-company-controller'
 
 const makeFakeCourt = (): Court => ({
   id: 'valid_id',
@@ -18,24 +18,24 @@ const makeFakeRequest = (): HttpRequest => {
   })
 }
 
-const makeFindManyCourts = (): IFindManyCourts => {
-  class FindManyCourtsStub implements IFindManyCourts {
-    async findMany (): FindManyCourtsReturn {
+const makeFindCourts = (): IFindCourts => {
+  class FindCourtsStub implements IFindCourts {
+    async findMany (): FindCourtsReturn {
       return await new Promise(resolve => { resolve([]) })
     }
   }
 
-  return new FindManyCourtsStub()
+  return new FindCourtsStub()
 }
 
 type SutTypes = {
-  sut: FindManyCourtsByCompanyController
-  findManyCourtsStub: IFindManyCourts
+  sut: FindCourtsByCompanyController
+  findManyCourtsStub: IFindCourts
 }
 
 const makeSut = (): SutTypes => {
-  const findManyCourtsStub = makeFindManyCourts()
-  const sut = new FindManyCourtsByCompanyController(findManyCourtsStub)
+  const findManyCourtsStub = makeFindCourts()
+  const sut = new FindCourtsByCompanyController(findManyCourtsStub)
 
   return {
     sut,
@@ -43,8 +43,8 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('FindManyCourtsController', () => {
-  it('should returns 500 if FindManyCourts throws', async () => {
+describe('FindCourtsController', () => {
+  it('should returns 500 if FindCourts throws', async () => {
     const { sut, findManyCourtsStub } = makeSut()
 
     jest.spyOn(findManyCourtsStub, 'findMany').mockRejectedValueOnce(new Error())
