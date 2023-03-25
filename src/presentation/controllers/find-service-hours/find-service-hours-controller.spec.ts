@@ -16,9 +16,9 @@ const fakeServiceHour = makeFakeServiceHour()
 const makeFakeRequest = (): HttpRequest => {
   return {
     body: {},
-    headers: {
+    query: {
       companyId: 'any_id',
-      weekday: 0
+      weekday: '0'
     }
   }
 }
@@ -56,7 +56,10 @@ describe('FindServiceHours Controller', () => {
 
     const httpResponse = await sut.handle(fakeRequest)
 
-    expect(findSpy).toHaveBeenCalledWith(fakeRequest.headers)
+    expect(findSpy).toHaveBeenCalledWith({
+      companyId: 'any_id',
+      weekday: 0
+    })
     expect(httpResponse).toEqual(ok({
       serviceHours: [fakeServiceHour]
     }))

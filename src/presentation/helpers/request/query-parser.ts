@@ -1,5 +1,4 @@
 export const queryParser = (queryParams: Object): Object => {
-  console.log('🚀 ~ file: query-parser.ts:2 ~ queryParser ~ queryParams:', queryParams)
   const parsedObj = {}
 
   Object.keys(queryParams).forEach(key => Object.assign(parsedObj, { [key]: parseNumber(queryParams[key]) }))
