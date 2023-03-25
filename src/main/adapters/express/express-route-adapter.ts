@@ -4,7 +4,9 @@ import { Controller, HttpRequest } from '@/presentation/protocols'
 export const routeAdapter = (controller: Controller): RequestHandler => {
   return (async (req: Request, res: Response) => {
     const httpRequest: HttpRequest = {
-      body: req.body
+      body: req.body,
+      headers: req.headers,
+      query: req.query
     }
     const httpResponse = await controller.handle(httpRequest)
 

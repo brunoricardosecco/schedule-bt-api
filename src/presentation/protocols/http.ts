@@ -7,4 +7,5 @@ export type HttpRequest = {
   body?: any
   headers?: any
   userId?: string
+  query?: any
 }
