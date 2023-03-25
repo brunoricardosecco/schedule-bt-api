@@ -128,6 +128,6 @@ describe('DbAddServiceHour UseCase', () => {
 
     const error = await sut.add(conflictingServiceHour)
 
-    expect(error).toEqual(new Error('Start time must be lower than end time'))
+    expect(error).toEqual(new Error('Start time must be before end time'))
   })
 })
