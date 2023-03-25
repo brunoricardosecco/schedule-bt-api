@@ -21,7 +21,7 @@
     "migrate:dev": "npx prisma migrate dev --schema=src/infra/db/orm/prisma/schema.prisma",
     "generate": "npx prisma generate --schema=src/infra/db/orm/prisma/schema.prisma",
     "studio:dev": "npx prisma studio dev",
-    "tsc:watch": "npx tsc"
+    "tsc:watch": "npx tsc -w"
   },
   "keywords": [],
   "author": "",
