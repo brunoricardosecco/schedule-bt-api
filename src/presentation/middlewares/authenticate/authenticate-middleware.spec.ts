@@ -1,14 +1,31 @@
-import { IAuthenticate, IAuthenticateReturn } from '@/domain/usecases/authenticate'
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { AccountModel } from '@/domain/models/account'
+import { IAuthenticate } from '@/domain/usecases/authenticate'
 import { AccessDeniedError, ServerError } from '@/presentation/errors'
 import { forbidden, serverError, ok } from '@/presentation/helpers/http/httpHelper'
 import { AuthenticateMiddleware } from './authenticate-middleware'
 
-const defaultPayload = { userId: '1' }
+const makeFakeAccount = (): AccountModel => ({
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  hashedPassword: 'hashed_password',
+  role: RoleEnum.EMPLOYEE,
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
+
+const defaultAccount = makeFakeAccount()
 
 const makeAuthenticate = (): IAuthenticate => {
   class AuthenticateStub implements IAuthenticate {
-    async auth (): Promise<IAuthenticateReturn | Error> {
-      return await new Promise(resolve => { resolve(defaultPayload) })
+    async auth (): Promise<AccountModel | Error> {
+      return await new Promise(resolve => { resolve(defaultAccount) })
     }
   }
 
@@ -86,6 +103,6 @@ describe('Authenticate Middleware', () => {
       }
     })
 
-    expect(httpResponse).toEqual(ok(defaultPayload))
+    expect(httpResponse).toEqual(ok(defaultAccount))
   })
 })
