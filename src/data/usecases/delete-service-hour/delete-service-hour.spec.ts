@@ -1,6 +1,4 @@
-import { DeleteServiceHourRepository } from '@/data/protocols/db/service-hour/delete-service-hour'
-import { IDeleteServiceHour } from '@/domain/usecases/delete-service-hour'
-import { ServiceHour } from '../add-service-hour/db-add-service-hour.protocols'
+import { ServiceHour, DeleteServiceHourRepository, IDeleteServiceHour } from './delete-service-hour.protocols'
 import { DeleteServiceHour } from './delete-service-hour'
 
 const makeFakeServiceHour = (): ServiceHour => ({

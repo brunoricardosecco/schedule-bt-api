@@ -1,6 +1,5 @@
-import { IDeleteServiceHour } from '@/domain/usecases/delete-service-hour'
 import { okNoContent, serverError } from '@/presentation/helpers/http/httpHelper'
-import { Controller, HttpRequest, HttpResponse } from '../add-company/add-company-controller.protocols'
+import { Controller, HttpRequest, HttpResponse, IDeleteServiceHour } from './delete-service-hour-controller.protocols'
 
 export class DeleteServiceHourController implements Controller {
   constructor (
