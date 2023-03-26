@@ -3,10 +3,27 @@ import { MissingParamError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { Validation, HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { CreateCourtsController } from './create-courts-controller'
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { AccountModel } from '@/domain/models/account'
+
+const makeFakeAccount = (): AccountModel => ({
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  hashedPassword: 'hashed_password',
+  role: RoleEnum.COMPANY_ADMIN,
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
 
 const makeFakeRequest = (): HttpRequest => {
   return ({
-    userId: 'userId',
+    user: makeFakeAccount(),
     body: {
       courts: [
         {
@@ -88,7 +105,7 @@ describe('CreateCourtsController', () => {
 
     const response = await sut.handle(httpRequest)
 
-    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.userId, httpRequest.body.courts)
+    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.user?.id, httpRequest.body.courts)
     expect(response).toEqual(badRequest(new Error('Erro')))
   })
 
@@ -102,7 +119,7 @@ describe('CreateCourtsController', () => {
 
     const response = await sut.handle(httpRequest)
 
-    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.userId, httpRequest.body.courts)
+    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.user?.id, httpRequest.body.courts)
     expect(response).toEqual(ok({
       courtsCount: httpRequest.body.courts.length
     }))

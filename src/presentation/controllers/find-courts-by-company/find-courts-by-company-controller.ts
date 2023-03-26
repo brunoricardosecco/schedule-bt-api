@@ -8,9 +8,9 @@ export class FindCourtsByCompanyController implements Controller {
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const { userId } = httpRequest
+      const { user } = httpRequest
 
-      const courts = await this.findManyCourts.findMany({ userId })
+      const courts = await this.findManyCourts.findMany({ userId: user?.id })
 
       return ok({
         courts

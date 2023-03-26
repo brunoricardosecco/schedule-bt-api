@@ -1,8 +1,25 @@
+import { AccountModel } from '@/domain/models/account'
 import { Court } from '@/domain/models/court'
 import { FindCourtsReturn, IFindCourts } from '@/domain/usecases/find-courts'
 import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { FindCourtsByCompanyController } from './find-courts-by-company-controller'
+import { RoleEnum } from '@/domain/enums/role-enum'
+
+const makeFakeAccount = (): AccountModel => ({
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  hashedPassword: 'hashed_password',
+  role: RoleEnum.COMPANY_ADMIN,
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
 
 const makeFakeCourt = (): Court => ({
   id: 'valid_id',
@@ -14,7 +31,7 @@ const makeFakeCourt = (): Court => ({
 
 const makeFakeRequest = (): HttpRequest => {
   return ({
-    userId: 'userId'
+    user: makeFakeAccount()
   })
 }
 
@@ -66,7 +83,7 @@ describe('FindCourtsController', () => {
 
     const response = await sut.handle(httpRequest)
 
-    expect(findManyCourtsSpy).toHaveBeenCalledWith({ userId: httpRequest.userId })
+    expect(findManyCourtsSpy).toHaveBeenCalledWith({ userId: httpRequest.user?.id })
     expect(response).toStrictEqual(
       ok({
         courts

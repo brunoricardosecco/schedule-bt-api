@@ -1,6 +1,6 @@
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { AccountModel } from '@/domain/models/account'
-import { IAuthenticate } from '@/domain/usecases/authenticate'
+import { IAuthenticate, IAuthenticateReturn } from '@/domain/usecases/authenticate'
 import { AccessDeniedError, ServerError } from '@/presentation/errors'
 import { forbidden, serverError, ok } from '@/presentation/helpers/http/httpHelper'
 import { AuthenticateMiddleware } from './authenticate-middleware'
@@ -24,8 +24,8 @@ const defaultAccount = makeFakeAccount()
 
 const makeAuthenticate = (): IAuthenticate => {
   class AuthenticateStub implements IAuthenticate {
-    async auth (): Promise<AccountModel | Error> {
-      return await new Promise(resolve => { resolve(defaultAccount) })
+    async auth (): Promise<IAuthenticateReturn | Error> {
+      return { user: defaultAccount }
     }
   }
 
@@ -69,7 +69,7 @@ describe('Authenticate Middleware', () => {
   it('should return 403 if Authenticate returns an error', async () => {
     const { authenticateMiddleware, authenticate } = makeSut()
 
-    jest.spyOn(authenticate, 'auth').mockReturnValueOnce(new Promise((resolve) => { resolve(new Error('Erro')) }))
+    jest.spyOn(authenticate, 'auth').mockResolvedValueOnce(new Error('Erro'))
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
@@ -83,7 +83,7 @@ describe('Authenticate Middleware', () => {
   it('should return 500 if Authenticate throws an error', async () => {
     const { authenticateMiddleware, authenticate } = makeSut()
 
-    jest.spyOn(authenticate, 'auth').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error('Erro')) }))
+    jest.spyOn(authenticate, 'auth').mockRejectedValueOnce(new Error('Erro'))
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
@@ -103,6 +103,8 @@ describe('Authenticate Middleware', () => {
       }
     })
 
-    expect(httpResponse).toEqual(ok(defaultAccount))
+    expect(httpResponse).toEqual(ok({
+      user: defaultAccount
+    }))
   })
 })
