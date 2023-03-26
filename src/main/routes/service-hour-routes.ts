@@ -13,7 +13,7 @@ export default (router: Router): void => {
   router.get('/service-hour', routeAdapter(makeFindServiceHoursController()))
   router.delete('/service-hour/:serviceHourId',
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
-    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
+    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.GENERAL_ADMIN, RoleEnum.COMPANY_ADMIN])),
     routeAdapter(makeDeleteServiceHourController())
   )
 }
