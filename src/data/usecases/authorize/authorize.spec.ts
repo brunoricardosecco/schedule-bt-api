@@ -50,4 +50,14 @@ describe('Authorize Usecase', () => {
 
     expect(response).toBe(true)
   })
+
+  it('should authorize the user if the user is General Admin', async () => {
+    const { sut } = makeSut()
+
+    const authorizedRoles = [RoleEnum.EMPLOYEE]
+
+    const response = await sut.authorize(makeFakeAccount(RoleEnum.GENERAL_ADMIN), authorizedRoles)
+
+    expect(response).toBe(true)
+  })
 })
