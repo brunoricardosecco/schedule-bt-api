@@ -1,5 +1,6 @@
 import { Role } from '@/domain/models/role'
+import { AccountModel } from '@/domain/models/account'
 
 export interface IAuthorize {
-  authorize: (userId: string, authorizedRoles: Role[]) => Promise<boolean | Error>
+  authorize: (user: AccountModel, authorizedRoles: Role[]) => Promise<boolean | Error>
 }

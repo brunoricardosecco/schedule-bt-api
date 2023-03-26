@@ -4,6 +4,22 @@ import { Role } from '@/domain/models/role'
 import { IAuthorize } from '@/domain/usecases/authorize'
 import { ServerError } from '@/presentation/errors'
 import { AuthorizeMiddleware } from './authorize-middleware'
+import { AccountModel } from '@/domain/models/account'
+
+const makeFakeAccount = (): AccountModel => ({
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  hashedPassword: 'hashed_password',
+  role: RoleEnum.EMPLOYEE,
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
 
 const defaultPayload = false
 
@@ -42,9 +58,9 @@ describe('Authorize Middleware', () => {
   it('should return 401 if Authorize returns an error', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
-    jest.spyOn(authorize, 'authorize').mockReturnValueOnce(new Promise((resolve) => { resolve(new Error('Erro')) }))
+    jest.spyOn(authorize, 'authorize').mockResolvedValueOnce(new Error('Erro'))
 
-    const httpResponse = await authorizeMiddleware.handle({ userId: 'any_id' })
+    const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
     expect(httpResponse).toEqual(unauthorized())
   })
@@ -52,9 +68,9 @@ describe('Authorize Middleware', () => {
   it('should return 401 if Authorize returns false', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
-    jest.spyOn(authorize, 'authorize').mockReturnValueOnce(new Promise((resolve) => { resolve(false) }))
+    jest.spyOn(authorize, 'authorize').mockResolvedValueOnce(false)
 
-    const httpResponse = await authorizeMiddleware.handle({ userId: 'any_id' })
+    const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
     expect(httpResponse).toEqual(unauthorized())
   })
@@ -62,9 +78,9 @@ describe('Authorize Middleware', () => {
   it('should return 500 if Authorize throws an error', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
-    jest.spyOn(authorize, 'authorize').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error('Erro')) }))
+    jest.spyOn(authorize, 'authorize').mockRejectedValueOnce((new Error('Erro')))
 
-    const httpResponse = await authorizeMiddleware.handle({ userId: 'any_id' })
+    const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
     expect(httpResponse).toEqual(serverError(new ServerError()))
   })
@@ -72,9 +88,9 @@ describe('Authorize Middleware', () => {
   it('should return 200', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
-    jest.spyOn(authorize, 'authorize').mockReturnValueOnce(new Promise((resolve) => { resolve(true) }))
+    jest.spyOn(authorize, 'authorize').mockResolvedValueOnce(true)
 
-    const httpResponse = await authorizeMiddleware.handle({ userId: 'any_id' })
+    const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
     expect(httpResponse).toEqual(ok(true))
   })

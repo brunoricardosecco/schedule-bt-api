@@ -1,8 +1,8 @@
 import {
   Decrypter,
   IAuthenticate,
-  AccountModel,
-  LoadAccountByIdRepository
+  LoadAccountByIdRepository,
+  IAuthenticateReturn
 } from './authenticate.protocols'
 
 export class Authenticate implements IAuthenticate {
@@ -11,7 +11,7 @@ export class Authenticate implements IAuthenticate {
     private readonly accountRepository: LoadAccountByIdRepository
   ) {}
 
-  async auth (token: string): Promise<AccountModel | Error> {
+  async auth (token: string): Promise<IAuthenticateReturn | Error> {
     const tokenPayload = await this.decrypter.decrypt(token)
 
     if (!tokenPayload) {
@@ -24,6 +24,8 @@ export class Authenticate implements IAuthenticate {
       return new Error('Usuário não encontrado')
     }
 
-    return user
+    return {
+      user
+    }
   }
 }

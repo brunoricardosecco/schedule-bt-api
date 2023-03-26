@@ -97,6 +97,8 @@ describe('Authenticate Usecase', () => {
 
     expect(decryptSpy).toHaveBeenCalledWith(token)
     expect(loadAccountByIdRepositorySpy).toHaveBeenCalledWith(defaultPayload.userId)
-    expect(response).toStrictEqual(defaultAccount)
+    expect(response).toStrictEqual({
+      user: defaultAccount
+    })
   })
 })
