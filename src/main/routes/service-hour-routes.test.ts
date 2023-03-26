@@ -53,5 +53,18 @@ describe('ServiceHour Routes', () => {
         .get('/api/service-hour')
         .expect(200)
     })
+    it('should return 204 on DELETE /service-hour', async () => {
+      const company = await db.companies.create({
+        data: makeFakeCompanyData()
+      })
+
+      const serviceHour = await db.serviceHours.create({
+        data: makeFakeServiceHourData(company.id)
+      })
+
+      await request(app)
+        .delete(`/api/service-hour/${serviceHour.id}`)
+        .expect(204)
+    })
   })
 })
