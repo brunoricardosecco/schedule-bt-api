@@ -1,5 +1,5 @@
 import { Controller, HttpRequest, HttpResponse, IFindCourts } from './find-courts-by-company.protocols'
-import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 
 export class FindCourtsByCompanyController implements Controller {
   constructor (
@@ -10,7 +10,11 @@ export class FindCourtsByCompanyController implements Controller {
     try {
       const { user } = httpRequest
 
-      const courts = await this.findManyCourts.findMany({ userId: user?.id })
+      if (!user?.companyId) {
+        return badRequest(new Error('Usuário não possui empresa vinculada'))
+      }
+
+      const courts = await this.findManyCourts.findMany({ companyId: user.companyId })
 
       return ok({
         courts

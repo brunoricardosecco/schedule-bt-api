@@ -51,7 +51,6 @@ describe('Company Routes', () => {
     await db.courts.deleteMany()
     await db.accounts.deleteMany()
     await db.companies.deleteMany()
-    // await db.$executeRawUnsafe('TRUNCATE TABLE "Companies" CASCADE;')
   })
 
   describe('POST /company', () => {

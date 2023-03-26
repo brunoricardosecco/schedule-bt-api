@@ -1,7 +1,7 @@
 import { Court } from '@/domain/models/court'
 
 export type FindCourtsParamsToRepository = {
-  companyId: string
+  companyId?: string
 }
 
 export interface FindCourtsRepository {

@@ -12,7 +12,7 @@ const makeFakeAccount = (): AccountModel => ({
   email: 'valid_email@mail.com',
   hashedPassword: 'hashed_password',
   role: RoleEnum.COMPANY_ADMIN,
-  companyId: null,
+  companyId: 'company_id',
   company: null,
   emailValidationToken: null,
   emailValidationTokenExpiration: null,
@@ -83,7 +83,7 @@ describe('FindCourtsController', () => {
 
     const response = await sut.handle(httpRequest)
 
-    expect(findManyCourtsSpy).toHaveBeenCalledWith({ userId: httpRequest.user?.id })
+    expect(findManyCourtsSpy).toHaveBeenCalledWith({ companyId: httpRequest.user?.companyId })
     expect(response).toStrictEqual(
       ok({
         courts
