@@ -3,11 +3,6 @@ import { db } from '@/infra/db/orm/prisma'
 import app from '@/main/config/app'
 import { AddCompanyModel } from '@/domain/usecases/add-company'
 
-jest.mock('jsonwebtoken', () => ({
-  ...jest.requireActual('jsonwebtoken'),
-  verify: jest.fn().mockReturnValue({ foo: 'bar' })
-}))
-
 const makeFakeCompanyData = (): AddCompanyModel => ({
   name: 'verona',
   reservationPrice: 60,
