@@ -5,6 +5,7 @@ import { makeAuthenticateMiddleware } from '@/main/factories/middlewares/authent
 import { expressMiddlewareAdapter } from '@/main/adapters/express/express-middleware-adapter'
 import { makeAuthorizeMiddleware } from '@/main/factories/middlewares/authorize-middleware/authorize-middleware-factory'
 import { RoleEnum } from '@/domain/enums/role-enum'
+import { findManyCourtsByCompanyControllerFactory } from '@/main/factories/controllers/find-courts-by-company/find-courts-by-company-controller-factory'
 
 export default (router: Router): void => {
   router.post(
@@ -12,5 +13,12 @@ export default (router: Router): void => {
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
     expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.GENERAL_ADMIN])),
     routeAdapter(makeAddCompanyController())
+  )
+
+  router.get(
+    '/company/court',
+    expressMiddlewareAdapter(makeAuthenticateMiddleware()),
+    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN, RoleEnum.EMPLOYEE])),
+    routeAdapter(findManyCourtsByCompanyControllerFactory())
   )
 }
