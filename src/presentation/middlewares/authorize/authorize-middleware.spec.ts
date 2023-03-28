@@ -25,7 +25,7 @@ const defaultPayload = false
 
 const makeAuthorize = (): IAuthorize => {
   class AuthorizeStub implements IAuthorize {
-    async authorize (): Promise<boolean | Error> {
+    async authorize (): Promise<boolean> {
       return await new Promise(resolve => { resolve(defaultPayload) })
     }
   }
@@ -51,16 +51,6 @@ describe('Authorize Middleware', () => {
     const { authorizeMiddleware } = makeSut([RoleEnum.EMPLOYEE])
 
     const httpResponse = await authorizeMiddleware.handle({})
-
-    expect(httpResponse).toEqual(unauthorized())
-  })
-
-  it('should return 401 if Authorize returns an error', async () => {
-    const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
-
-    jest.spyOn(authorize, 'authorize').mockResolvedValueOnce(new Error('Erro'))
-
-    const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
     expect(httpResponse).toEqual(unauthorized())
   })

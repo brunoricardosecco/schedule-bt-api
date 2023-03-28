@@ -18,17 +18,13 @@ export class AuthorizeMiddleware implements Middleware {
 
       const { user } = httpRequest
 
-      const isUserAuthorizedOrError = await this.authorize.authorize(user, this.authorizedRoles)
+      const isUserAuthorized = await this.authorize.authorize(user, this.authorizedRoles)
 
-      if (isUserAuthorizedOrError instanceof Error) {
+      if (!isUserAuthorized) {
         return unauthorized()
       }
 
-      if (!isUserAuthorizedOrError) {
-        return unauthorized()
-      }
-
-      return ok(isUserAuthorizedOrError)
+      return ok(isUserAuthorized)
     } catch (error) {
       return serverError(error)
     }

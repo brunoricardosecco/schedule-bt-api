@@ -5,7 +5,7 @@ import {
 } from './authorize.protocols'
 
 export class Authorize implements IAuthorize {
-  async authorize (user: AccountModel, authorizedRoles: Role[]): Promise<boolean | Error> {
+  async authorize (user: AccountModel, authorizedRoles: Role[]): Promise<boolean> {
     if (user.role === 'GENERAL_ADMIN') {
       return true
     }
