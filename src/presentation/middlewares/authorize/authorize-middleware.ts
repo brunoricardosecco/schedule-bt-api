@@ -12,23 +12,19 @@ export class AuthorizeMiddleware implements Middleware {
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      if (!httpRequest.userId) {
+      if (!httpRequest.user?.id) {
         return unauthorized()
       }
 
-      const { userId } = httpRequest
+      const { user } = httpRequest
 
-      const isUserAuthorizedOrError = await this.authorize.authorize(userId, this.authorizedRoles)
+      const isUserAuthorized = await this.authorize.authorize(user, this.authorizedRoles)
 
-      if (isUserAuthorizedOrError instanceof Error) {
+      if (!isUserAuthorized) {
         return unauthorized()
       }
 
-      if (!isUserAuthorizedOrError) {
-        return unauthorized()
-      }
-
-      return ok(isUserAuthorizedOrError)
+      return ok(isUserAuthorized)
     } catch (error) {
       return serverError(error)
     }

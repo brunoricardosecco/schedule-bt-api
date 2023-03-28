@@ -6,19 +6,8 @@ const makeSut = (): CompanyPostgresRepository => {
 }
 
 describe('Company Postgres Repository', () => {
-  afterAll(async () => {
-    const deleteCompanies = db.companies.deleteMany()
-    await db.$transaction([
-      deleteCompanies
-    ])
-    await db.$disconnect()
-  })
-
   afterEach(async () => {
-    const deleteCompanies = db.companies.deleteMany()
-    await db.$transaction([
-      deleteCompanies
-    ])
+    await db.$executeRawUnsafe('TRUNCATE TABLE "Companies" CASCADE;')
   })
 
   it('should return an company on add success', async () => {
