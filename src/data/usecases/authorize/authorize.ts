@@ -1,19 +1,13 @@
 import {
-  LoadAccountByIdRepository,
   IAuthorize,
-  Role
+  Role,
+  AccountModel
 } from './authorize.protocols'
 
 export class Authorize implements IAuthorize {
-  constructor (
-    private readonly accountRepository: LoadAccountByIdRepository
-  ) {}
-
-  async authorize (userId: string, authorizedRoles: Role[]): Promise<boolean | Error> {
-    const user = await this.accountRepository.loadById(userId)
-
-    if (!user) {
-      return new Error('User not found')
+  async authorize (user: AccountModel, authorizedRoles: Role[]): Promise<boolean> {
+    if (user.role === 'GENERAL_ADMIN') {
+      return true
     }
 
     const isUserAuthorized = authorizedRoles.some((authorizedRole) => authorizedRole === user.role)

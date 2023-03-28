@@ -1,11 +1,11 @@
 import { Court } from '@/domain/models/court'
 
 export type FindCourtsParams = {
-  userId?: string
+  companyId?: string
 }
 
 export type FindCourtsReturn = Promise<Court[] | Error>
 
 export interface IFindCourts {
-  findMany: ({ userId }: FindCourtsParams) => FindCourtsReturn
+  findMany: ({ companyId }: FindCourtsParams) => FindCourtsReturn
 }
