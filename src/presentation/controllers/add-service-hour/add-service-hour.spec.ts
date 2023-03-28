@@ -1,4 +1,4 @@
-import { AddServiceHour, AddServiceHourModel, ServiceHour } from './add-service-hour-controller.protocols'
+import { IAddServiceHour, AddServiceHourModel, ServiceHour } from './add-service-hour-controller.protocols'
 import { MissingParamError, ServerError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, Validation } from '@/presentation/protocols'
@@ -12,8 +12,8 @@ const makeFakeServiceHour = (): ServiceHour => ({
   id: 'any_id'
 })
 
-const makeAddServiceHour = (): AddServiceHour => {
-  class AddServiceHourStub implements AddServiceHour {
+const makeAddServiceHour = (): IAddServiceHour => {
+  class AddServiceHourStub implements IAddServiceHour {
     async add (serviceHour: AddServiceHourModel): Promise<ServiceHour | Error> {
       return await new Promise(resolve => { resolve(makeFakeServiceHour()) })
     }
@@ -50,7 +50,7 @@ const makeFakeRequest = (): HttpRequest => {
 
 type SutTypes = {
   validationStub: Validation
-  addServiceHourStub: AddServiceHour
+  addServiceHourStub: IAddServiceHour
   sut: AddServiceHourController
 }
 

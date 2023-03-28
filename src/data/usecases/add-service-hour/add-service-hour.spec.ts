@@ -1,14 +1,14 @@
-import { DbAddServiceHour } from './db-add-service-hour'
+import { AddServiceHour } from './add-service-hour'
 import {
   AddServiceHourRepository,
   AddServiceHourRepositoryModel,
   ServiceHour,
-  AddServiceHour,
+  IAddServiceHour,
   LoadServiceHoursByCompanyIdAndWeekdayRepository,
   LoadServiceHoursByCompanyIdRepositoryModel,
   ServiceHourTimeModel,
   TimeConflictChecker
-} from './db-add-service-hour.protocols'
+} from './add-service-hour.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
@@ -77,7 +77,7 @@ type SutTypes = {
   addServiceHourRepository: AddServiceHourRepository
   loadServiceHoursByCompanyIdAndWeekdayRepository: LoadServiceHoursByCompanyIdAndWeekdayRepository
   timeConflictChecker: TimeConflictChecker
-  sut: AddServiceHour
+  sut: IAddServiceHour
 }
 
 const makeSut = (): SutTypes => {
@@ -85,7 +85,7 @@ const makeSut = (): SutTypes => {
   const loadServiceHoursByCompanyIdAndWeekdayRepository =
     makeLoadServiceHoursByCompanyIdAndWeekday()
   const timeConflictChecker = makeTimeConflictChecker()
-  const sut = new DbAddServiceHour(
+  const sut = new AddServiceHour(
     addServiceHourRepository,
     loadServiceHoursByCompanyIdAndWeekdayRepository,
     timeConflictChecker
@@ -99,7 +99,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('DbAddServiceHour UseCase', () => {
+describe('AddServiceHour UseCase', () => {
   it('should call AddServiceHourRepository with correct values', async () => {
     const { addServiceHourRepository, sut } = makeSut()
 

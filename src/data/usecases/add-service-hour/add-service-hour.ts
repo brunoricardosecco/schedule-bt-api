@@ -1,8 +1,8 @@
-import { AddServiceHourRepository, ServiceHour, AddServiceHour, AddServiceHourModel, LoadServiceHoursByCompanyIdAndWeekdayRepository, TimeConflictChecker } from './db-add-service-hour.protocols'
+import { AddServiceHourRepository, ServiceHour, IAddServiceHour, AddServiceHourModel, LoadServiceHoursByCompanyIdAndWeekdayRepository, TimeConflictChecker } from './add-service-hour.protocols'
 
-export class DbAddServiceHour implements AddServiceHour {
+export class AddServiceHour implements IAddServiceHour {
   constructor (
-    private readonly dbAddServiceHourRepository: AddServiceHourRepository,
+    private readonly addServiceHourRepository: AddServiceHourRepository,
     private readonly dbLoadServiceHoursByCompanyIdAndWeekdayRepository: LoadServiceHoursByCompanyIdAndWeekdayRepository,
     private readonly timeConflictChecker: TimeConflictChecker
   ) {}
@@ -41,6 +41,6 @@ export class DbAddServiceHour implements AddServiceHour {
       return new Error('New service hour is conflicting with another')
     }
 
-    return await this.dbAddServiceHourRepository.add(serviceHourData)
+    return await this.addServiceHourRepository.add(serviceHourData)
   }
 }
