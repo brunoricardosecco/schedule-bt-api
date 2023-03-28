@@ -10,7 +10,7 @@ export class AddServiceHour implements IAddServiceHour {
   async add (serviceHourData: AddServiceHourModel): Promise<ServiceHour | Error> {
     const { companyId, endTime, startTime, weekday } = serviceHourData
 
-    const isValidTimes = this.timeConflictChecker.isEndTimeGraterThanStartTime({
+    const isValidTimes = this.timeConflictChecker.isEndTimeGreaterThanStartTime({
       startTime,
       endTime
     })

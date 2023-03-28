@@ -32,7 +32,7 @@ export class DateFnsAdapter implements TimeConflictChecker {
     }
   }
 
-  isEndTimeGraterThanStartTime ({
+  isEndTimeGreaterThanStartTime ({
     startTime: receivedStartTime,
     endTime: receivedEndTime
   }: ServiceHourTimeModel): boolean {

@@ -62,7 +62,7 @@ const makeTimeConflictChecker = (): TimeConflictChecker => {
       return false
     }
 
-    isEndTimeGraterThanStartTime ({
+    isEndTimeGreaterThanStartTime ({
       startTime,
       endTime
     }: ServiceHourTimeModel): boolean {
@@ -151,7 +151,7 @@ describe('AddServiceHour UseCase', () => {
     const { sut, timeConflictChecker } = makeSut()
 
     jest
-      .spyOn(timeConflictChecker, 'isEndTimeGraterThanStartTime')
+      .spyOn(timeConflictChecker, 'isEndTimeGreaterThanStartTime')
       .mockReturnValueOnce(false)
 
     const conflictingServiceHour: AddServiceHourRepositoryModel = {
