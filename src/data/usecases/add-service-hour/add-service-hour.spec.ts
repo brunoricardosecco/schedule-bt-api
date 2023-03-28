@@ -144,7 +144,7 @@ describe('AddServiceHour UseCase', () => {
     const error = await sut.add(conflictingServiceHour)
 
     expect(error).toEqual(
-      new Error('New service hour is conflicting with another')
+      new Error('O intervalo de tempo não pode conflitar com outro intervalo de tempo já cadastrado')
     )
   })
   it('should returns an error on trying to add an service hour with the start time greater than the end time', async () => {
@@ -163,6 +163,6 @@ describe('AddServiceHour UseCase', () => {
 
     const error = await sut.add(conflictingServiceHour)
 
-    expect(error).toEqual(new Error('Start time must be before end time'))
+    expect(error).toEqual(new Error('O tempo de início precisa ser menor que o tempo de término'))
   })
 })

@@ -9,6 +9,7 @@ export class AddServiceHourController implements Controller {
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
+      // TODO: Atualmente estamos recebendo o companyId no body, após alteração do middleware, alterar para pegar da própria request
       const error = this.validation.validate(httpRequest.body)
 
       if (error) {
