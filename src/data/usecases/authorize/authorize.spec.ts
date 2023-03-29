@@ -1,16 +1,15 @@
 import { Authorize } from './authorize'
 import {
-  LoadAccountByIdRepository,
   AccountModel,
   RoleEnum
 } from './authorize.protocols'
 
-const makeFakeAccount = (): AccountModel => ({
+const makeFakeAccount = (role: RoleEnum): AccountModel => ({
+  role,
   id: 'valid_id',
   name: 'valid_name',
   email: 'valid_email@mail.com',
   hashedPassword: 'hashed_password',
-  role: RoleEnum.EMPLOYEE,
   companyId: null,
   company: null,
   emailValidationToken: null,
@@ -20,59 +19,45 @@ const makeFakeAccount = (): AccountModel => ({
   updatedAt: new Date()
 })
 
-const defaultPayload: AccountModel = makeFakeAccount()
-
-const makeLoadAccountByIdRepository = (): LoadAccountByIdRepository => {
-  class LoadAccountByIdRepositoryStub implements LoadAccountByIdRepository {
-    async loadById (): Promise<AccountModel | null> {
-      return await new Promise(resolve => { resolve(defaultPayload) })
-    }
-  }
-
-  return new LoadAccountByIdRepositoryStub()
-}
-
 type SutTypes = {
-  sut: Authorize
-  LoadAccountByIdRepositoryStub: LoadAccountByIdRepository
-}
+  sut: Authorize }
 
 const makeSut = (): SutTypes => {
-  const LoadAccountByIdRepositoryStub = makeLoadAccountByIdRepository()
-  const sut = new Authorize(LoadAccountByIdRepositoryStub)
+  const sut = new Authorize()
 
   return {
-    sut,
-    LoadAccountByIdRepositoryStub
+    sut
   }
 }
 
 describe('Authorize Usecase', () => {
-  it('should authorize the user', async () => {
-    const { sut, LoadAccountByIdRepositoryStub } = makeSut()
+  it('should not authorize the user', async () => {
+    const { sut } = makeSut()
 
-    const userId = 'userId'
     const authorizedRoles = [RoleEnum.EMPLOYEE]
 
-    const loadAccountByIdRepositorySpy = jest.spyOn(LoadAccountByIdRepositoryStub, 'loadById')
+    const response = await sut.authorize(makeFakeAccount(RoleEnum.CLIENT), authorizedRoles)
 
-    const response = await sut.authorize(userId, authorizedRoles)
+    expect(response).toBe(false)
+  })
 
-    expect(loadAccountByIdRepositorySpy).toHaveBeenCalledWith(userId)
+  it('should authorize the user', async () => {
+    const { sut } = makeSut()
+
+    const authorizedRoles = [RoleEnum.EMPLOYEE]
+
+    const response = await sut.authorize(makeFakeAccount(RoleEnum.EMPLOYEE), authorizedRoles)
+
     expect(response).toBe(true)
   })
 
-  it('should return error if user is not found', async () => {
-    const { sut, LoadAccountByIdRepositoryStub } = makeSut()
+  it('should authorize the user if the user is General Admin', async () => {
+    const { sut } = makeSut()
 
-    const userId = 'userId'
     const authorizedRoles = [RoleEnum.EMPLOYEE]
 
-    jest.spyOn(LoadAccountByIdRepositoryStub, 'loadById').mockReturnValueOnce(new Promise((resolve) => { resolve(null) }))
+    const response = await sut.authorize(makeFakeAccount(RoleEnum.GENERAL_ADMIN), authorizedRoles)
 
-    const error = await sut.authorize(userId, authorizedRoles) as Error
-
-    expect(error).toBeInstanceOf(Error)
-    expect(error.message).toBe('User not found')
+    expect(response).toBe(true)
   })
 })

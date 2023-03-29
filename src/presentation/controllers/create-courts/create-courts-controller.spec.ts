@@ -3,10 +3,27 @@ import { MissingParamError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { Validation, HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { CreateCourtsController } from './create-courts-controller'
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { AccountModel } from '@/domain/models/account'
+
+const makeFakeAccount = (): AccountModel => ({
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  hashedPassword: 'hashed_password',
+  role: RoleEnum.COMPANY_ADMIN,
+  companyId: 'company_id',
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
 
 const makeFakeRequest = (): HttpRequest => {
   return ({
-    userId: 'userId',
+    user: makeFakeAccount(),
     body: {
       courts: [
         {
@@ -78,20 +95,6 @@ describe('CreateCourtsController', () => {
     expect(response).toEqual(serverError(new Error()))
   })
 
-  it('should return 400 when an error is returned in the usecase', async () => {
-    const { sut, createCourtsStub } = makeSut()
-
-    const httpRequest = makeFakeRequest()
-
-    const createCourtsSpy = jest.spyOn(createCourtsStub, 'create')
-    createCourtsSpy.mockResolvedValueOnce(new Error('Erro'))
-
-    const response = await sut.handle(httpRequest)
-
-    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.userId, httpRequest.body.courts)
-    expect(response).toEqual(badRequest(new Error('Erro')))
-  })
-
   it('should return 200 on success', async () => {
     const { sut, createCourtsStub } = makeSut()
 
@@ -102,7 +105,7 @@ describe('CreateCourtsController', () => {
 
     const response = await sut.handle(httpRequest)
 
-    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.userId, httpRequest.body.courts)
+    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.user?.companyId, httpRequest.body.courts)
     expect(response).toEqual(ok({
       courtsCount: httpRequest.body.courts.length
     }))
