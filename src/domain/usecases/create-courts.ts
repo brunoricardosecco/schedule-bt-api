@@ -5,5 +5,5 @@ export type CreateCourtModel = {
 export type CreateCourtsReturn = Promise<number | Error>
 
 export interface ICreateCourts {
-  create: (userId: string, courts: CreateCourtModel[]) => CreateCourtsReturn
+  create: (companyId: string, courts: CreateCourtModel[]) => CreateCourtsReturn
 }

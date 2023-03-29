@@ -18,7 +18,7 @@ export class CreateCourtsController implements Controller {
       const { user } = httpRequest
       const { courts } = httpRequest.body
 
-      const courtsCountOrError = await this.createCourts.create(user?.id as string, courts)
+      const courtsCountOrError = await this.createCourts.create(user?.companyId as string, courts)
 
       if (courtsCountOrError instanceof Error) {
         return badRequest(courtsCountOrError)
