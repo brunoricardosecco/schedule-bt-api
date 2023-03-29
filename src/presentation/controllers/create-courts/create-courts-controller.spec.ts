@@ -12,7 +12,7 @@ const makeFakeAccount = (): AccountModel => ({
   email: 'valid_email@mail.com',
   hashedPassword: 'hashed_password',
   role: RoleEnum.COMPANY_ADMIN,
-  companyId: null,
+  companyId: 'company_id',
   company: null,
   emailValidationToken: null,
   emailValidationTokenExpiration: null,
@@ -95,20 +95,6 @@ describe('CreateCourtsController', () => {
     expect(response).toEqual(serverError(new Error()))
   })
 
-  it('should return 400 when an error is returned in the usecase', async () => {
-    const { sut, createCourtsStub } = makeSut()
-
-    const httpRequest = makeFakeRequest()
-
-    const createCourtsSpy = jest.spyOn(createCourtsStub, 'create')
-    createCourtsSpy.mockResolvedValueOnce(new Error('Erro'))
-
-    const response = await sut.handle(httpRequest)
-
-    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.user?.id, httpRequest.body.courts)
-    expect(response).toEqual(badRequest(new Error('Erro')))
-  })
-
   it('should return 200 on success', async () => {
     const { sut, createCourtsStub } = makeSut()
 
@@ -119,7 +105,7 @@ describe('CreateCourtsController', () => {
 
     const response = await sut.handle(httpRequest)
 
-    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.user?.id, httpRequest.body.courts)
+    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.user?.companyId, httpRequest.body.courts)
     expect(response).toEqual(ok({
       courtsCount: httpRequest.body.courts.length
     }))
