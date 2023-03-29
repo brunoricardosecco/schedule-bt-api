@@ -5,6 +5,6 @@ export type FindServiceHoursModel = {
   weekday?: number
 }
 
-export interface FindServiceHours {
+export interface IFindServiceHours {
   find: ({ companyId, weekday }: FindServiceHoursModel) => Promise<ServiceHour[]>
 }

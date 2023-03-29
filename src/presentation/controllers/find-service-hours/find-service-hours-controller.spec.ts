@@ -1,4 +1,4 @@
-import { FindServiceHours, FindServiceHoursModel } from '@/domain/usecases/find-service-hours'
+import { IFindServiceHours, FindServiceHoursModel } from '@/domain/usecases/find-service-hours'
 import { ServerError } from '@/presentation/errors'
 import { ok, serverError } from '../../helpers/http/httpHelper'
 import { HttpRequest, ServiceHour } from '../add-service-hour/add-service-hour-controller.protocols'
@@ -24,8 +24,8 @@ const makeFakeRequest = (): HttpRequest => {
 }
 const fakeRequest = makeFakeRequest()
 
-const makeFindServiceHours = (): FindServiceHours => {
-  class FindServiceHoursStub implements FindServiceHours {
+const makeFindServiceHours = (): IFindServiceHours => {
+  class FindServiceHoursStub implements IFindServiceHours {
     async find ({ companyId, weekday }: FindServiceHoursModel): Promise<ServiceHour[]> {
       return await new Promise(resolve => { resolve([fakeServiceHour]) })
     }
@@ -36,7 +36,7 @@ const makeFindServiceHours = (): FindServiceHours => {
 
 type SutTypes = {
   sut: FindServiceHoursController
-  findServiceHours: FindServiceHours
+  findServiceHours: IFindServiceHours
 }
 
 const makeSut = (): SutTypes => {

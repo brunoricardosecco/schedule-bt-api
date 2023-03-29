@@ -1,6 +1,6 @@
-import { ServiceHour, FindServiceHours, FindServiceHoursModel, FindServiceHoursRepository } from './db-find-service-hours.protocols'
+import { ServiceHour, IFindServiceHours, FindServiceHoursModel, FindServiceHoursRepository } from './find-service-hours.protocols'
 
-export class DbFindServiceHours implements FindServiceHours {
+export class FindServiceHours implements IFindServiceHours {
   constructor (
     private readonly findServiceHoursRepository: FindServiceHoursRepository
   ) {}
