@@ -3,6 +3,7 @@ import { MissingParamError, ServerError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, Validation } from '@/presentation/protocols'
 import { AddServiceHourController } from './add-service-hour-controller'
+import { RoleEnum } from '@/domain/enums/role-enum'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   companyId: 'any_company_id',
@@ -44,7 +45,21 @@ const addServiceHourData = makeFakeServiceHourData()
 
 const makeFakeRequest = (): HttpRequest => {
   return {
-    body: addServiceHourData
+    body: addServiceHourData,
+    user: {
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      hashedPassword: 'valid_password',
+      role: RoleEnum.CLIENT,
+      companyId: 'any_company_id',
+      company: null,
+      emailValidationToken: null,
+      emailValidationTokenExpiration: null,
+      isConfirmed: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
   }
 }
 
