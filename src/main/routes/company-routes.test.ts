@@ -13,28 +13,44 @@ const makeFakeCompanyData = (): AddCompanyModel => ({
 
 describe('Company Routes', () => {
   const password = 'password'
-  const email = 'email@mail.com'
-  let createdAccount
+  const companyAdminEmail = 'company_admin@mail.com'
+  const generalAdminEmail = 'generala_dmin@mail.com'
+  let createdCompany
 
   beforeAll(async () => {
+    createdCompany = await db.companies.create({
+      data: {
+        name: 'Empresa X',
+        reservationPrice: 70,
+        reservationTimeInMinutes: 60
+      }
+    })
+
     const hashedPassword = await new BcryptAdapter(12).hash(password)
-    createdAccount = await db.accounts.create({
+    await db.accounts.create({
       data: {
         name: 'any_name',
-        email,
+        email: generalAdminEmail,
         hashedPassword,
         role: RoleEnum.GENERAL_ADMIN
       }
     })
-  })
 
-  afterEach(async () => {
-    await db.accounts.delete({
-      where: {
-        id: createdAccount.id
+    await db.accounts.create({
+      data: {
+        name: 'any_name',
+        email: companyAdminEmail,
+        hashedPassword,
+        companyId: createdCompany.id,
+        role: RoleEnum.COMPANY_ADMIN
       }
     })
-    await db.$executeRawUnsafe('TRUNCATE TABLE "Companies" CASCADE;')
+  })
+
+  afterAll(async () => {
+    await db.courts.deleteMany()
+    await db.accounts.deleteMany()
+    await db.companies.deleteMany()
   })
 
   describe('POST /company', () => {
@@ -42,7 +58,7 @@ describe('Company Routes', () => {
       const loginResponse = await request(app)
         .post('/api/authenticate-by-password')
         .send({
-          email,
+          email: generalAdminEmail,
           password
         })
 
@@ -50,6 +66,22 @@ describe('Company Routes', () => {
         .post('/api/company')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken}`)
         .send(makeFakeCompanyData())
+        .expect(200)
+    })
+  })
+
+  describe('GET /company/court', () => {
+    it('should return 200 on GET /company/court', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email: companyAdminEmail,
+          password
+        })
+
+      await request(app)
+        .get('/api/company/court')
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .expect(200)
     })
   })
