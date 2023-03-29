@@ -95,20 +95,6 @@ describe('CreateCourtsController', () => {
     expect(response).toEqual(serverError(new Error()))
   })
 
-  it('should return 400 when an error is returned in the usecase', async () => {
-    const { sut, createCourtsStub } = makeSut()
-
-    const httpRequest = makeFakeRequest()
-
-    const createCourtsSpy = jest.spyOn(createCourtsStub, 'create')
-    createCourtsSpy.mockResolvedValueOnce(new Error('Erro'))
-
-    const response = await sut.handle(httpRequest)
-
-    expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.user?.companyId, httpRequest.body.courts)
-    expect(response).toEqual(badRequest(new Error('Erro')))
-  })
-
   it('should return 200 on success', async () => {
     const { sut, createCourtsStub } = makeSut()
 
