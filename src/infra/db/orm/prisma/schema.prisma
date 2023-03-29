@@ -5,6 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -24,6 +28,8 @@ model Accounts {
   createdAt                      DateTime       @default(now()) @map("created_at")
   updatedAt                      DateTime       @default(now()) @map("updated_at")
   reservations                   Reservations[]
+
+  @@map("accounts")
 }
 
 model Companies {
@@ -37,6 +43,8 @@ model Companies {
   reservations             Reservations[]
   serviceHours             ServiceHours[]
   reservationTimeInMinutes Int            @map("reservation_time_in_minutes")
+
+  @@map("companies")
 }
 
 model ServiceHours {
@@ -46,6 +54,8 @@ model ServiceHours {
   endTime   String    @map("end_time")
   company   Companies @relation(fields: [companyId], references: [id])
   companyId String
+
+  @@map("service_hours")
 }
 
 model Courts {
@@ -55,6 +65,8 @@ model Courts {
   company   Companies @relation(fields: [companyId], references: [id])
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @default(now()) @map("updated_at")
+
+  @@map("courts")
 }
 
 model Reservations {
@@ -69,6 +81,8 @@ model Reservations {
   updatedAt         DateTime          @default(now()) @map("updated_at")
   company           Companies?        @relation(fields: [companyId], references: [id])
   companyId         String?
+
+  @@map("reservations")
 }
 
 model Errors {
@@ -76,6 +90,8 @@ model Errors {
   stack     String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("errors")
 }
 
 enum Role {
@@ -83,10 +99,14 @@ enum Role {
   GENERAL_ADMIN
   COMPANY_ADMIN
   EMPLOYEE
+
+  @@map("role")
 }
 
 enum ReservationStatus {
   PAID
   AWAITING_PAYMENT
   PENDING
+
+  @@map("reservation_status")
 }
