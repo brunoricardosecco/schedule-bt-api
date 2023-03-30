@@ -1,8 +1,8 @@
-import request from 'supertest'
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
 import { db } from '@/infra/db/orm/prisma'
 import app from '@/main/config/app'
-import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
-import { RoleEnum } from '@/domain/enums/role-enum'
+import request from 'supertest'
 
 describe('Court Routes', () => {
   const password = 'password'
@@ -13,6 +13,7 @@ describe('Court Routes', () => {
   beforeAll(async () => {
     createdCompany = await db.companies.create({
       data: {
+        id: 'company_id_01',
         name: 'Empresa X',
         reservationPrice: 70,
         reservationTimeInMinutes: 60
@@ -27,6 +28,14 @@ describe('Court Routes', () => {
         hashedPassword,
         companyId: createdCompany.id,
         role: RoleEnum.COMPANY_ADMIN
+      }
+    })
+
+    await db.courts.create({
+      data: {
+        id: 'id_01',
+        name: 'any court name',
+        companyId: 'company_id_01',
       }
     })
   })
@@ -68,6 +77,36 @@ describe('Court Routes', () => {
           ]
         })
         .expect(200)
+    })
+  })
+
+  describe('DELETE /court/:courtId', () => {
+    it('should return 204 on DELETE /court/:courtId', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email,
+          password
+        })
+
+      await request(app)
+        .delete('/api/court/id_01')
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
+        .expect(204)
+    })
+
+    it('should return 404 on DELETE /court/:courtId if court not exists', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email,
+          password
+        })
+
+      await request(app)
+        .delete('/api/court/non_existent_id')
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
+        .expect(404)
     })
   })
 })
