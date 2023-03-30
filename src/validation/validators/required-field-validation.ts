@@ -7,7 +7,7 @@ export class RequiredFieldValidation implements Validation {
   ) {}
 
   validate (input: any): Error | null {
-    if (!input[this.fieldName]) {
+    if (!(this.fieldName in input)) {
       return new MissingParamError(this.fieldName)
     }
     return null
