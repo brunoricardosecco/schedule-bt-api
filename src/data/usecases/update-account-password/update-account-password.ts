@@ -10,7 +10,7 @@ export class UpdateAccountPassword implements IUpdateAccountPassword {
     private readonly accountRepository: UpdateAccountRepository
   ) {}
 
-  async update (password: string): UpdateAccountPasswordReturn {
+  async update (userId: string, password: string): UpdateAccountPasswordReturn {
     if (password.length < MIN_PASSWORD_LENGTH) {
       return new Error('A senha deve possuir no mínimo 8 caracteres')
     }
@@ -25,9 +25,12 @@ export class UpdateAccountPassword implements IUpdateAccountPassword {
 
     const hashedPassword = await this.hasher.hash(password)
 
-    const account = await this.accountRepository.update({
-      hashedPassword
-    })
+    const account = await this.accountRepository.update(
+      userId,
+      {
+        hashedPassword
+      }
+    )
 
     return account
   }

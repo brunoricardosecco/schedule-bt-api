@@ -59,9 +59,10 @@ describe('UpdateAccountPassword Usecase', () => {
   it('should return error if the password length is lower than the minimum', async () => {
     const { sut } = makeSut()
 
+    const userId = 'valid_id'
     const password = 'a'
 
-    const error = await sut.update(password) as Error
+    const error = await sut.update(userId, password) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir no mínimo 8 caracteres')
@@ -70,9 +71,10 @@ describe('UpdateAccountPassword Usecase', () => {
   it('should return error if the password doesn`t contain at least one letter', async () => {
     const { sut } = makeSut()
 
+    const userId = 'valid_id'
     const password = '12345678'
 
-    const error = await sut.update(password) as Error
+    const error = await sut.update(userId, password) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir ao menos uma letra')
@@ -83,7 +85,8 @@ describe('UpdateAccountPassword Usecase', () => {
 
     const password = 'abcdefghijk'
 
-    const error = await sut.update(password) as Error
+    const userId = 'valid_id'
+    const error = await sut.update(userId, password) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir ao menos um número')
@@ -94,8 +97,9 @@ describe('UpdateAccountPassword Usecase', () => {
 
     jest.spyOn(HasherStub, 'hash').mockRejectedValueOnce(new Error())
 
+    const userId = 'valid_id'
     const password = 'rajsiad21i'
-    const promise = sut.update(password)
+    const promise = sut.update(userId, password)
 
     await expect(promise).rejects.toThrow()
   })
@@ -112,13 +116,17 @@ describe('UpdateAccountPassword Usecase', () => {
     hashSpy.mockResolvedValueOnce(hashedPassword)
     updateSpy.mockResolvedValueOnce(expectedResult)
 
+    const userId = 'valid_id'
     const password = 'rajsiad21i'
-    const account = await sut.update(password) as AccountModel
+    const account = await sut.update(userId, password) as AccountModel
 
     expect(hashSpy).toHaveBeenCalledWith(password)
-    expect(updateSpy).toHaveBeenCalledWith({
-      hashedPassword
-    })
+    expect(updateSpy).toHaveBeenCalledWith(
+      userId,
+      {
+        hashedPassword
+      }
+    )
     expect(account).toEqual(expectedResult)
     expect(account.hashedPassword).toEqual(hashedPassword)
   })

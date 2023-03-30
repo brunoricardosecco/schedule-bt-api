@@ -5,5 +5,5 @@ export type UpdateAccountRepositoryModel = {
 }
 
 export interface UpdateAccountRepository {
-  update: (accountData: UpdateAccountRepositoryModel) => Promise<AccountModel>
+  update: (userId: string, accountData: UpdateAccountRepositoryModel) => Promise<AccountModel>
 }
