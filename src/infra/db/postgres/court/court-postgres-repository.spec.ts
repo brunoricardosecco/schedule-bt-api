@@ -1,3 +1,4 @@
+import { Company } from '@/domain/models/company'
 import { db } from '@/infra/db/orm/prisma'
 import { CourtPostgresRepository } from './court-postgres-repository'
 
@@ -6,7 +7,7 @@ const makeSut = (): CourtPostgresRepository => {
 }
 
 describe('Court Postgres Repository', () => {
-  let createdCompany
+  let createdCompany: Company
 
   beforeAll(async () => {
     createdCompany = await db.companies.create({
@@ -64,5 +65,58 @@ describe('Court Postgres Repository', () => {
 
     expect(courtCount).toBe(params.length)
     expect(courts.length).toBe(courtCount)
+  })
+
+  it('should find court', async () => {
+    const sut = makeSut()
+    const params = [
+      {
+        id: '1',
+        name: 'Quadra 1',
+        companyId: createdCompany.id,
+        status: "ACTIVE",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '2',
+        name: 'Quadra 2',
+        companyId: createdCompany.id,
+        status: "ACTIVE",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+    await sut.createMany(params)
+    const court = await sut.findByIdAndCompanyId(params[0].id, params[0].companyId)
+
+    expect(court).toEqual(params[0])
+  })
+
+  it('should delete court', async () => {
+    const sut = makeSut()
+    const params = [
+      {
+        id: '1',
+        name: 'Quadra 1',
+        companyId: createdCompany.id,
+        status: "ACTIVE",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '2',
+        name: 'Quadra 2',
+        companyId: createdCompany.id,
+        status: "ACTIVE",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+    await sut.createMany(params)
+    const court = await sut.findByIdAndCompanyId(params[0].id, params[0].companyId)
+    const courtDeleted = await sut.deleteById(court?.id as string)
+
+    expect(courtDeleted).toEqual({...params[0], status: "INACTIVE"})
   })
 })

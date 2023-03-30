@@ -7,7 +7,7 @@ const makeSut = (): CompanyPostgresRepository => {
 
 describe('Company Postgres Repository', () => {
   afterEach(async () => {
-    await db.$executeRawUnsafe('TRUNCATE TABLE "Companies" CASCADE;')
+    await db.$executeRawUnsafe('TRUNCATE TABLE "companies" CASCADE;')
   })
 
   it('should return an company on add success', async () => {
