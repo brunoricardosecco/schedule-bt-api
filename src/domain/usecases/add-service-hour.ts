@@ -7,6 +7,6 @@ export type AddServiceHourModel = {
   companyId: string
 }
 
-export interface AddServiceHour {
+export interface IAddServiceHour {
   add: (serviceHour: AddServiceHourModel) => Promise<ServiceHour | Error>
 }

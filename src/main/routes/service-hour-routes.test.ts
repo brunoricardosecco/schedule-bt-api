@@ -80,12 +80,20 @@ describe('ServiceHour Routes', () => {
 
   describe('POST /service-hour', () => {
     it('should return 200 on POST /service-hour', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email: companyAdminEmail,
+          password
+        })
+
       const company = await db.companies.create({
         data: makeFakeCompanyData()
       })
 
       await request(app)
         .post('/api/service-hour')
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .send(makeFakeServiceHourData(company.id))
         .expect(200)
     })

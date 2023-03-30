@@ -1,14 +1,31 @@
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { AccountModel } from '@/domain/models/account'
 import { IAuthenticate, IAuthenticateReturn } from '@/domain/usecases/authenticate'
 import { AccessDeniedError, ServerError } from '@/presentation/errors'
 import { forbidden, serverError, ok } from '@/presentation/helpers/http/httpHelper'
 import { AuthenticateMiddleware } from './authenticate-middleware'
 
-const defaultPayload = { userId: '1' }
+const makeFakeAccount = (): AccountModel => ({
+  id: 'valid_id',
+  name: 'valid_name',
+  email: 'valid_email@mail.com',
+  hashedPassword: 'hashed_password',
+  role: RoleEnum.EMPLOYEE,
+  companyId: null,
+  company: null,
+  emailValidationToken: null,
+  emailValidationTokenExpiration: null,
+  isConfirmed: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
+
+const defaultAccount = makeFakeAccount()
 
 const makeAuthenticate = (): IAuthenticate => {
   class AuthenticateStub implements IAuthenticate {
     async auth (): Promise<IAuthenticateReturn | Error> {
-      return await new Promise(resolve => { resolve(defaultPayload) })
+      return { user: defaultAccount }
     }
   }
 
@@ -52,7 +69,7 @@ describe('Authenticate Middleware', () => {
   it('should return 403 if Authenticate returns an error', async () => {
     const { authenticateMiddleware, authenticate } = makeSut()
 
-    jest.spyOn(authenticate, 'auth').mockReturnValueOnce(new Promise((resolve) => { resolve(new Error('Erro')) }))
+    jest.spyOn(authenticate, 'auth').mockResolvedValueOnce(new Error('Erro'))
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
@@ -66,7 +83,7 @@ describe('Authenticate Middleware', () => {
   it('should return 500 if Authenticate throws an error', async () => {
     const { authenticateMiddleware, authenticate } = makeSut()
 
-    jest.spyOn(authenticate, 'auth').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error('Erro')) }))
+    jest.spyOn(authenticate, 'auth').mockRejectedValueOnce(new Error('Erro'))
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
@@ -86,6 +103,8 @@ describe('Authenticate Middleware', () => {
       }
     })
 
-    expect(httpResponse).toEqual(ok(defaultPayload))
+    expect(httpResponse).toEqual(ok({
+      user: defaultAccount
+    }))
   })
 })

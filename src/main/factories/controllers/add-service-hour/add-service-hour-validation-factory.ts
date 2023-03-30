@@ -4,7 +4,7 @@ import { RequiredFieldValidation, ValidationComposite } from '@/validation/valid
 export const makeAddServiceHourValidation = (): ValidationComposite => {
   const validations: Validation[] = []
 
-  for (const field of ['weekday', 'startTime', 'endTime', 'companyId']) {
+  for (const field of ['weekday', 'startTime', 'endTime']) {
     validations.push(new RequiredFieldValidation(field))
   }
 

@@ -1,9 +1,9 @@
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { Controller, HttpRequest, HttpResponse, Validation, AddServiceHour } from './add-service-hour-controller.protocols'
+import { Controller, HttpRequest, HttpResponse, Validation, IAddServiceHour } from './add-service-hour-controller.protocols'
 
 export class AddServiceHourController implements Controller {
   constructor (
-    private readonly addServiceHour: AddServiceHour,
+    private readonly addServiceHour: IAddServiceHour,
     private readonly validation: Validation
   ) {}
 
@@ -15,7 +15,14 @@ export class AddServiceHourController implements Controller {
         return badRequest(error)
       }
 
-      const serviceHourOrError = await this.addServiceHour.add(httpRequest.body)
+      const { body: { weekday, startTime, endTime }, user } = httpRequest
+
+      const serviceHourOrError = await this.addServiceHour.add({
+        companyId: user?.companyId as string,
+        endTime,
+        startTime,
+        weekday
+      })
 
       if (serviceHourOrError instanceof Error) {
         return badRequest(serviceHourOrError)

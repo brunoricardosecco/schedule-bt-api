@@ -1,12 +1,14 @@
-import { Request, Response, RequestHandler } from 'express'
+import { Response, RequestHandler } from 'express'
 import { Controller, HttpRequest } from '@/presentation/protocols'
+import { ExpressRequest } from './express-request'
 
 export const routeAdapter = (controller: Controller): RequestHandler => {
-  return (async (req: Request, res: Response) => {
+  return (async (req: ExpressRequest, res: Response) => {
     const httpRequest: HttpRequest = {
       body: req.body,
       headers: req.headers,
-      query: req.query
+      query: req.query,
+      user: req.user
     }
     const httpResponse = await controller.handle(httpRequest)
 

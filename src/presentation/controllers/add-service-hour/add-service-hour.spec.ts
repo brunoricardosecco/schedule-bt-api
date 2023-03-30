@@ -1,8 +1,9 @@
-import { AddServiceHour, AddServiceHourModel, ServiceHour } from './add-service-hour-controller.protocols'
+import { IAddServiceHour, AddServiceHourModel, ServiceHour } from './add-service-hour-controller.protocols'
 import { MissingParamError, ServerError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, Validation } from '@/presentation/protocols'
 import { AddServiceHourController } from './add-service-hour-controller'
+import { RoleEnum } from '@/domain/enums/role-enum'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   companyId: 'any_company_id',
@@ -12,8 +13,8 @@ const makeFakeServiceHour = (): ServiceHour => ({
   id: 'any_id'
 })
 
-const makeAddServiceHour = (): AddServiceHour => {
-  class AddServiceHourStub implements AddServiceHour {
+const makeAddServiceHour = (): IAddServiceHour => {
+  class AddServiceHourStub implements IAddServiceHour {
     async add (serviceHour: AddServiceHourModel): Promise<ServiceHour | Error> {
       return await new Promise(resolve => { resolve(makeFakeServiceHour()) })
     }
@@ -44,13 +45,27 @@ const addServiceHourData = makeFakeServiceHourData()
 
 const makeFakeRequest = (): HttpRequest => {
   return {
-    body: addServiceHourData
+    body: addServiceHourData,
+    user: {
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      hashedPassword: 'valid_password',
+      role: RoleEnum.CLIENT,
+      companyId: 'any_company_id',
+      company: null,
+      emailValidationToken: null,
+      emailValidationTokenExpiration: null,
+      isConfirmed: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
   }
 }
 
 type SutTypes = {
   validationStub: Validation
-  addServiceHourStub: AddServiceHour
+  addServiceHourStub: IAddServiceHour
   sut: AddServiceHourController
 }
 

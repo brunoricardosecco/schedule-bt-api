@@ -34,21 +34,21 @@ describe('date-fns Adapter', () => {
     it('should returns true on success', async () => {
       const sut = makeSut()
 
-      const value = sut.isEndTimeGraterThanStartTime(makeFakeServiceHourTimes())
+      const value = sut.isEndTimeGreaterThanStartTime(makeFakeServiceHourTimes())
 
       expect(value).toBeTruthy()
     })
     it('should returns false on wrong service hour times', () => {
       const sut = makeSut()
 
-      const value = sut.isEndTimeGraterThanStartTime(makeFakeWrongServiceHourTimes())
+      const value = sut.isEndTimeGreaterThanStartTime(makeFakeWrongServiceHourTimes())
 
       expect(value).toBeFalsy()
     })
     it('should returns false on same service hour times', () => {
       const sut = makeSut()
 
-      const value = sut.isEndTimeGraterThanStartTime(makeFakeWrongServiceHourTimes())
+      const value = sut.isEndTimeGreaterThanStartTime(makeFakeWrongServiceHourTimes())
 
       expect(value).toBeFalsy()
     })

@@ -1,14 +1,14 @@
-import { DbAddServiceHour } from './db-add-service-hour'
+import { AddServiceHour } from './add-service-hour'
 import {
   AddServiceHourRepository,
   AddServiceHourRepositoryModel,
   ServiceHour,
-  AddServiceHour,
+  IAddServiceHour,
   LoadServiceHoursByCompanyIdAndWeekdayRepository,
   LoadServiceHoursByCompanyIdRepositoryModel,
   ServiceHourTimeModel,
   TimeConflictChecker
-} from './db-add-service-hour.protocols'
+} from './add-service-hour.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
@@ -62,7 +62,7 @@ const makeTimeConflictChecker = (): TimeConflictChecker => {
       return false
     }
 
-    isEndTimeGraterThanStartTime ({
+    isEndTimeGreaterThanStartTime ({
       startTime,
       endTime
     }: ServiceHourTimeModel): boolean {
@@ -77,7 +77,7 @@ type SutTypes = {
   addServiceHourRepository: AddServiceHourRepository
   loadServiceHoursByCompanyIdAndWeekdayRepository: LoadServiceHoursByCompanyIdAndWeekdayRepository
   timeConflictChecker: TimeConflictChecker
-  sut: AddServiceHour
+  sut: IAddServiceHour
 }
 
 const makeSut = (): SutTypes => {
@@ -85,7 +85,7 @@ const makeSut = (): SutTypes => {
   const loadServiceHoursByCompanyIdAndWeekdayRepository =
     makeLoadServiceHoursByCompanyIdAndWeekday()
   const timeConflictChecker = makeTimeConflictChecker()
-  const sut = new DbAddServiceHour(
+  const sut = new AddServiceHour(
     addServiceHourRepository,
     loadServiceHoursByCompanyIdAndWeekdayRepository,
     timeConflictChecker
@@ -99,7 +99,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('DbAddServiceHour UseCase', () => {
+describe('AddServiceHour UseCase', () => {
   it('should call AddServiceHourRepository with correct values', async () => {
     const { addServiceHourRepository, sut } = makeSut()
 
@@ -144,14 +144,14 @@ describe('DbAddServiceHour UseCase', () => {
     const error = await sut.add(conflictingServiceHour)
 
     expect(error).toEqual(
-      new Error('New service hour is conflicting with another')
+      new Error('O intervalo de tempo não pode conflitar com outro intervalo de tempo já cadastrado')
     )
   })
   it('should returns an error on trying to add an service hour with the start time greater than the end time', async () => {
     const { sut, timeConflictChecker } = makeSut()
 
     jest
-      .spyOn(timeConflictChecker, 'isEndTimeGraterThanStartTime')
+      .spyOn(timeConflictChecker, 'isEndTimeGreaterThanStartTime')
       .mockReturnValueOnce(false)
 
     const conflictingServiceHour: AddServiceHourRepositoryModel = {
@@ -163,6 +163,6 @@ describe('DbAddServiceHour UseCase', () => {
 
     const error = await sut.add(conflictingServiceHour)
 
-    expect(error).toEqual(new Error('Start time must be before end time'))
+    expect(error).toEqual(new Error('O tempo de início precisa ser menor que o tempo de término'))
   })
 })
