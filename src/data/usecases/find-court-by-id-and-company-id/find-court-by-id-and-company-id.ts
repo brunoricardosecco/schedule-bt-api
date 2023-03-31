@@ -1,6 +1,4 @@
-import { FindCourtByIdAndCompanyIdRepository } from '@/data/protocols/db/court/find-court-by-id-and-company-id.repository'
-import { IFindCourtByIdAndCompanyId } from '@/domain/usecases/find-court-by-id'
-import { Court } from './find-court-by-id-and-company-id.protocols'
+import { Court, FindCourtByIdAndCompanyIdRepository, IFindCourtByIdAndCompanyId } from './find-court-by-id-and-company-id.protocols'
 
 export class FindCourtByIdAndCompanyId implements IFindCourtByIdAndCompanyId {
   constructor (

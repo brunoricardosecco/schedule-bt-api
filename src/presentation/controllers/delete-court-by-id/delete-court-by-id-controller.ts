@@ -1,7 +1,5 @@
-import { IDeleteCourtById } from '@/domain/usecases/delete-court-by-id'
-import { IFindCourtByIdAndCompanyId } from '@/domain/usecases/find-court-by-id'
 import { noContent, notFound, serverError } from '@/presentation/helpers/http/httpHelper'
-import { Controller, HttpRequest, HttpResponse } from './delete-court-by-id.protocols'
+import { Controller, HttpRequest, HttpResponse, IDeleteCourtById, IFindCourtByIdAndCompanyId } from './delete-court-by-id.protocols'
 
 export class DeleteCourtByIdController implements Controller {
   constructor (

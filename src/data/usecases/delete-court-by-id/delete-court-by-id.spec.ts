@@ -1,7 +1,6 @@
 
-import { DeleteCourtByIdRepository } from '@/data/protocols/db/court/delete-court-by-id-repository'
 import { DeleteCourtById } from './delete-court-by-id'
-import { Court } from './delete-court-by-id.protocols'
+import { Court, DeleteCourtByIdRepository } from './delete-court-by-id.protocols'
 
 const mockCourt = (): Court => ({
   id: 'any_id',

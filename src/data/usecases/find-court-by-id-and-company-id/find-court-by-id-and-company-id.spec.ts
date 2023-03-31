@@ -1,7 +1,6 @@
 
-import { FindCourtByIdAndCompanyIdRepository } from '@/data/protocols/db/court/find-court-by-id-and-company-id.repository'
 import { FindCourtByIdAndCompanyId } from './find-court-by-id-and-company-id'
-import { Court } from './find-court-by-id-and-company-id.protocols'
+import { Court, FindCourtByIdAndCompanyIdRepository } from './find-court-by-id-and-company-id.protocols'
 
 const mockCourt = (): Court => ({
   id: 'any_id',

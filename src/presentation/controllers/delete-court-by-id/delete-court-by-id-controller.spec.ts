@@ -1,12 +1,7 @@
-import { FindCourtByIdAndCompanyIdRepository } from '@/data/protocols/db/court/find-court-by-id-and-company-id.repository'
-import { RoleEnum } from '@/domain/enums/role-enum'
-import { AccountModel } from '@/domain/models/account'
-import { Court } from '@/domain/models/court'
-import { IDeleteCourtById } from '@/domain/usecases/delete-court-by-id'
-import { IFindCourtByIdAndCompanyId } from '@/domain/usecases/find-court-by-id'
 import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { noContent, notFound, serverError } from '@/presentation/helpers/http/httpHelper'
 import { DeleteCourtByIdController } from './delete-court-by-id-controller'
+import { AccountModel, Court, FindCourtByIdAndCompanyIdRepository, IDeleteCourtById, IFindCourtByIdAndCompanyId, RoleEnum } from './delete-court-by-id.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
