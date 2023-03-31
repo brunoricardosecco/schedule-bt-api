@@ -122,4 +122,16 @@ describe('FindReservationIntervals', () => {
 
     expect(error).toEqual(new Error('A empresa não possui horários de trabalhos cadastrados neste dia'))
   })
+  it("should return an error if the doesn't find a company", async () => {
+    const { findCompanyRepository, sut } = makeSut()
+    jest.spyOn(findCompanyRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve) => { resolve([]) }))
+    const params = {
+      date: new Date(),
+      companyId: 'any_company_id'
+    }
+
+    const error = await sut.find(params)
+
+    expect(error).toEqual(new Error('Erro ao buscar empresa'))
+  })
 })
