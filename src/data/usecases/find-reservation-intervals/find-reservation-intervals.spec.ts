@@ -98,4 +98,16 @@ describe('FindReservationIntervals', () => {
 
     await expect(promise).rejects.toThrow()
   })
+  it('should throw if FindCompaniesRepository throws', async () => {
+    const { findCompanyRepository, sut } = makeSut()
+    jest.spyOn(findCompanyRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
+    const params = {
+      date: new Date(),
+      companyId: 'any_company_id'
+    }
+
+    const promise = sut.find(params)
+
+    await expect(promise).rejects.toThrow()
+  })
 })
