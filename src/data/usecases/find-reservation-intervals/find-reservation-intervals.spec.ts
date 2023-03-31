@@ -3,6 +3,9 @@ import { IFindReservationIntervals } from '@/domain/usecases/find-reservation-in
 import { Company } from '../add-company/db-add-company.protocols'
 import { FindServiceHoursRepository, FindServiceHoursRepositoryParams, ServiceHour } from '../find-service-hours/find-service-hours.protocols'
 import { FindReservationIntervals } from './find-reservation-intervals'
+import { Reservation } from '@/domain/models/reservation'
+import { ReservationStatus } from '@prisma/client'
+import { FindReservationsRepository, FindReservationsRepositoryParams } from '@/data/protocols/db/reservation/find-reservation-repository'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
@@ -22,6 +25,28 @@ const makeFakeCompany = (): Company => ({
   updatedAt: new Date()
 })
 const fakeCompany = makeFakeCompany()
+
+const makeFakeReservation = (): Reservation => ({
+  id: 'any_id',
+  accountId: 'account_id',
+  companyId: 'company_id',
+  description: '',
+  reservationDate: new Date(),
+  reservationPrice: 0,
+  reservationStatus: ReservationStatus.AWAITING_PAYMENT,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
+const fakeReservation = makeFakeReservation()
+
+const makeFindReservationsRepository = (): FindReservationsRepository => {
+  class FindReservationRepositoryStub implements FindReservationsRepository {
+    async findBy (params: FindReservationsRepositoryParams): Promise<Reservation[]> {
+      return await new Promise(resolve => { resolve([fakeReservation]) })
+    }
+  }
+  return new FindReservationRepositoryStub()
+}
 
 const makeFindServiceHoursRepository = (): FindServiceHoursRepository => {
   class FindServiceHoursRepositoryStub implements FindServiceHoursRepository {
@@ -47,17 +72,20 @@ type SutTypes = {
   sut: IFindReservationIntervals
   findServiceHoursRepository: FindServiceHoursRepository
   findCompanyRepository: FindCompaniesRepository
+  findReservationsRepository: FindReservationsRepository
 }
 
 const makeSut = (): SutTypes => {
   const findServiceHoursRepositoryStub = makeFindServiceHoursRepository()
   const findCompanyRepositoryStub = makeFindCompaniesRepository()
-  const sut = new FindReservationIntervals(findServiceHoursRepositoryStub, findCompanyRepositoryStub)
+  const findReservationsRepositoryStub = makeFindReservationsRepository()
+  const sut = new FindReservationIntervals(findServiceHoursRepositoryStub, findCompanyRepositoryStub, findReservationsRepositoryStub)
 
   return {
     sut,
     findServiceHoursRepository: findServiceHoursRepositoryStub,
-    findCompanyRepository: findCompanyRepositoryStub
+    findCompanyRepository: findCompanyRepositoryStub,
+    findReservationsRepository: findReservationsRepositoryStub
   }
 }
 
@@ -72,7 +100,7 @@ describe('FindReservationIntervals', () => {
 
     await sut.find(params)
 
-    expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id', weekday: new Date().getDay() })
+    expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id', weekday: params.date.getDay() })
   })
   it('should calls FindCompaniesRepository with correct values', async () => {
     const { findCompanyRepository, sut } = makeSut()
@@ -133,5 +161,17 @@ describe('FindReservationIntervals', () => {
     const error = await sut.find(params)
 
     expect(error).toEqual(new Error('Erro ao buscar empresa'))
+  })
+  it('should call FindReservationsRepository with correct values', async () => {
+    const { findReservationsRepository, sut } = makeSut()
+    const findBySpy = jest.spyOn(findReservationsRepository, 'findBy')
+    const params = {
+      date: new Date(),
+      companyId: 'any_company_id'
+    }
+
+    await sut.find(params)
+
+    expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id', startAt: new Date(params.date.setHours(0, 0, 0, 0)), endAt: new Date(params.date.setHours(23, 59, 59, 999)) })
   })
 })
