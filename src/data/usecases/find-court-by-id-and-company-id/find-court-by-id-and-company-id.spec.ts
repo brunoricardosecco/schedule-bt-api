@@ -12,9 +12,9 @@ const mockCourt = (): Court => ({
 
 const makeFindCourtByIdAndCompanyIdRepository = (): FindCourtByIdAndCompanyIdRepository => {
   class FindCourtByIdAndCompanyIdRepositoryStub implements FindCourtByIdAndCompanyIdRepository {
-    findByIdAndCompanyId(courtId: string, companyId: string): Promise<Court | null> {
+    async findByIdAndCompanyId (courtId: string, companyId: string): Promise<Court | null> {
       const fakeCourt = mockCourt()
-      return Promise.resolve(fakeCourt)
+      return await Promise.resolve(fakeCourt)
     }
   }
 
@@ -54,10 +54,10 @@ describe('DbFindCourtByIdAndCompanyId Usecase', () => {
   })
 
   it('should throw an exception if LoadSurveyByIdRepository throws an expection', async () => {
-    const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut();
-    jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockReturnValueOnce(Promise.reject(new Error()));
-    const promise = sut.findByIdAndCompanyId('any_id', 'any_company_id');
+    const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut()
+    jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockReturnValueOnce(Promise.reject(new Error()))
+    const promise = sut.findByIdAndCompanyId('any_id', 'any_company_id')
 
-    await expect(promise).rejects.toThrow();
-  });
+    await expect(promise).rejects.toThrow()
+  })
 })

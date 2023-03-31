@@ -1,18 +1,18 @@
-import fs from "fs"
-import { join } from "path"
+import fs from 'fs'
+import { join } from 'path'
 import { db } from '../index'
 
-async function main() {
+async function main () {
   const queries = fs
-    .readFileSync(join(__dirname, "seed.sql"))
+    .readFileSync(join(__dirname, 'seed.sql'))
     .toString()
-    .split("\n")
-    .filter((line) => line.indexOf("--") !== 0) // ignore comments
-    .join("\n")
-    .replace(/(\r\n|\n|\r)/gm, " ") // remove newlines
-    .replace(/\s+/g, " ") // excess white space
-    .split(";")
-    
+    .split('\n')
+    .filter((line) => line.indexOf('--') !== 0) // ignore comments
+    .join('\n')
+    .replace(/(\r\n|\n|\r)/gm, ' ') // remove newlines
+    .replace(/\s+/g, ' ') // excess white space
+    .split(';')
+
   for (const query of queries) {
     console.log(query)
     await db.$queryRawUnsafe(query)

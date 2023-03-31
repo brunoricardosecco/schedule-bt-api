@@ -35,7 +35,7 @@ describe('Court Routes', () => {
       data: {
         id: 'id_01',
         name: 'any court name',
-        companyId: 'company_id_01',
+        companyId: 'company_id_01'
       }
     })
   })

@@ -29,7 +29,7 @@ const mockCourt = (): Court => ({
 const makeFakeRequest = (courtId?: string): HttpRequest => {
   return ({
     user: makeFakeAccount(),
-    params: { courtId },
+    params: { courtId }
   })
 }
 
@@ -37,7 +37,7 @@ const makeDeleteCourtById = (): IDeleteCourtById => {
   class DeleteCourtByIdStub implements IDeleteCourtById {
     async deleteById (courtId: string): Promise<Court> {
       const fakeCourt = mockCourt()
-      return Promise.resolve(fakeCourt)
+      return await Promise.resolve(fakeCourt)
     }
   }
 
@@ -46,9 +46,9 @@ const makeDeleteCourtById = (): IDeleteCourtById => {
 
 const makeFindCourtByIdAndCompanyIdRepository = (): FindCourtByIdAndCompanyIdRepository => {
   class FindCourtByIdAndCompanyIdRepositoryStub implements FindCourtByIdAndCompanyIdRepository {
-    findByIdAndCompanyId(courtId: string, companyId: string): Promise<Court | null> {
+    async findByIdAndCompanyId (courtId: string, companyId: string): Promise<Court | null> {
       const fakeCourt = mockCourt()
-      return Promise.resolve(fakeCourt)
+      return await Promise.resolve(fakeCourt)
     }
   }
 
@@ -98,7 +98,7 @@ describe('DeleteCourtByIdController', () => {
     const httpRequest = makeFakeRequest('any_court_id')
     await sut.handle(httpRequest)
 
-    expect(findByIdAndCompanyIdSpy).toHaveBeenCalledWith('any_court_id', 'company_id');
+    expect(findByIdAndCompanyIdSpy).toHaveBeenCalledWith('any_court_id', 'company_id')
   })
 
   it('should call DeleteCourtById with correct values', async () => {
@@ -107,7 +107,7 @@ describe('DeleteCourtByIdController', () => {
     const httpRequest = makeFakeRequest('any_court_id')
     await sut.handle(httpRequest)
 
-    expect(deleteByIdSpy).toHaveBeenCalledWith('any_court_id');
+    expect(deleteByIdSpy).toHaveBeenCalledWith('any_court_id')
   })
 
   it('should return 404 if court_id not exists', async () => {

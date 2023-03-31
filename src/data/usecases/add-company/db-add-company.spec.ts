@@ -44,12 +44,12 @@ const makeSut = (): SutTypes => {
 
 describe('DbAddCompany Usecase', () => {
   beforeAll(() => {
-    MockDate.set(new Date());
-  });
+    MockDate.set(new Date())
+  })
 
   afterAll(() => {
-    MockDate.reset();
-  });
+    MockDate.reset()
+  })
 
   it('should call AddCompanyRepository with correct values', async () => {
     const { sut, addCompanyRepositoryStub } = makeSut()

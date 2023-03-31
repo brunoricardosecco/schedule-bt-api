@@ -12,9 +12,9 @@ const mockCourt = (): Court => ({
 
 const makeDeleteCourtByIdRepository = (): DeleteCourtByIdRepository => {
   class DeleteCourtByIdRepositoryStub implements DeleteCourtByIdRepository {
-    deleteById (courtId: string): Promise<Court> {
+    async deleteById (courtId: string): Promise<Court> {
       const fakeCourt = mockCourt()
-      return Promise.resolve(fakeCourt)
+      return await Promise.resolve(fakeCourt)
     }
   }
 
@@ -54,10 +54,10 @@ describe('DbFindCourtByIdAndCompanyId Usecase', () => {
   })
 
   it('should throw an exception if LoadSurveyByIdRepository throws an expection', async () => {
-    const { sut, deleteCourtByIdRepositoryStub } = makeSut();
-    jest.spyOn(deleteCourtByIdRepositoryStub, 'deleteById').mockReturnValueOnce(Promise.reject(new Error()));
-    const promise = sut.deleteById('any_id');
+    const { sut, deleteCourtByIdRepositoryStub } = makeSut()
+    jest.spyOn(deleteCourtByIdRepositoryStub, 'deleteById').mockReturnValueOnce(Promise.reject(new Error()))
+    const promise = sut.deleteById('any_id')
 
-    await expect(promise).rejects.toThrow();
-  });
+    await expect(promise).rejects.toThrow()
+  })
 })

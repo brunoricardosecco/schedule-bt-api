@@ -28,7 +28,7 @@ export class CourtPostgresRepository implements CreateCourtsRepository, FindCour
     const court = await db.courts.findFirst({
       where: {
         id: courtId,
-        companyId,
+        companyId
       }
     })
 
@@ -41,7 +41,7 @@ export class CourtPostgresRepository implements CreateCourtsRepository, FindCour
         id: courtId
       },
       data: {
-        status: "INACTIVE"
+        status: 'INACTIVE'
       }
     })
 

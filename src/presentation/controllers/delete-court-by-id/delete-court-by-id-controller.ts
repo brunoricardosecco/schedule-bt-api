@@ -4,7 +4,7 @@ import { Controller, HttpRequest, HttpResponse, IDeleteCourtById, IFindCourtById
 export class DeleteCourtByIdController implements Controller {
   constructor (
     private readonly deleteCourt: IDeleteCourtById,
-    private readonly findCourt: IFindCourtByIdAndCompanyId,
+    private readonly findCourt: IFindCourtByIdAndCompanyId
   ) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {

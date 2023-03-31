@@ -5,7 +5,6 @@ import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import MockDate from 'mockdate'
 import { LogControllerDecorator } from './log-controller-decorator'
 
-
 const makeFakeRequest = (): HttpRequest => {
   return {
     body: {
@@ -76,12 +75,12 @@ const makeSut = (): SutTypes => {
 
 describe('LogControllerDecorator', () => {
   beforeAll(() => {
-    MockDate.set(new Date());
-  });
+    MockDate.set(new Date())
+  })
 
   afterAll(() => {
-    MockDate.reset();
-  });
+    MockDate.reset()
+  })
 
   it('should call controller handle', async () => {
     const { controllerStub, sut } = makeSut()

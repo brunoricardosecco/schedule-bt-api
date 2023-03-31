@@ -84,12 +84,12 @@ const makeSut = (): SutTypes => {
 
 describe('SignUp Controller', () => {
   beforeAll(() => {
-    MockDate.set(new Date());
-  });
+    MockDate.set(new Date())
+  })
 
   afterAll(() => {
-    MockDate.reset();
-  });
+    MockDate.reset()
+  })
 
   it('should call AddAccount with correct values', async () => {
     const { sut, addAccountStub } = makeSut()

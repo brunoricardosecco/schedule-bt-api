@@ -74,7 +74,7 @@ describe('Court Postgres Repository', () => {
         id: '1',
         name: 'Quadra 1',
         companyId: createdCompany.id,
-        status: "ACTIVE",
+        status: 'ACTIVE',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -82,7 +82,7 @@ describe('Court Postgres Repository', () => {
         id: '2',
         name: 'Quadra 2',
         companyId: createdCompany.id,
-        status: "ACTIVE",
+        status: 'ACTIVE',
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -100,7 +100,7 @@ describe('Court Postgres Repository', () => {
         id: '1',
         name: 'Quadra 1',
         companyId: createdCompany.id,
-        status: "ACTIVE",
+        status: 'ACTIVE',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -108,7 +108,7 @@ describe('Court Postgres Repository', () => {
         id: '2',
         name: 'Quadra 2',
         companyId: createdCompany.id,
-        status: "ACTIVE",
+        status: 'ACTIVE',
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -117,6 +117,6 @@ describe('Court Postgres Repository', () => {
     const court = await sut.findByIdAndCompanyId(params[0].id, params[0].companyId)
     const courtDeleted = await sut.deleteById(court?.id as string)
 
-    expect(courtDeleted).toEqual({ ...params[0], status: "INACTIVE" })
+    expect(courtDeleted).toEqual({ ...params[0], status: 'INACTIVE' })
   })
 })
