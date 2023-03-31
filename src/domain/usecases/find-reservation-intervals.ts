@@ -1,5 +1,10 @@
 import { ReservationInterval } from '../models/reservation-interval'
 
+export type FindReservationIntervalsParams = {
+  date: Date
+  companyId: string
+}
+
 export interface IFindReservationIntervals {
-  find: (date: Date, companyId: string) => Promise<ReservationInterval[]>
+  find: ({ date, companyId }: FindReservationIntervalsParams) => Promise<ReservationInterval[]>
 }
