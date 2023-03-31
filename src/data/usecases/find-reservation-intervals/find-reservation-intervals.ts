@@ -9,8 +9,13 @@ export class FindReservationIntervals implements IFindReservationIntervals {
     private readonly findCompaniesRepository: FindCompaniesRepository
   ) {}
 
-  async find ({ date, companyId }: FindReservationIntervalsParams): Promise<ReservationInterval[]> {
-    await this.findServiceHoursRepository.findBy({ companyId, weekday: date.getDay() })
+  async find ({ date, companyId }: FindReservationIntervalsParams): Promise<ReservationInterval[] | Error> {
+    const serviceHours = await this.findServiceHoursRepository.findBy({ companyId, weekday: date.getDay() })
+
+    if (serviceHours.length === 0) {
+      return new Error('A empresa não possui horários de trabalhos cadastrados neste dia')
+    }
+
     await this.findCompaniesRepository.findBy({
       companyId
     })

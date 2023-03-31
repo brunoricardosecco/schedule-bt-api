@@ -6,5 +6,5 @@ export type FindReservationIntervalsParams = {
 }
 
 export interface IFindReservationIntervals {
-  find: ({ date, companyId }: FindReservationIntervalsParams) => Promise<ReservationInterval[]>
+  find: ({ date, companyId }: FindReservationIntervalsParams) => Promise<ReservationInterval[] | Error>
 }
