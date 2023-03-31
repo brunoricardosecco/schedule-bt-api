@@ -174,4 +174,16 @@ describe('FindReservationIntervals', () => {
 
     expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id', startAt: new Date(params.date.setHours(0, 0, 0, 0)), endAt: new Date(params.date.setHours(23, 59, 59, 999)) })
   })
+  it('should throws if FindReservationsRepository throws', async () => {
+    const { findReservationsRepository, sut } = makeSut()
+    jest.spyOn(findReservationsRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
+    const params = {
+      date: new Date(),
+      companyId: 'any_company_id'
+    }
+
+    const promise = sut.find(params)
+
+    await expect(promise).rejects.toThrow()
+  })
 })
