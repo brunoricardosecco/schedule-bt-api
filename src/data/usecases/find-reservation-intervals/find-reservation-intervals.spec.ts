@@ -86,4 +86,16 @@ describe('FindReservationIntervals', () => {
 
     expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id' })
   })
+  it('should throw if FindServiceHoursRepository throws', async () => {
+    const { findServiceHoursRepository, sut } = makeSut()
+    jest.spyOn(findServiceHoursRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
+    const params = {
+      date: new Date(),
+      companyId: 'any_company_id'
+    }
+
+    const promise = sut.find(params)
+
+    await expect(promise).rejects.toThrow()
+  })
 })
