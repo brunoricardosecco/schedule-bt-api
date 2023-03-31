@@ -5,7 +5,6 @@ import { createCourtsControllerFactory } from '@/main/factories/controllers/crea
 import { makeAuthenticateMiddleware } from '@/main/factories/middlewares/authenticate-middleware/authenticate-middleware-factory'
 import { makeAuthorizeMiddleware } from '@/main/factories/middlewares/authorize-middleware/authorize-middleware-factory'
 import { Router } from 'express'
-import { deleteCourtByIdControllerFactory } from '../factories/controllers/delete-court-by-id/delete-court-by-id-controller-factory'
 
 export default (router: Router): void => {
   router.post(
@@ -13,12 +12,5 @@ export default (router: Router): void => {
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
     expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
     routeAdapter(createCourtsControllerFactory())
-  )
-
-  router.delete(
-    '/court/:courtId',
-    expressMiddlewareAdapter(makeAuthenticateMiddleware()),
-    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
-    routeAdapter(deleteCourtByIdControllerFactory())
   )
 }

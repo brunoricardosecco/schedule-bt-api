@@ -80,8 +80,8 @@ describe('Court Routes', () => {
     })
   })
 
-  describe('DELETE /court/:courtId', () => {
-    it('should return 204 on DELETE /court/:courtId', async () => {
+  describe('DELETE /company/court/:courtId', () => {
+    it('should return 204 on DELETE /company/court/:courtId', async () => {
       const loginResponse = await request(app)
         .post('/api/authenticate-by-password')
         .send({
@@ -90,12 +90,12 @@ describe('Court Routes', () => {
         })
 
       await request(app)
-        .delete('/api/court/id_01')
+        .delete('/api/company/court/id_01')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .expect(204)
     })
 
-    it('should return 404 on DELETE /court/:courtId if court not exists', async () => {
+    it('should return 404 on DELETE /company/court/:courtId if court not exists', async () => {
       const loginResponse = await request(app)
         .post('/api/authenticate-by-password')
         .send({
@@ -104,7 +104,7 @@ describe('Court Routes', () => {
         })
 
       await request(app)
-        .delete('/api/court/non_existent_id')
+        .delete('/api/company/court/non_existent_id')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .expect(404)
     })
