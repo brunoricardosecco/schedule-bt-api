@@ -52,19 +52,27 @@ describe('Court Postgres Repository', () => {
     const sut = makeSut()
     const params = [
       {
+        id: '1',
         name: 'Quadra 1',
-        companyId: createdCompany.id
+        companyId: createdCompany.id,
+        status: 'ACTIVE',
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
+        id: '2',
         name: 'Quadra 2',
-        companyId: createdCompany.id
+        companyId: createdCompany.id,
+        status: 'INACTIVE',
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ]
     const courtCount = await sut.createMany(params)
     const courts = await sut.findMany({ companyId: createdCompany.id })
 
     expect(courtCount).toBe(params.length)
-    expect(courts.length).toBe(courtCount)
+    expect(courts.length).toBe(1)
   })
 
   it('should find court', async () => {

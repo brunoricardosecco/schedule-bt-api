@@ -17,7 +17,8 @@ export class CourtPostgresRepository implements CreateCourtsRepository, FindCour
   async findMany ({ companyId }: FindCourtsParamsToRepository): Promise<Court[]> {
     const courts = await db.courts.findMany({
       where: {
-        companyId
+        companyId,
+        status: 'ACTIVE'
       }
     })
 
