@@ -16,9 +16,13 @@ export class FindReservationIntervals implements IFindReservationIntervals {
       return new Error('A empresa não possui horários de trabalhos cadastrados neste dia')
     }
 
-    await this.findCompaniesRepository.findBy({
+    const [company] = await this.findCompaniesRepository.findBy({
       companyId
     })
+
+    if (!company) {
+      return new Error('Erro ao buscar empresa')
+    }
 
     return await new Promise(resolve => { resolve([{ start: new Date(), end: new Date() }]) })
   }
