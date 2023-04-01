@@ -186,4 +186,29 @@ describe('FindReservationIntervals', () => {
 
     await expect(promise).rejects.toThrow()
   })
+  it('should return the reservation intervals for a given date', async () => {
+    const { sut } = makeSut()
+
+    const params = {
+      date: new Date(),
+      companyId: 'any_company_id'
+    }
+
+    const reservationIntervals = await sut.find(params)
+
+    expect(reservationIntervals).toEqual([
+      {
+        start: new Date(params.date.setHours(9, 0, 0, 0)),
+        end: new Date(params.date.setHours(10, 0, 0, 0))
+      },
+      {
+        start: new Date(params.date.setHours(10, 0, 0, 0)),
+        end: new Date(params.date.setHours(11, 0, 0, 0))
+      },
+      {
+        start: new Date(params.date.setHours(11, 0, 0, 0)),
+        end: new Date(params.date.setHours(12, 0, 0, 0))
+      }
+    ])
+  })
 })
