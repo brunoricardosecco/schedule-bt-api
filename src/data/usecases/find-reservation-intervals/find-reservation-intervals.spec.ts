@@ -43,7 +43,7 @@ const fakeReservation = makeFakeReservation()
 const makeFindReservationsRepository = (): FindReservationsRepository => {
   class FindReservationRepositoryStub implements FindReservationsRepository {
     async findBy (params: FindReservationsRepositoryParams): Promise<Reservation[]> {
-      return await new Promise(resolve => { resolve([]) })
+      return []
     }
   }
   return new FindReservationRepositoryStub()
@@ -217,7 +217,7 @@ describe('FindReservationIntervals', () => {
   })
   it('should set an interval as unavailable when there is a scheduled reservation for a specific interval', async () => {
     const { sut, findReservationsRepository } = makeSut()
-    jest.spyOn(findReservationsRepository, 'findBy').mockReturnValueOnce(new Promise(resolve => { resolve([fakeReservation]) }))
+    jest.spyOn(findReservationsRepository, 'findBy').mockResolvedValueOnce([fakeReservation])
 
     const params = {
       date: new Date(),
