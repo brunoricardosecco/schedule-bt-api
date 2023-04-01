@@ -6,7 +6,8 @@ export type Reservation = {
   id: string
   reservationPrice: number
   reservationStatus: ReservationStatus
-  reservationDate: Date
+  reservationStartDateTime: Date
+  reservationEndDateTime: Date
   description: string
   accountId: string
   account?: AccountModel

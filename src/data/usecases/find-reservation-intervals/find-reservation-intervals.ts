@@ -3,6 +3,7 @@ import { ReservationInterval } from '@/domain/models/reservation-interval'
 import { FindReservationIntervalsParams, IFindReservationIntervals } from '@/domain/usecases/find-reservation-intervals'
 import { FindServiceHoursRepository } from '../find-service-hours/find-service-hours.protocols'
 import { FindReservationsRepository } from '@/data/protocols/db/reservation/find-reservation-repository'
+import { areIntervalsOverlapping } from 'date-fns'
 
 export class FindReservationIntervals implements IFindReservationIntervals {
   constructor (
@@ -26,7 +27,7 @@ export class FindReservationIntervals implements IFindReservationIntervals {
       return new Error('Erro ao buscar empresa')
     }
 
-    await this.findReservationsRepository.findBy({
+    const reservations = await this.findReservationsRepository.findBy({
       companyId,
       startAt: new Date(date.setHours(0, 0, 0, 0)),
       endAt: new Date(date.setHours(23, 59, 59, 999))
@@ -47,7 +48,25 @@ export class FindReservationIntervals implements IFindReservationIntervals {
       serviceHourIntervals.forEach(serviceHourInterval => intervals.push(serviceHourInterval))
     })
 
-    return intervals
+    const checkedIntervals = intervals.map(interval => {
+      let isOverlapping = false
+      reservations.forEach(reservation => {
+        const formattedReservation = {
+          start: reservation.reservationStartDateTime,
+          end: reservation.reservationEndDateTime
+        }
+        if (areIntervalsOverlapping(interval, formattedReservation)) {
+          isOverlapping = true
+        }
+      })
+
+      return {
+        ...interval,
+        isAvailable: !isOverlapping
+      }
+    })
+
+    return checkedIntervals
   }
 
   private getIntervals (start: Date, end: Date, intervalInMinutes: number): ReservationInterval[] {
@@ -58,7 +77,8 @@ export class FindReservationIntervals implements IFindReservationIntervals {
     while (current < new Date(end)) {
       intervals.push({
         start: current,
-        end: next
+        end: next,
+        isAvailable: true
       })
       current = next
       next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)
