@@ -68,7 +68,7 @@ const makeSut = (): SutTypes => {
 }
 
 describe('FindReservationIntervals Controller', () => {
-  it('should return 200 on success', async () => {
+  it('should return ok on success', async () => {
     const { sut, findReservationIntervalsStub, validationStub } = makeSut()
     const validateSpy = jest.spyOn(validationStub, 'validate')
     const findBySpy = jest.spyOn(findReservationIntervalsStub, 'find')
@@ -79,7 +79,7 @@ describe('FindReservationIntervals Controller', () => {
     expect(findBySpy).toHaveBeenCalledWith({ date: fakeRequest.query.date, companyId: fakeRequest.user?.companyId })
     expect(httpResponse).toEqual(ok({ intervals: [] }))
   })
-  it('should return 500 if FindReservationIntervalsController throws', async () => {
+  it('should return a server error if FindReservationIntervalsController throws', async () => {
     const { sut, findReservationIntervalsStub } = makeSut()
 
     jest.spyOn(findReservationIntervalsStub, 'find').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
@@ -88,7 +88,7 @@ describe('FindReservationIntervals Controller', () => {
 
     expect(httpResponse).toEqual(serverError(new Error()))
   })
-  it('should returns a bad request if FindReservationIntervalsController returns an Error', async () => {
+  it('should return a bad request if FindReservationIntervalsController returns an Error', async () => {
     const { sut, findReservationIntervalsStub } = makeSut()
 
     jest.spyOn(findReservationIntervalsStub, 'find').mockImplementationOnce(async () => await new Promise((resolve) => { resolve(new Error('any_error')) }))
@@ -97,7 +97,7 @@ describe('FindReservationIntervals Controller', () => {
 
     expect(httpResponse).toEqual(badRequest(new Error('any_error')))
   })
-  it('should returns a bad request if Validation returns an error', async () => {
+  it('should return a bad request if Validation returns an error', async () => {
     const { sut, validationStub } = makeSut()
 
     jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new Error('some_error'))
@@ -106,7 +106,7 @@ describe('FindReservationIntervals Controller', () => {
 
     expect(httpResponse).toEqual(badRequest(new Error('some_error')))
   })
-  it('should returns a server error if Validation throws', async () => {
+  it('should return a server error if Validation throws', async () => {
     const { sut, validationStub } = makeSut()
 
     jest.spyOn(validationStub, 'validate').mockImplementationOnce(() => { throw new Error() })
