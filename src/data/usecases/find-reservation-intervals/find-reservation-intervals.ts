@@ -32,6 +32,38 @@ export class FindReservationIntervals implements IFindReservationIntervals {
       endAt: new Date(date.setHours(23, 59, 59, 999))
     })
 
-    return await new Promise(resolve => { resolve([{ start: new Date(), end: new Date() }]) })
+    const intervals: ReservationInterval[] = []
+
+    serviceHours.forEach(serviceHour => {
+      const splittedStartTime = serviceHour.startTime
+        .split(':')
+        .map((piece) => Number(piece))
+      const splittedEndTime = serviceHour.endTime.split(':').map((piece) => Number(piece))
+      const intervalStart = new Date(new Date().setHours(splittedStartTime[0], splittedStartTime[1], 0, 0))
+      const intervalEnd = new Date(new Date().setHours(splittedEndTime[0], splittedEndTime[1], 0, 0))
+
+      const serviceHourIntervals = this.getIntervals(intervalStart, intervalEnd, company.reservationTimeInMinutes)
+
+      serviceHourIntervals.forEach(serviceHourInterval => intervals.push(serviceHourInterval))
+    })
+
+    return intervals
+  }
+
+  private getIntervals (start: Date, end: Date, intervalInMinutes: number): ReservationInterval[] {
+    const intervals: ReservationInterval[] = []
+    let current = new Date(start)
+    let next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)
+
+    while (current < new Date(end)) {
+      intervals.push({
+        start: current,
+        end: next
+      })
+      current = next
+      next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)
+    }
+
+    return intervals
   }
 }
