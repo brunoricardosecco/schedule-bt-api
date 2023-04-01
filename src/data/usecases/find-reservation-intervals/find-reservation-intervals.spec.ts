@@ -31,7 +31,8 @@ const makeFakeReservation = (): Reservation => ({
   accountId: 'account_id',
   companyId: 'company_id',
   description: '',
-  reservationDate: new Date(),
+  reservationStartDateTime: new Date(new Date().setHours(10, 0, 0, 0)),
+  reservationEndDateTime: new Date(new Date().setHours(11, 0, 0, 0)),
   reservationPrice: 0,
   reservationStatus: ReservationStatus.AWAITING_PAYMENT,
   createdAt: new Date(),
@@ -42,7 +43,7 @@ const fakeReservation = makeFakeReservation()
 const makeFindReservationsRepository = (): FindReservationsRepository => {
   class FindReservationRepositoryStub implements FindReservationsRepository {
     async findBy (params: FindReservationsRepositoryParams): Promise<Reservation[]> {
-      return await new Promise(resolve => { resolve([fakeReservation]) })
+      return await new Promise(resolve => { resolve([]) })
     }
   }
   return new FindReservationRepositoryStub()
@@ -90,7 +91,7 @@ const makeSut = (): SutTypes => {
 }
 
 describe('FindReservationIntervals', () => {
-  it('should calls FindServiceHoursRepository with correct values', async () => {
+  it('should call FindServiceHoursRepository with correct values', async () => {
     const { findServiceHoursRepository, sut } = makeSut()
     const findBySpy = jest.spyOn(findServiceHoursRepository, 'findBy')
     const params = {
@@ -102,7 +103,7 @@ describe('FindReservationIntervals', () => {
 
     expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id', weekday: params.date.getDay() })
   })
-  it('should calls FindCompaniesRepository with correct values', async () => {
+  it('should call FindCompaniesRepository with correct values', async () => {
     const { findCompanyRepository, sut } = makeSut()
     const findBySpy = jest.spyOn(findCompanyRepository, 'findBy')
     const params = {
@@ -174,7 +175,7 @@ describe('FindReservationIntervals', () => {
 
     expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id', startAt: new Date(params.date.setHours(0, 0, 0, 0)), endAt: new Date(params.date.setHours(23, 59, 59, 999)) })
   })
-  it('should throws if FindReservationsRepository throws', async () => {
+  it('should throw if FindReservationsRepository throws', async () => {
     const { findReservationsRepository, sut } = makeSut()
     jest.spyOn(findReservationsRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
     const params = {
@@ -199,15 +200,47 @@ describe('FindReservationIntervals', () => {
     expect(reservationIntervals).toEqual([
       {
         start: new Date(params.date.setHours(9, 0, 0, 0)),
-        end: new Date(params.date.setHours(10, 0, 0, 0))
+        end: new Date(params.date.setHours(10, 0, 0, 0)),
+        isAvailable: true
       },
       {
         start: new Date(params.date.setHours(10, 0, 0, 0)),
-        end: new Date(params.date.setHours(11, 0, 0, 0))
+        end: new Date(params.date.setHours(11, 0, 0, 0)),
+        isAvailable: true
       },
       {
         start: new Date(params.date.setHours(11, 0, 0, 0)),
-        end: new Date(params.date.setHours(12, 0, 0, 0))
+        end: new Date(params.date.setHours(12, 0, 0, 0)),
+        isAvailable: true
+      }
+    ])
+  })
+  it('should set an interval as unavailable when there is a scheduled reservation for a specific interval', async () => {
+    const { sut, findReservationsRepository } = makeSut()
+    jest.spyOn(findReservationsRepository, 'findBy').mockReturnValueOnce(new Promise(resolve => { resolve([fakeReservation]) }))
+
+    const params = {
+      date: new Date(),
+      companyId: 'any_company_id'
+    }
+
+    const reservationIntervals = await sut.find(params)
+
+    expect(reservationIntervals).toEqual([
+      {
+        start: new Date(params.date.setHours(9, 0, 0, 0)),
+        end: new Date(params.date.setHours(10, 0, 0, 0)),
+        isAvailable: true
+      },
+      {
+        start: new Date(params.date.setHours(10, 0, 0, 0)),
+        end: new Date(params.date.setHours(11, 0, 0, 0)),
+        isAvailable: false
+      },
+      {
+        start: new Date(params.date.setHours(11, 0, 0, 0)),
+        end: new Date(params.date.setHours(12, 0, 0, 0)),
+        isAvailable: true
       }
     ])
   })
