@@ -1,23 +1,8 @@
 import request from 'supertest'
 import { db } from '@/infra/db/orm/prisma'
 import app from '@/main/config/app'
-import { AddServiceHourModel } from '@/domain/usecases/add-service-hour'
-import { AddCompanyModel } from '@/domain/usecases/add-company'
-import { RoleEnum } from '@/domain/enums/role-enum'
 import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
-
-const makeFakeServiceHourData = (companyId: string): AddServiceHourModel => ({
-  companyId,
-  startTime: '09:00',
-  endTime: '12:00',
-  weekday: 0
-})
-
-const makeFakeCompanyData = (): AddCompanyModel => ({
-  name: 'verona',
-  reservationPrice: 60,
-  reservationTimeInMinutes: 60
-})
+import { RoleEnum } from '@/domain/enums/role-enum'
 
 describe('ServiceHour Routes', () => {
   const password = 'password'
@@ -60,9 +45,9 @@ describe('ServiceHour Routes', () => {
     const deleteServiceHours = db.serviceHours.deleteMany()
     const deleteAccounts = db.accounts.deleteMany()
     await db.$transaction([
+      deleteAccounts,
       deleteServiceHours,
-      deleteCompanies,
-      deleteAccounts
+      deleteCompanies
     ])
     await db.$disconnect()
   })
@@ -72,29 +57,25 @@ describe('ServiceHour Routes', () => {
     const deleteServiceHours = db.serviceHours.deleteMany()
     const deleteAccounts = db.accounts.deleteMany()
     await db.$transaction([
+      deleteAccounts,
       deleteServiceHours,
-      deleteCompanies,
-      deleteAccounts
+      deleteCompanies
     ])
   })
 
-  describe('POST /service-hour', () => {
-    it('should return 200 on POST /service-hour', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: companyAdminEmail,
-          password
-        })
-
-      const company = await db.companies.create({
-        data: makeFakeCompanyData()
+  describe('GET /service-hour', () => {
+    it('should return 200 on GET /service-hour', async () => {
+      await db.serviceHours.create({
+        data: {
+          companyId: createdCompany.id as string,
+          startTime: '09:00',
+          endTime: '12:00',
+          weekday: 0
+        }
       })
 
       await request(app)
-        .post('/api/service-hour')
-        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
-        .send(makeFakeServiceHourData(company.id))
+        .get(`/api/service-hour?companyId=${createdCompany.id}&weekday=${0}`)
         .expect(200)
     })
   })

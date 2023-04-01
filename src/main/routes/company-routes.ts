@@ -6,6 +6,8 @@ import { expressMiddlewareAdapter } from '@/main/adapters/express/express-middle
 import { makeAuthorizeMiddleware } from '@/main/factories/middlewares/authorize-middleware/authorize-middleware-factory'
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { findManyCourtsByCompanyControllerFactory } from '@/main/factories/controllers/find-courts-by-company/find-courts-by-company-controller-factory'
+import { makeAddServiceHourController } from '@/main/factories/controllers/add-service-hour/add-service-hour-factory'
+import { makeFindCompanyServiceHoursController } from '../factories/controllers/find-company-service-hours/find-company-service-hours-factory'
 
 export default (router: Router): void => {
   router.post(
@@ -20,5 +22,19 @@ export default (router: Router): void => {
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
     expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN, RoleEnum.EMPLOYEE])),
     routeAdapter(findManyCourtsByCompanyControllerFactory())
+  )
+
+  router.post(
+    '/company/service-hour',
+    expressMiddlewareAdapter(makeAuthenticateMiddleware()),
+    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
+    routeAdapter(makeAddServiceHourController())
+  )
+
+  router.get(
+    '/company/service-hour',
+    expressMiddlewareAdapter(makeAuthenticateMiddleware()),
+    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.EMPLOYEE, RoleEnum.COMPANY_ADMIN])),
+    routeAdapter(makeFindCompanyServiceHoursController())
   )
 }
