@@ -8,7 +8,7 @@ export type Reservation = {
   reservationStatus: ReservationStatus
   reservationStartDateTime: Date
   reservationEndDateTime: Date
-  description: string
+  description: string | null
   accountId: string
   account?: AccountModel
   companyId: string

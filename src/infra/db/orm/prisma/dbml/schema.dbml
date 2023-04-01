@@ -56,12 +56,12 @@ Table reservations {
   reservationStartDateTime DateTime [not null]
   reservationEndDateTime DateTime [not null]
   description String
-  accountId String
-  account accounts
+  accountId String [not null]
+  account accounts [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  company companies
-  companyId String
+  company companies [not null]
+  companyId String [not null]
 }
 
 Table errors {

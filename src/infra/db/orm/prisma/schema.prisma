@@ -76,12 +76,12 @@ model Reservations {
   reservationStartDateTime DateTime
   reservationEndDateTime   DateTime
   description              String?
-  accountId                String?           @map("account_id")
-  account                  Accounts?         @relation(fields: [accountId], references: [id])
+  accountId                String            @map("account_id")
+  account                  Accounts          @relation(fields: [accountId], references: [id])
   createdAt                DateTime          @default(now()) @map("created_at")
   updatedAt                DateTime          @default(now()) @map("updated_at")
-  company                  Companies?        @relation(fields: [companyId], references: [id])
-  companyId                String?
+  company                  Companies         @relation(fields: [companyId], references: [id])
+  companyId                String
 
   @@map("reservations")
 }
