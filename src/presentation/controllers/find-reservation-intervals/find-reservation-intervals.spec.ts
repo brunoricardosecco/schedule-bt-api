@@ -106,4 +106,13 @@ describe('FindReservationIntervals Controller', () => {
 
     expect(httpResponse).toEqual(badRequest(new Error('some_error')))
   })
+  it('should returns a server error if Validation throws', async () => {
+    const { sut, validationStub } = makeSut()
+
+    jest.spyOn(validationStub, 'validate').mockImplementationOnce(() => { throw new Error() })
+
+    const httpResponse = await sut.handle(fakeRequest)
+
+    expect(httpResponse).toEqual(serverError(new Error()))
+  })
 })
