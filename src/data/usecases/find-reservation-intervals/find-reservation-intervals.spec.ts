@@ -4,8 +4,8 @@ import { Company } from '../add-company/db-add-company.protocols'
 import { FindServiceHoursRepository, FindServiceHoursRepositoryParams, ServiceHour } from '../find-service-hours/find-service-hours.protocols'
 import { FindReservationIntervals } from './find-reservation-intervals'
 import { Reservation } from '@/domain/models/reservation'
-import { ReservationStatus } from '@prisma/client'
 import { FindReservationsRepository, FindReservationsRepositoryParams } from '@/data/protocols/db/reservation/find-reservation-repository'
+import { ReservationStatusEnum } from '@/domain/enums/reservation-status-enum'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
@@ -34,7 +34,7 @@ const makeFakeReservation = (): Reservation => ({
   reservationStartDateTime: new Date(new Date().setHours(10, 0, 0, 0)),
   reservationEndDateTime: new Date(new Date().setHours(11, 0, 0, 0)),
   reservationPrice: 0,
-  reservationStatus: ReservationStatus.AWAITING_PAYMENT,
+  reservationStatus: ReservationStatusEnum.AWAITING_PAYMENT,
   createdAt: new Date(),
   updatedAt: new Date()
 })
