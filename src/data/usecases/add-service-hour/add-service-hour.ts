@@ -1,14 +1,23 @@
-import { AddServiceHourRepository, ServiceHour, AddServiceHour, AddServiceHourModel, LoadServiceHoursByCompanyIdAndWeekdayRepository, TimeConflictChecker } from './db-add-service-hour.protocols'
+import { AddServiceHourRepository, ServiceHour, IAddServiceHour, AddServiceHourModel, LoadServiceHoursByCompanyIdAndWeekdayRepository, TimeConflictChecker } from './add-service-hour.protocols'
 
-export class DbAddServiceHour implements AddServiceHour {
+export class AddServiceHour implements IAddServiceHour {
   constructor (
-    private readonly dbAddServiceHourRepository: AddServiceHourRepository,
+    private readonly addServiceHourRepository: AddServiceHourRepository,
     private readonly dbLoadServiceHoursByCompanyIdAndWeekdayRepository: LoadServiceHoursByCompanyIdAndWeekdayRepository,
     private readonly timeConflictChecker: TimeConflictChecker
   ) {}
 
   async add (serviceHourData: AddServiceHourModel): Promise<ServiceHour | Error> {
     const { companyId, endTime, startTime, weekday } = serviceHourData
+
+    const isValidTimes = this.timeConflictChecker.isEndTimeGreaterThanStartTime({
+      startTime,
+      endTime
+    })
+
+    if (!isValidTimes) {
+      return new Error('O tempo de início precisa ser menor que o tempo de término')
+    }
 
     const serviceHours = await this.dbLoadServiceHoursByCompanyIdAndWeekdayRepository.loadByCompanyIdAndWeekday({
       companyId,
@@ -20,15 +29,6 @@ export class DbAddServiceHour implements AddServiceHour {
       endTime: storedEndTime
     }))
 
-    const isValidTimes = this.timeConflictChecker.isEndTimeGraterThanStartTime({
-      startTime,
-      endTime
-    })
-
-    if (!isValidTimes) {
-      return new Error('Start time must be before end time')
-    }
-
     const hasConflict = this.timeConflictChecker.hasConflicts({
       existingTimes: storedTimes,
       newTime: {
@@ -38,9 +38,9 @@ export class DbAddServiceHour implements AddServiceHour {
     })
 
     if (hasConflict) {
-      return new Error('New service hour is conflicting with another')
+      return new Error('O intervalo de tempo não pode conflitar com outro intervalo de tempo já cadastrado')
     }
 
-    return await this.dbAddServiceHourRepository.add(serviceHourData)
+    return await this.addServiceHourRepository.add(serviceHourData)
   }
 }

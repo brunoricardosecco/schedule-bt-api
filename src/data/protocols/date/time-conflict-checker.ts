@@ -10,5 +10,5 @@ export type TimeConflictCheckerModel = {
 
 export interface TimeConflictChecker {
   hasConflicts: ({ newTime, existingTimes }: TimeConflictCheckerModel) => boolean
-  isEndTimeGraterThanStartTime: ({ startTime, endTime }: ServiceHourTimeModel) => boolean
+  isEndTimeGreaterThanStartTime: ({ startTime, endTime }: ServiceHourTimeModel) => boolean
 }

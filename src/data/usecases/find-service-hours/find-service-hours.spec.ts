@@ -1,5 +1,5 @@
-import { ServiceHour, FindServiceHoursRepository, FindServiceHoursRepositoryParams } from './db-find-service-hours.protocols'
-import { DbFindServiceHours } from './db-find-service-hours'
+import { ServiceHour, FindServiceHoursRepository, FindServiceHoursRepositoryParams, IFindServiceHours } from './find-service-hours.protocols'
+import { FindServiceHours } from './find-service-hours'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
@@ -22,13 +22,13 @@ const makeFindServiceHoursRepository = (): FindServiceHoursRepository => {
 }
 
 type SutTypes = {
-  sut: DbFindServiceHours
+  sut: IFindServiceHours
   findServiceHoursRepository: FindServiceHoursRepository
 }
 
 const makeSut = (): SutTypes => {
   const findServiceHoursRepositoryStub = makeFindServiceHoursRepository()
-  const sut = new DbFindServiceHours(findServiceHoursRepositoryStub)
+  const sut = new FindServiceHours(findServiceHoursRepositoryStub)
 
   return {
     sut,
@@ -36,7 +36,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('DbFindServiceHours', () => {
+describe('FindServiceHours', () => {
   it('should returns service hours on success', async () => {
     const { sut, findServiceHoursRepository } = makeSut()
 

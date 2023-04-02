@@ -1,5 +1,7 @@
-export type IAuthenticateReturn = {
-  userId: string
+import { AccountModel } from '@/domain/models/account'
+
+export interface IAuthenticateReturn {
+  user: AccountModel
 }
 
 export interface IAuthenticate {
