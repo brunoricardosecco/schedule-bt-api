@@ -2,7 +2,7 @@ import { IDeleteServiceHour } from '@/domain/usecases/delete-service-hour'
 import { ServerError } from '@/presentation/errors'
 import { okNoContent, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, ServiceHour } from '../add-service-hour/add-service-hour-controller.protocols'
-import { DeleteServiceHourController } from './delete-service-hour-controller'
+import { DeleteCompanyServiceHourController } from './delete-company-service-hour-controller'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   companyId: 'any_company_id',
@@ -35,13 +35,13 @@ const makeDeleteServiceHour = (): IDeleteServiceHour => {
 }
 
 type SutTypes = {
-  sut: DeleteServiceHourController
+  sut: DeleteCompanyServiceHourController
   deleteServiceHour: IDeleteServiceHour
 }
 
 const makeSut = (): SutTypes => {
   const deleteServiceHour = makeDeleteServiceHour()
-  const sut = new DeleteServiceHourController(deleteServiceHour)
+  const sut = new DeleteCompanyServiceHourController(deleteServiceHour)
 
   return {
     sut,

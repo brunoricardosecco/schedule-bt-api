@@ -8,7 +8,7 @@ import { RoleEnum } from '@/domain/enums/role-enum'
 import { findManyCourtsByCompanyControllerFactory } from '@/main/factories/controllers/find-courts-by-company/find-courts-by-company-controller-factory'
 import { makeAddServiceHourController } from '@/main/factories/controllers/add-service-hour/add-service-hour-factory'
 import { makeFindCompanyServiceHoursController } from '../factories/controllers/find-company-service-hours/find-company-service-hours-factory'
-import { makeDeleteServiceHourController } from '../factories/controllers/delete-service-hour/delete-service-hour-factory'
+import { makeDeleteCompanyServiceHourController } from '../factories/controllers/delete-company-service-hour/delete-company-service-hour-factory'
 
 export default (router: Router): void => {
   router.post(
@@ -42,7 +42,7 @@ export default (router: Router): void => {
   router.delete(
     '/company/service-hour/:serviceHourId',
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
-    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.GENERAL_ADMIN, RoleEnum.COMPANY_ADMIN])),
-    routeAdapter(makeDeleteServiceHourController())
+    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
+    routeAdapter(makeDeleteCompanyServiceHourController())
   )
 }

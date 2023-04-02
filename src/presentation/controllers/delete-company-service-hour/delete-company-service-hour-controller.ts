@@ -1,7 +1,7 @@
 import { okNoContent, serverError } from '@/presentation/helpers/http/httpHelper'
-import { Controller, HttpRequest, HttpResponse, IDeleteServiceHour } from './delete-service-hour-controller.protocols'
+import { Controller, HttpRequest, HttpResponse, IDeleteServiceHour } from './delete-company-service-hour-controller.protocols'
 
-export class DeleteServiceHourController implements Controller {
+export class DeleteCompanyServiceHourController implements Controller {
   constructor (
     private readonly deleteServiceHour: IDeleteServiceHour
   ) {}
