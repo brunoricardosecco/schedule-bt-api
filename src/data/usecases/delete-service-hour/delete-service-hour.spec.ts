@@ -37,7 +37,7 @@ const makeSut = (): SutTypes => {
 }
 
 describe('DbDeleteServiceHour', () => {
-  it('should return null on success', async () => {
+  it('should return the deleted service hour on success', async () => {
     const { deleteServiceHourRepository, sut } = makeSut()
     const deleteSpy = jest.spyOn(deleteServiceHourRepository, 'delete')
     const serviceHourId = 'any_id'
