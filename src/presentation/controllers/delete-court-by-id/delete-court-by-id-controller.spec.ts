@@ -1,7 +1,7 @@
 import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { noContent, notFound, serverError } from '@/presentation/helpers/http/httpHelper'
 import { DeleteCourtByIdController } from './delete-court-by-id-controller'
-import { AccountModel, Court, FindCourtByIdAndCompanyIdRepository, IDeleteCourtById, IFindCourtByIdAndCompanyId, RoleEnum } from './delete-court-by-id.protocols'
+import { AccountModel, Court, IDeleteCourtById, RoleEnum } from './delete-court-by-id.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -9,7 +9,7 @@ const makeFakeAccount = (): AccountModel => ({
   email: 'valid_email@mail.com',
   hashedPassword: 'hashed_password',
   role: RoleEnum.COMPANY_ADMIN,
-  companyId: 'company_id',
+  companyId: 'any_company_id',
   company: null,
   emailValidationToken: null,
   emailValidationTokenExpiration: null,
@@ -44,45 +44,22 @@ const makeDeleteCourtById = (): IDeleteCourtById => {
   return new DeleteCourtByIdStub()
 }
 
-const makeFindCourtByIdAndCompanyIdRepository = (): FindCourtByIdAndCompanyIdRepository => {
-  class FindCourtByIdAndCompanyIdRepositoryStub implements FindCourtByIdAndCompanyIdRepository {
-    async findByIdAndCompanyId (courtId: string, companyId: string): Promise<Court | null> {
-      const fakeCourt = mockCourt()
-      return await Promise.resolve(fakeCourt)
-    }
-  }
-
-  return new FindCourtByIdAndCompanyIdRepositoryStub()
-}
-
 type SutTypes = {
   sut: DeleteCourtByIdController
   deleteCourtByIdStub: IDeleteCourtById
-  findCourtByIdAndCompanyIdStub: IFindCourtByIdAndCompanyId
 }
 
 const makeSut = (): SutTypes => {
   const deleteCourtByIdStub = makeDeleteCourtById()
-  const findCourtByIdAndCompanyIdStub = makeFindCourtByIdAndCompanyIdRepository()
-  const sut = new DeleteCourtByIdController(deleteCourtByIdStub, findCourtByIdAndCompanyIdStub)
+  const sut = new DeleteCourtByIdController(deleteCourtByIdStub)
 
   return {
     sut,
     deleteCourtByIdStub,
-    findCourtByIdAndCompanyIdStub
   }
 }
 
 describe('DeleteCourtByIdController', () => {
-  it('should returns 500 if FindCourtByIdAndCompanyId throws', async () => {
-    const { sut, findCourtByIdAndCompanyIdStub } = makeSut()
-    jest.spyOn(findCourtByIdAndCompanyIdStub, 'findByIdAndCompanyId').mockRejectedValueOnce(new Error())
-    const httpRequest = makeFakeRequest()
-    const response = await sut.handle(httpRequest)
-
-    expect(response).toEqual(serverError(new Error()))
-  })
-
   it('should returns 500 if DeleteCourtById throws', async () => {
     const { sut, deleteCourtByIdStub } = makeSut()
     jest.spyOn(deleteCourtByIdStub, 'deleteById').mockRejectedValueOnce(new Error())
@@ -92,31 +69,22 @@ describe('DeleteCourtByIdController', () => {
     expect(response).toEqual(serverError(new Error()))
   })
 
-  it('should call FindCourtByIdAndCompanyId with correct values', async () => {
-    const { sut, findCourtByIdAndCompanyIdStub } = makeSut()
-    const findByIdAndCompanyIdSpy = jest.spyOn(findCourtByIdAndCompanyIdStub, 'findByIdAndCompanyId')
-    const httpRequest = makeFakeRequest('any_court_id')
-    await sut.handle(httpRequest)
-
-    expect(findByIdAndCompanyIdSpy).toHaveBeenCalledWith('any_court_id', 'company_id')
-  })
-
   it('should call DeleteCourtById with correct values', async () => {
     const { sut, deleteCourtByIdStub } = makeSut()
     const deleteByIdSpy = jest.spyOn(deleteCourtByIdStub, 'deleteById')
     const httpRequest = makeFakeRequest('any_court_id')
     await sut.handle(httpRequest)
 
-    expect(deleteByIdSpy).toHaveBeenCalledWith('any_court_id')
+    expect(deleteByIdSpy).toHaveBeenCalledWith('any_court_id', 'any_company_id')
   })
 
   it('should return 404 if court_id not exists', async () => {
-    const { sut, findCourtByIdAndCompanyIdStub } = makeSut()
+    const { sut, deleteCourtByIdStub } = makeSut()
     const httpRequest = makeFakeRequest()
-    jest.spyOn(findCourtByIdAndCompanyIdStub, 'findByIdAndCompanyId').mockReturnValueOnce(Promise.resolve(null))
+    jest.spyOn(deleteCourtByIdStub, 'deleteById').mockReturnValueOnce(Promise.resolve(new Error()))
     const response = await sut.handle(httpRequest)
 
-    expect(response).toStrictEqual(notFound())
+    expect(response).toStrictEqual(notFound('Quadra não encontrada'))
   })
 
   it('should return 204 on success', async () => {

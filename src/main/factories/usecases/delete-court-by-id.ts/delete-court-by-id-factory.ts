@@ -4,5 +4,5 @@ import { CourtPostgresRepository } from '@/infra/db/postgres/court/court-postgre
 export const deleteCourtByIdFactory = (): DeleteCourtById => {
   const courtPostgresRepository = new CourtPostgresRepository()
 
-  return new DeleteCourtById(courtPostgresRepository)
+  return new DeleteCourtById(courtPostgresRepository, courtPostgresRepository)
 }
