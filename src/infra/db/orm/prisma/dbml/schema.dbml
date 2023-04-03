@@ -44,7 +44,7 @@ Table courts {
   id String [pk]
   name String [not null]
   companyId String [not null]
-  status CourtStatus [not null, default: 'ACTIVE']
+  isDeleted Boolean [not null, default: false]
   company companies [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -82,11 +82,6 @@ Enum ReservationStatus {
   PAID
   AWAITING_PAYMENT
   PENDING
-}
-
-Enum CourtStatus {
-  ACTIVE
-  INACTIVE
 }
 
 Ref: accounts.companyId > companies.id

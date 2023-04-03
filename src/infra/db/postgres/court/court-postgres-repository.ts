@@ -18,7 +18,7 @@ export class CourtPostgresRepository implements CreateCourtsRepository, FindCour
     const courts = await db.courts.findMany({
       where: {
         companyId,
-        status: 'ACTIVE'
+        isDeleted: false        
       }
     })
 
@@ -42,7 +42,7 @@ export class CourtPostgresRepository implements CreateCourtsRepository, FindCour
         id: courtId
       },
       data: {
-        status: 'INACTIVE'
+        isDeleted: true
       }
     })
 
