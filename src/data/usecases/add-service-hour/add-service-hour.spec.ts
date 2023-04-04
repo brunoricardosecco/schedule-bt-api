@@ -7,7 +7,8 @@ import {
   LoadServiceHoursByCompanyIdAndWeekdayRepository,
   LoadServiceHoursByCompanyIdRepositoryModel,
   ServiceHourTimeModel,
-  TimeConflictChecker
+  TimeConflictChecker,
+  TimeOverlappingCheckerModel
 } from './add-service-hour.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
@@ -67,6 +68,10 @@ const makeTimeConflictChecker = (): TimeConflictChecker => {
       endTime
     }: ServiceHourTimeModel): boolean {
       return true
+    }
+
+    areIntervalsOverlapping ({ firstTime, secondTime }: TimeOverlappingCheckerModel): boolean {
+      return false
     }
   }
 

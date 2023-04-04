@@ -1,11 +1,26 @@
-import { FindCompaniesRepository, FindCompaniesRepositoryParams } from '@/data/protocols/db/company/find-company-repository'
+import {
+  FindCompaniesRepository,
+  FindCompaniesRepositoryParams
+} from '@/data/protocols/db/company/find-company-repository'
 import { IFindReservationIntervals } from '@/domain/usecases/find-reservation-intervals'
 import { Company } from '../add-company/db-add-company.protocols'
-import { FindServiceHoursRepository, FindServiceHoursRepositoryParams, ServiceHour } from '../find-service-hours/find-service-hours.protocols'
+import {
+  FindServiceHoursRepository,
+  FindServiceHoursRepositoryParams,
+  ServiceHour
+} from '../find-service-hours/find-service-hours.protocols'
 import { FindReservationIntervals } from './find-reservation-intervals'
 import { Reservation } from '@/domain/models/reservation'
-import { FindReservationsRepository, FindReservationsRepositoryParams } from '@/data/protocols/db/reservation/find-reservation-repository'
+import {
+  FindReservationsRepository,
+  FindReservationsRepositoryParams
+} from '@/data/protocols/db/reservation/find-reservation-repository'
 import { ReservationStatusEnum } from '@/domain/enums/reservation-status-enum'
+import {
+  ServiceHourTimeModel,
+  TimeConflictChecker,
+  TimeOverlappingCheckerModel
+} from '../add-service-hour/add-service-hour.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
@@ -42,17 +57,44 @@ const fakeReservation = makeFakeReservation()
 
 const makeFindReservationsRepository = (): FindReservationsRepository => {
   class FindReservationRepositoryStub implements FindReservationsRepository {
-    async findBy (params: FindReservationsRepositoryParams): Promise<Reservation[]> {
+    async findBy (
+      params: FindReservationsRepositoryParams
+    ): Promise<Reservation[]> {
       return []
     }
   }
   return new FindReservationRepositoryStub()
 }
 
+const makeTimeConflictChecker = (): TimeConflictChecker => {
+  class TimeConflictCheckerStub implements TimeConflictChecker {
+    hasConflicts ({ newDateTime, storedDateTimes }: any): boolean {
+      return false
+    }
+
+    isEndTimeGreaterThanStartTime ({
+      startTime,
+      endTime
+    }: ServiceHourTimeModel): boolean {
+      return true
+    }
+
+    areIntervalsOverlapping ({ firstTime, secondTime }: TimeOverlappingCheckerModel): boolean {
+      return false
+    }
+  }
+
+  return new TimeConflictCheckerStub()
+}
+
 const makeFindServiceHoursRepository = (): FindServiceHoursRepository => {
   class FindServiceHoursRepositoryStub implements FindServiceHoursRepository {
-    async findBy (params: FindServiceHoursRepositoryParams): Promise<ServiceHour[]> {
-      return await new Promise(resolve => { resolve([fakeServiceHour]) })
+    async findBy (
+      params: FindServiceHoursRepositoryParams
+    ): Promise<ServiceHour[]> {
+      return await new Promise((resolve) => {
+        resolve([fakeServiceHour])
+      })
     }
   }
 
@@ -62,7 +104,9 @@ const makeFindServiceHoursRepository = (): FindServiceHoursRepository => {
 const makeFindCompaniesRepository = (): FindCompaniesRepository => {
   class FindCompaniesRepositoryStub implements FindCompaniesRepository {
     async findBy (params: FindCompaniesRepositoryParams): Promise<Company[]> {
-      return await new Promise(resolve => { resolve([fakeCompany]) })
+      return await new Promise((resolve) => {
+        resolve([fakeCompany])
+      })
     }
   }
 
@@ -74,19 +118,27 @@ type SutTypes = {
   findServiceHoursRepository: FindServiceHoursRepository
   findCompanyRepository: FindCompaniesRepository
   findReservationsRepository: FindReservationsRepository
+  timeConflictChecker: TimeConflictChecker
 }
 
 const makeSut = (): SutTypes => {
   const findServiceHoursRepositoryStub = makeFindServiceHoursRepository()
   const findCompanyRepositoryStub = makeFindCompaniesRepository()
   const findReservationsRepositoryStub = makeFindReservationsRepository()
-  const sut = new FindReservationIntervals(findServiceHoursRepositoryStub, findCompanyRepositoryStub, findReservationsRepositoryStub)
+  const timeConflictChecker = makeTimeConflictChecker()
+  const sut = new FindReservationIntervals(
+    findServiceHoursRepositoryStub,
+    findCompanyRepositoryStub,
+    findReservationsRepositoryStub,
+    timeConflictChecker
+  )
 
   return {
     sut,
     findServiceHoursRepository: findServiceHoursRepositoryStub,
     findCompanyRepository: findCompanyRepositoryStub,
-    findReservationsRepository: findReservationsRepositoryStub
+    findReservationsRepository: findReservationsRepositoryStub,
+    timeConflictChecker
   }
 }
 
@@ -101,7 +153,10 @@ describe('FindReservationIntervals', () => {
 
     await sut.find(params)
 
-    expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id', weekday: params.date.getDay() })
+    expect(findBySpy).toHaveBeenCalledWith({
+      companyId: 'any_company_id',
+      weekday: params.date.getDay()
+    })
   })
   it('should call FindCompaniesRepository with correct values', async () => {
     const { findCompanyRepository, sut } = makeSut()
@@ -117,7 +172,12 @@ describe('FindReservationIntervals', () => {
   })
   it('should throw if FindServiceHoursRepository throws', async () => {
     const { findServiceHoursRepository, sut } = makeSut()
-    jest.spyOn(findServiceHoursRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(findServiceHoursRepository, 'findBy').mockImplementationOnce(
+      async () =>
+        await new Promise((resolve, reject) => {
+          reject(new Error())
+        })
+    )
     const params = {
       date: new Date(),
       companyId: 'any_company_id'
@@ -129,7 +189,12 @@ describe('FindReservationIntervals', () => {
   })
   it('should throw if FindCompaniesRepository throws', async () => {
     const { findCompanyRepository, sut } = makeSut()
-    jest.spyOn(findCompanyRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(findCompanyRepository, 'findBy').mockImplementationOnce(
+      async () =>
+        await new Promise((resolve, reject) => {
+          reject(new Error())
+        })
+    )
     const params = {
       date: new Date(),
       companyId: 'any_company_id'
@@ -141,7 +206,12 @@ describe('FindReservationIntervals', () => {
   })
   it("should return an error if the company doesn't have any stored service hour", async () => {
     const { findServiceHoursRepository, sut } = makeSut()
-    jest.spyOn(findServiceHoursRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve) => { resolve([]) }))
+    jest.spyOn(findServiceHoursRepository, 'findBy').mockImplementationOnce(
+      async () =>
+        await new Promise((resolve) => {
+          resolve([])
+        })
+    )
     const params = {
       date: new Date(),
       companyId: 'any_company_id'
@@ -149,11 +219,20 @@ describe('FindReservationIntervals', () => {
 
     const error = await sut.find(params)
 
-    expect(error).toEqual(new Error('A empresa não possui horários de trabalhos cadastrados neste dia'))
+    expect(error).toEqual(
+      new Error(
+        'A empresa não possui horários de trabalhos cadastrados neste dia'
+      )
+    )
   })
   it("should return an error if the doesn't find a company", async () => {
     const { findCompanyRepository, sut } = makeSut()
-    jest.spyOn(findCompanyRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve) => { resolve([]) }))
+    jest.spyOn(findCompanyRepository, 'findBy').mockImplementationOnce(
+      async () =>
+        await new Promise((resolve) => {
+          resolve([])
+        })
+    )
     const params = {
       date: new Date(),
       companyId: 'any_company_id'
@@ -173,11 +252,20 @@ describe('FindReservationIntervals', () => {
 
     await sut.find(params)
 
-    expect(findBySpy).toHaveBeenCalledWith({ companyId: 'any_company_id', startAt: new Date(params.date.setHours(0, 0, 0, 0)), endAt: new Date(params.date.setHours(23, 59, 59, 999)) })
+    expect(findBySpy).toHaveBeenCalledWith({
+      companyId: 'any_company_id',
+      startAt: new Date(params.date.setHours(0, 0, 0, 0)),
+      endAt: new Date(params.date.setHours(23, 59, 59, 999))
+    })
   })
   it('should throw if FindReservationsRepository throws', async () => {
     const { findReservationsRepository, sut } = makeSut()
-    jest.spyOn(findReservationsRepository, 'findBy').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(findReservationsRepository, 'findBy').mockImplementationOnce(
+      async () =>
+        await new Promise((resolve, reject) => {
+          reject(new Error())
+        })
+    )
     const params = {
       date: new Date(),
       companyId: 'any_company_id'
@@ -216,8 +304,11 @@ describe('FindReservationIntervals', () => {
     ])
   })
   it('should set an interval as unavailable when there is a scheduled reservation for a specific interval', async () => {
-    const { sut, findReservationsRepository } = makeSut()
-    jest.spyOn(findReservationsRepository, 'findBy').mockResolvedValueOnce([fakeReservation])
+    const { sut, findReservationsRepository, timeConflictChecker } = makeSut()
+    jest
+      .spyOn(findReservationsRepository, 'findBy')
+      .mockResolvedValueOnce([fakeReservation])
+    jest.spyOn(timeConflictChecker, 'areIntervalsOverlapping').mockReturnValueOnce(false).mockReturnValueOnce(true).mockReturnValueOnce(false)
 
     const params = {
       date: new Date(),

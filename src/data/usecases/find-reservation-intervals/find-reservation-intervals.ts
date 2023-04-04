@@ -3,13 +3,15 @@ import { ReservationInterval } from '@/domain/models/reservation-interval'
 import { FindReservationIntervalsParams, IFindReservationIntervals } from '@/domain/usecases/find-reservation-intervals'
 import { FindServiceHoursRepository } from '../find-service-hours/find-service-hours.protocols'
 import { FindReservationsRepository } from '@/data/protocols/db/reservation/find-reservation-repository'
-import { areIntervalsOverlapping } from 'date-fns'
+import { getServiceHourTimeFormatted } from '@/data/helpers/service-hour-time-formatter'
+import { TimeConflictChecker } from '../add-service-hour/add-service-hour.protocols'
 
 export class FindReservationIntervals implements IFindReservationIntervals {
   constructor (
     private readonly findServiceHoursRepository: FindServiceHoursRepository,
     private readonly findCompaniesRepository: FindCompaniesRepository,
-    private readonly findReservationsRepository: FindReservationsRepository
+    private readonly findReservationsRepository: FindReservationsRepository,
+    private readonly timeConflictsChecker: TimeConflictChecker
   ) {}
 
   async find ({ date, companyId }: FindReservationIntervalsParams): Promise<ReservationInterval[] | Error> {
@@ -36,14 +38,9 @@ export class FindReservationIntervals implements IFindReservationIntervals {
     const intervals: ReservationInterval[] = []
 
     serviceHours.forEach(serviceHour => {
-      const splittedStartTime = serviceHour.startTime
-        .split(':')
-        .map((piece) => Number(piece))
-      const splittedEndTime = serviceHour.endTime.split(':').map((piece) => Number(piece))
-      const intervalStart = new Date(new Date().setHours(splittedStartTime[0], splittedStartTime[1], 0, 0))
-      const intervalEnd = new Date(new Date().setHours(splittedEndTime[0], splittedEndTime[1], 0, 0))
+      const { start, end } = getServiceHourTimeFormatted(serviceHour)
 
-      const serviceHourIntervals = this.getIntervals(intervalStart, intervalEnd, company.reservationTimeInMinutes)
+      const serviceHourIntervals = this.getIntervals(start, end, company.reservationTimeInMinutes)
 
       serviceHourIntervals.forEach(serviceHourInterval => intervals.push(serviceHourInterval))
     })
@@ -55,7 +52,7 @@ export class FindReservationIntervals implements IFindReservationIntervals {
           start: reservation.reservationStartDateTime,
           end: reservation.reservationEndDateTime
         }
-        if (areIntervalsOverlapping(interval, formattedReservation)) {
+        if (this.timeConflictsChecker.areIntervalsOverlapping({ firstTime: formattedReservation, secondTime: interval })) {
           isOverlapping = true
         }
       })
