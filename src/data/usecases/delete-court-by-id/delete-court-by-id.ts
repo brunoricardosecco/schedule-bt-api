@@ -10,8 +10,8 @@ export class DeleteCourtById implements IDeleteCourtById {
   async deleteById (courtId: string, companyId: string): Promise<Court | Error> {
     const court = await this.findCourt.findByIdAndCompanyId(courtId, companyId)
 
-    if(!court) {
-      return new NotFoundError('court')
+    if (!court) {
+      return new NotFoundError('Quadra não encontrada')
     }
 
     return await this.deleteCourt.deleteById(courtId)

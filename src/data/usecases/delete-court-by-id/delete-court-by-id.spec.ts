@@ -89,7 +89,7 @@ describe('DbFindCourtByIdAndCompanyId Usecase', () => {
     jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockReturnValueOnce(Promise.resolve(null))
     const error = await sut.deleteById('any_id', 'any_company_id')
 
-    expect(error).toEqual(new NotFoundError(`court`))
+    expect(error).toEqual(new NotFoundError('Quadra não encontrada'))
   })
 
   it('should return a court on success', async () => {

@@ -1,5 +1,5 @@
 export class NotFoundError extends Error {
-  constructor (paramName: string) {
-    super(`${paramName} not found`)
+  constructor (message: string) {
+    super(`${message}`)
   }
 }

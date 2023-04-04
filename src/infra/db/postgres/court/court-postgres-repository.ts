@@ -18,7 +18,7 @@ export class CourtPostgresRepository implements CreateCourtsRepository, FindCour
     const courts = await db.courts.findMany({
       where: {
         companyId,
-        isDeleted: false        
+        isDeleted: false
       }
     })
 

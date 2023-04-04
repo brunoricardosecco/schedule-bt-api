@@ -1,7 +1,7 @@
 import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { noContent, notFound, serverError } from '@/presentation/helpers/http/httpHelper'
 import { DeleteCourtByIdController } from './delete-court-by-id-controller'
-import { AccountModel, Court, IDeleteCourtById, RoleEnum } from './delete-court-by-id.protocols'
+import { AccountModel, Court, IDeleteCourtById, NotFoundError, RoleEnum } from './delete-court-by-id.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -55,7 +55,7 @@ const makeSut = (): SutTypes => {
 
   return {
     sut,
-    deleteCourtByIdStub,
+    deleteCourtByIdStub
   }
 }
 
@@ -81,7 +81,7 @@ describe('DeleteCourtByIdController', () => {
   it('should return 404 if court_id not exists', async () => {
     const { sut, deleteCourtByIdStub } = makeSut()
     const httpRequest = makeFakeRequest()
-    jest.spyOn(deleteCourtByIdStub, 'deleteById').mockReturnValueOnce(Promise.resolve(new Error()))
+    jest.spyOn(deleteCourtByIdStub, 'deleteById').mockReturnValueOnce(Promise.resolve(new NotFoundError('Quadra não encontrada')))
     const response = await sut.handle(httpRequest)
 
     expect(response).toStrictEqual(notFound('Quadra não encontrada'))
