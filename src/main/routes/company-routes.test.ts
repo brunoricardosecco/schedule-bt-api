@@ -1,10 +1,10 @@
-import request from 'supertest'
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { AddCompanyModel } from '@/domain/usecases/add-company'
+import { AddServiceHourModel } from '@/domain/usecases/add-service-hour'
+import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
 import { db } from '@/infra/db/orm/prisma'
 import app from '@/main/config/app'
-import { AddCompanyModel } from '@/domain/usecases/add-company'
-import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
-import { RoleEnum } from '@/domain/enums/role-enum'
-import { AddServiceHourModel } from '@/domain/usecases/add-service-hour'
+import request from 'supertest'
 
 const makeFakeCompanyData = (): AddCompanyModel => ({
   name: 'verona',
@@ -28,6 +28,7 @@ describe('Company Routes', () => {
   beforeAll(async () => {
     createdCompany = await db.companies.create({
       data: {
+        id: 'company_id_01',
         name: 'Empresa X',
         reservationPrice: 70,
         reservationTimeInMinutes: 60
@@ -51,6 +52,14 @@ describe('Company Routes', () => {
         hashedPassword,
         companyId: createdCompany.id,
         role: RoleEnum.COMPANY_ADMIN
+      }
+    })
+
+    await db.courts.create({
+      data: {
+        id: 'id_01',
+        name: 'any court name',
+        companyId: 'company_id_01'
       }
     })
   })
@@ -97,6 +106,7 @@ describe('Company Routes', () => {
         .expect(200)
     })
   })
+
   describe('POST /company/service-hour', () => {
     it('should return 200 on POST /company/service-hour', async () => {
       const loginResponse = await request(app)
@@ -117,6 +127,7 @@ describe('Company Routes', () => {
         .expect(200)
     })
   })
+  
   describe('GET /company/service-hour', () => {
     it('should return 200 on GET /company/service-hour', async () => {
       const loginResponse = await request(app)
@@ -130,6 +141,60 @@ describe('Company Routes', () => {
         .get('/api/company/service-hour')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .expect(200)
+    })
+  })
+
+  describe('PATCH /company/court/:courtId', () => {
+    it('should return 200 on PATCH /company/court/:courtId', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email: companyAdminEmail,
+          password
+        })
+        
+
+      await request(app)
+        .patch('/api/company/court/id_01')
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
+        .send({
+          name: 'updated_name',
+        })
+        .expect(200)
+    })
+
+    it('should return 400 on PATCH /company/court/:courtId if new court name not provided', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email: companyAdminEmail,
+          password
+        })
+        
+
+      await request(app)
+        .patch('/api/company/court/id_01')
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
+        .send({})
+        .expect(400)
+    })
+
+    it('should return 404 on PATCH /company/court/:courtId if court not exists', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email: companyAdminEmail,
+          password
+        })
+        
+
+      await request(app)
+        .patch('/api/company/court/non_existent_id')
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
+        .send({
+          name: 'updated_name',
+        })
+        .expect(404)
     })
   })
 })
