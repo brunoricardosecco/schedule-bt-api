@@ -127,7 +127,7 @@ describe('Company Routes', () => {
         .expect(200)
     })
   })
-  
+
   describe('GET /company/service-hour', () => {
     it('should return 200 on GET /company/service-hour', async () => {
       const loginResponse = await request(app)
@@ -152,13 +152,12 @@ describe('Company Routes', () => {
           email: companyAdminEmail,
           password
         })
-        
 
       await request(app)
         .patch('/api/company/court/id_01')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .send({
-          name: 'updated_name',
+          name: 'updated_name'
         })
         .expect(200)
     })
@@ -170,7 +169,6 @@ describe('Company Routes', () => {
           email: companyAdminEmail,
           password
         })
-        
 
       await request(app)
         .patch('/api/company/court/id_01')
@@ -186,13 +184,12 @@ describe('Company Routes', () => {
           email: companyAdminEmail,
           password
         })
-        
 
       await request(app)
         .patch('/api/company/court/non_existent_id')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .send({
-          name: 'updated_name',
+          name: 'updated_name'
         })
         .expect(404)
     })

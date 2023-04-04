@@ -39,7 +39,7 @@ export default (router: Router): void => {
     expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
     routeAdapter(deleteCourtByIdControllerFactory())
   )
-  
+
   router.post(
     '/company/service-hour',
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),

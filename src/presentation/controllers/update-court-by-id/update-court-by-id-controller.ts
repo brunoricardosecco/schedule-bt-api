@@ -18,7 +18,7 @@ export class UpdateCourtByIdController implements Controller {
       const { params, user } = httpRequest
 
       const updatedCourtOrError = await this.updateCourt.updateById({
-        id: params.courtId, 
+        id: params.courtId,
         companyId: user?.companyId as string,
         data: httpRequest.body
       })

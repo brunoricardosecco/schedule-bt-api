@@ -58,7 +58,6 @@ const makeValidation = (): Validation => {
   return new ValidationStub()
 }
 
-
 type SutTypes = {
   sut: UpdateCourtByIdController
   updateCourtByIdStub: IUpdateCourtById
@@ -110,7 +109,7 @@ describe('UpdateeCourtByIdController', () => {
     await sut.handle(httpRequest)
 
     expect(updateByIdSpy).toHaveBeenCalledWith({
-      id: 'any_court_id', 
+      id: 'any_court_id',
       companyId: 'any_company_id',
       data: { name: 'any_name' }
     })
@@ -131,11 +130,11 @@ describe('UpdateeCourtByIdController', () => {
     const response = await sut.handle(httpRequest)
 
     expect(response).toStrictEqual(ok({
-      companyId: "any_id",
+      companyId: 'any_id',
       createdAt: new Date(),
-      id: "any_id",
-      name: "any_name",
-      updatedAt: new Date(),
-     }))
+      id: 'any_id',
+      name: 'any_name',
+      updatedAt: new Date()
+    }))
   })
 })

@@ -6,7 +6,7 @@ export type UpdateCourtByIdModel = {
 
 export type UpdateCourtByIdParams = {
   id: string
-  companyId: string,
+  companyId: string
   data: UpdateCourtByIdModel
 }
 
