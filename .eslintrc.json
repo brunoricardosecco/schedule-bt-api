@@ -9,5 +9,5 @@
     "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/restrict-template-expressions": "off"
   },
-  "ignorePatterns": ["**/migrations/**/*", "**/schema.prisma"]
+  "ignorePatterns": ["**/migrations/**/*", "**/schema.prisma", "**/schema.dbml", "**/seed.sql", "**/seed.ts"]
 }
