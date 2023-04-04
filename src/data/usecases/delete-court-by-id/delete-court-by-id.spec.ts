@@ -51,7 +51,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('DbFindCourtByIdAndCompanyId Usecase', () => {
+describe('DbDeleteCourtById Usecase', () => {
   it('should call DeleteCourtByIdRepository with correct values', async () => {
     const { sut, deleteCourtByIdRepositoryStub } = makeSut()
     const deleteByIdSpy = jest.spyOn(deleteCourtByIdRepositoryStub, 'deleteById')
