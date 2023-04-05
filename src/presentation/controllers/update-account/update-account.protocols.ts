@@ -1,5 +1,4 @@
 export * from '@/presentation/protocols'
-export * from '@/domain/usecases/update-account-password'
+export * from '@/domain/usecases/update-account'
 export * from '@/domain/models/account'
-export * from '@/presentation/protocols/validation'
 export * from '@/domain/enums/role-enum'

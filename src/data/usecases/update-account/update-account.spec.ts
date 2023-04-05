@@ -1,5 +1,5 @@
-import { Hasher, AccountModel, UpdateAccountRepository } from './update-account-password.protocols'
-import { UpdateAccountPassword } from './update-account-password'
+import { Hasher, AccountModel, UpdateAccountRepository } from './update-account.protocols'
+import { UpdateAccount } from './update-account'
 import { RoleEnum } from '@/domain/enums/role-enum'
 
 const makeFakeAccount = (hashedPassword: string): AccountModel => ({
@@ -38,7 +38,7 @@ const makeHasher = (): Hasher => {
 }
 
 type SutTypes = {
-  sut: UpdateAccountPassword
+  sut: UpdateAccount
   HasherStub: Hasher
   accountRepositoryStub: UpdateAccountRepository
 }
@@ -46,7 +46,7 @@ type SutTypes = {
 const makeSut = (): SutTypes => {
   const HasherStub = makeHasher()
   const accountRepositoryStub = makeAccountRepository()
-  const sut = new UpdateAccountPassword(HasherStub, accountRepositoryStub)
+  const sut = new UpdateAccount(HasherStub, accountRepositoryStub)
 
   return {
     sut,
@@ -55,14 +55,14 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('UpdateAccountPassword Usecase', () => {
+describe('UpdateAccount Usecase', () => {
   it('should return error if the password length is lower than the minimum', async () => {
     const { sut } = makeSut()
 
     const userId = 'valid_id'
     const password = 'a'
 
-    const error = await sut.update(userId, password) as Error
+    const error = await sut.update(userId, { password }) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir no mínimo 8 caracteres')
@@ -74,7 +74,7 @@ describe('UpdateAccountPassword Usecase', () => {
     const userId = 'valid_id'
     const password = '12345678'
 
-    const error = await sut.update(userId, password) as Error
+    const error = await sut.update(userId, { password }) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir ao menos uma letra')
@@ -86,7 +86,7 @@ describe('UpdateAccountPassword Usecase', () => {
     const password = 'abcdefghijk'
 
     const userId = 'valid_id'
-    const error = await sut.update(userId, password) as Error
+    const error = await sut.update(userId, { password }) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir ao menos um número')
@@ -99,7 +99,7 @@ describe('UpdateAccountPassword Usecase', () => {
 
     const userId = 'valid_id'
     const password = 'rajsiad21i'
-    const promise = sut.update(userId, password)
+    const promise = sut.update(userId, { password })
 
     await expect(promise).rejects.toThrow()
   })
@@ -117,14 +117,18 @@ describe('UpdateAccountPassword Usecase', () => {
     updateSpy.mockResolvedValueOnce(expectedResult)
 
     const userId = 'valid_id'
-    const password = 'rajsiad21i'
-    const account = await sut.update(userId, password) as AccountModel
+    const params = {
+      name: 'New name',
+      password: 'rajsiad21i'
+    }
+    const account = await sut.update(userId, params) as AccountModel
 
-    expect(hashSpy).toHaveBeenCalledWith(password)
+    expect(hashSpy).toHaveBeenCalledWith(params.password)
     expect(updateSpy).toHaveBeenCalledWith(
       userId,
       {
-        hashedPassword
+        hashedPassword,
+        name: params.name
       }
     )
     expect(account).toEqual(expectedResult)

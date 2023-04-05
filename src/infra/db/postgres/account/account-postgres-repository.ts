@@ -1,7 +1,7 @@
 import { AddAccountRepository, AddAccountToRepository } from '@/data/protocols/db/account/add-account-repository'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/account/load-account-by-email-repository'
 import { LoadAccountByIdRepository } from '@/data/protocols/db/account/load-account-by-id-repository'
-import { UpdateAccountRepository, UpdateAccountRepositoryModel } from '@/data/usecases/update-account-password/update-account-password.protocols'
+import { UpdateAccountRepository, UpdateAccountRepositoryModel } from '@/data/usecases/update-account/update-account.protocols'
 import { AccountModel } from '@/domain/models/account'
 import { db } from '@/infra/db/orm/prisma'
 
