@@ -27,7 +27,7 @@ export const forbidden = (error: Error): HttpResponse => ({
   body: error
 })
 
-export const okNoContent = (): HttpResponse => ({
+export const noContent = (): HttpResponse => ({
   statusCode: 204,
   body: null
 })

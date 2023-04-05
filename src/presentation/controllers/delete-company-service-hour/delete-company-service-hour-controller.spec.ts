@@ -1,6 +1,6 @@
 import { IDeleteServiceHour } from '@/domain/usecases/delete-service-hour'
 import { ServerError } from '@/presentation/errors'
-import { okNoContent, serverError } from '@/presentation/helpers/http/httpHelper'
+import { noContent, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, ServiceHour } from '../add-service-hour/add-service-hour-controller.protocols'
 import { DeleteCompanyServiceHourController } from './delete-company-service-hour-controller'
 import { RoleEnum } from '@/domain/enums/role-enum'
@@ -72,7 +72,7 @@ describe('DeleteServiceHour Controller', () => {
     const httpResponse = await sut.handle(fakeRequest)
 
     expect(deleteSpy).toHaveBeenCalledWith({ serviceHourId: fakeRequest.params.serviceHourId, companyId: fakeRequest.user?.companyId })
-    expect(httpResponse).toEqual(okNoContent())
+    expect(httpResponse).toEqual(noContent())
   })
   it('should return serverError if DeleteServiceHour throws', async () => {
     const { sut, deleteServiceHour } = makeSut()

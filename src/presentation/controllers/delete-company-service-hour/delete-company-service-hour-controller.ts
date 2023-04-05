@@ -1,4 +1,4 @@
-import { badRequest, okNoContent, serverError } from '@/presentation/helpers/http/httpHelper'
+import { badRequest, noContent, serverError } from '@/presentation/helpers/http/httpHelper'
 import { Controller, HttpRequest, HttpResponse, IDeleteServiceHour } from './delete-company-service-hour-controller.protocols'
 
 export class DeleteCompanyServiceHourController implements Controller {
@@ -19,7 +19,7 @@ export class DeleteCompanyServiceHourController implements Controller {
         return badRequest(deletedServiceHourOrError)
       }
 
-      return okNoContent()
+      return noContent()
     } catch (error) {
       return serverError(error)
     }
