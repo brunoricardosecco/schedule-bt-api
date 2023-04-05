@@ -1,12 +1,13 @@
-import { Router } from 'express'
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { expressMiddlewareAdapter } from '@/main/adapters/express/express-middleware-adapter'
 import { routeAdapter } from '@/main/adapters/express/express-route-adapter'
 import { makeAddCompanyController } from '@/main/factories/controllers/add-company/add-company-factory'
-import { makeAuthenticateMiddleware } from '@/main/factories/middlewares/authenticate-middleware/authenticate-middleware-factory'
-import { expressMiddlewareAdapter } from '@/main/adapters/express/express-middleware-adapter'
-import { makeAuthorizeMiddleware } from '@/main/factories/middlewares/authorize-middleware/authorize-middleware-factory'
-import { RoleEnum } from '@/domain/enums/role-enum'
-import { findManyCourtsByCompanyControllerFactory } from '@/main/factories/controllers/find-courts-by-company/find-courts-by-company-controller-factory'
 import { makeAddServiceHourController } from '@/main/factories/controllers/add-service-hour/add-service-hour-factory'
+import { findManyCourtsByCompanyControllerFactory } from '@/main/factories/controllers/find-courts-by-company/find-courts-by-company-controller-factory'
+import { makeAuthenticateMiddleware } from '@/main/factories/middlewares/authenticate-middleware/authenticate-middleware-factory'
+import { makeAuthorizeMiddleware } from '@/main/factories/middlewares/authorize-middleware/authorize-middleware-factory'
+import { Router } from 'express'
+import { deleteCourtByIdControllerFactory } from '../factories/controllers/delete-court-by-id/delete-court-by-id-controller-factory'
 import { makeFindCompanyServiceHoursController } from '../factories/controllers/find-company-service-hours/find-company-service-hours-factory'
 
 export default (router: Router): void => {
@@ -24,6 +25,13 @@ export default (router: Router): void => {
     routeAdapter(findManyCourtsByCompanyControllerFactory())
   )
 
+  router.delete(
+    '/company/court/:courtId',
+    expressMiddlewareAdapter(makeAuthenticateMiddleware()),
+    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
+    routeAdapter(deleteCourtByIdControllerFactory())
+  )
+  
   router.post(
     '/company/service-hour',
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),

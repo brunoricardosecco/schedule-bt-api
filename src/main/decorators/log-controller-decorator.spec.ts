@@ -2,6 +2,7 @@ import { LogErrorRepository } from '@/data/protocols/db/log/log-controller-repos
 import { AccountModel } from '@/domain/models/account'
 import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
+import MockDate from 'mockdate'
 import { LogControllerDecorator } from './log-controller-decorator'
 
 const makeFakeRequest = (): HttpRequest => {
@@ -73,6 +74,14 @@ const makeSut = (): SutTypes => {
 }
 
 describe('LogControllerDecorator', () => {
+  beforeAll(() => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(() => {
+    MockDate.reset()
+  })
+
   it('should call controller handle', async () => {
     const { controllerStub, sut } = makeSut()
 

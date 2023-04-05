@@ -62,6 +62,7 @@ model Courts {
   id        String    @id @default(uuid())
   name      String
   companyId String    @map("company_id")
+  isDeleted Boolean   @default(false) @map("is_deleted")
   company   Companies @relation(fields: [companyId], references: [id])
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @default(now()) @map("updated_at")

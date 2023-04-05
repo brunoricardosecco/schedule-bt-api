@@ -44,6 +44,7 @@ Table courts {
   id String [pk]
   name String [not null]
   companyId String [not null]
+  isDeleted Boolean [not null, default: false]
   company companies [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
