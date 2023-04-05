@@ -1,5 +1,5 @@
 import { IUpdateAccount, UpdateAccountReturn, AccountModel, RoleEnum } from './update-account.protocols'
-import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { UpdateAccountController } from './update-account-controller'
 
@@ -61,6 +61,20 @@ describe('UpdateAccountController', () => {
     const response = await sut.handle(httpRequest)
 
     expect(response).toEqual(serverError(new Error()))
+  })
+
+  it('should returns 400 if UpdateAccount returns an Error', async () => {
+    const { sut, updateAccountStub } = makeSut()
+
+    const error = new Error('Error')
+
+    jest.spyOn(updateAccountStub, 'update').mockResolvedValueOnce(error)
+
+    const httpRequest = makeFakeRequest({ name: '', password: '' })
+
+    const response = await sut.handle(httpRequest)
+
+    expect(response).toEqual(badRequest(error))
   })
 
   it('should return 200 on success', async () => {

@@ -1,5 +1,5 @@
 import { Controller, HttpRequest, HttpResponse, IUpdateAccount } from './update-account.protocols'
-import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 
 export class UpdateAccountController implements Controller {
   constructor (
@@ -11,7 +11,7 @@ export class UpdateAccountController implements Controller {
       const { user } = httpRequest
       const { password, name } = httpRequest.body
 
-      const account = await this.updateAccount.update(
+      const accountOrError = await this.updateAccount.update(
         user?.id as string,
         {
           password,
@@ -19,8 +19,12 @@ export class UpdateAccountController implements Controller {
         }
       )
 
+      if (accountOrError instanceof Error) {
+        return badRequest(accountOrError)
+      }
+
       return ok({
-        account
+        account: accountOrError
       })
     } catch (error) {
       return serverError(error)
