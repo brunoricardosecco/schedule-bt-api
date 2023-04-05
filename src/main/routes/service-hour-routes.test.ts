@@ -47,7 +47,8 @@ describe('ServiceHour Routes', () => {
     await db.$transaction([
       deleteAccounts,
       deleteServiceHours,
-      deleteCompanies
+      deleteCompanies,
+      deleteAccounts
     ])
     await db.$disconnect()
   })
@@ -59,7 +60,8 @@ describe('ServiceHour Routes', () => {
     await db.$transaction([
       deleteAccounts,
       deleteServiceHours,
-      deleteCompanies
+      deleteCompanies,
+      deleteAccounts
     ])
   })
 

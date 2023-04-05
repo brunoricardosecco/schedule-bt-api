@@ -132,4 +132,23 @@ describe('Company Routes', () => {
         .expect(200)
     })
   })
+  describe('DELETE /company/service-hour/:serviceHourId', () => {
+    it('should return 204 on DELETE /company/service-hour/:serviceHourId', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email: companyAdminEmail,
+          password
+        })
+
+      const serviceHour = await db.serviceHours.create({
+        data: makeFakeServiceHourData(createdCompany.id)
+      })
+
+      await request(app)
+        .delete(`/api/company/service-hour/${serviceHour.id}`)
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
+        .expect(204)
+    })
+  })
 })
