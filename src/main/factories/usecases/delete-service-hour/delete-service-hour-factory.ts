@@ -5,5 +5,5 @@ import { ServiceHourPostgresRepository } from '@/infra/db/postgres/service-hour/
 export const makeDeleteServiceHour = (): IDeleteServiceHour => {
   const serviceHourPostgresRepository = new ServiceHourPostgresRepository()
 
-  return new DeleteServiceHour(serviceHourPostgresRepository)
+  return new DeleteServiceHour(serviceHourPostgresRepository, serviceHourPostgresRepository)
 }

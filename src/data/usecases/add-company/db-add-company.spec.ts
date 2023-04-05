@@ -1,5 +1,6 @@
-import { AddCompanyModel, Company, AddCompanyRepository } from './db-add-company.protocols'
+import MockDate from 'mockdate'
 import { DbAddCompany } from './db-add-company'
+import { AddCompanyModel, AddCompanyRepository, Company } from './db-add-company.protocols'
 
 const makeFakeCompany = (): Company => ({
   id: 'valid_id',
@@ -42,6 +43,14 @@ const makeSut = (): SutTypes => {
 }
 
 describe('DbAddCompany Usecase', () => {
+  beforeAll(() => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(() => {
+    MockDate.reset()
+  })
+
   it('should call AddCompanyRepository with correct values', async () => {
     const { sut, addCompanyRepositoryStub } = makeSut()
 

@@ -1,8 +1,9 @@
-import { MissingParamError, ServerError } from '@/presentation/errors'
-import { AccountModel, AddAccount, AddAccountModel, HttpRequest, Validation, IAuthenticateByPassword } from './signup-controller.protocols'
-import { SignUpController } from './signup-controller'
-import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { RoleEnum } from '@/domain/enums/role-enum'
+import { MissingParamError, ServerError } from '@/presentation/errors'
+import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import MockDate from 'mockdate'
+import { SignUpController } from './signup-controller'
+import { AccountModel, AddAccount, AddAccountModel, HttpRequest, IAuthenticateByPassword, Validation } from './signup-controller.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -82,6 +83,14 @@ const makeSut = (): SutTypes => {
 }
 
 describe('SignUp Controller', () => {
+  beforeAll(() => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(() => {
+    MockDate.reset()
+  })
+
   it('should call AddAccount with correct values', async () => {
     const { sut, addAccountStub } = makeSut()
 
