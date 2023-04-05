@@ -3,6 +3,7 @@ import { ServerError } from '@/presentation/errors'
 import { okNoContent, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, ServiceHour } from '../add-service-hour/add-service-hour-controller.protocols'
 import { DeleteCompanyServiceHourController } from './delete-company-service-hour-controller'
+import { RoleEnum } from '@/domain/enums/role-enum'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   companyId: 'any_company_id',
@@ -19,6 +20,20 @@ const makeFakeRequest = (): HttpRequest => {
     query: {},
     params: {
       serviceHourId: 'any_id'
+    },
+    user: {
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      hashedPassword: 'hashed_password',
+      role: RoleEnum.EMPLOYEE,
+      companyId: 'valid_company_id',
+      company: null,
+      emailValidationToken: null,
+      emailValidationTokenExpiration: null,
+      isConfirmed: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   }
 }
@@ -26,7 +41,7 @@ const fakeRequest = makeFakeRequest()
 
 const makeDeleteServiceHour = (): IDeleteServiceHour => {
   class DeleteServiceHourStub implements IDeleteServiceHour {
-    async delete (serviceHourId: string): Promise<ServiceHour> {
+    async delete ({ serviceHourId, companyId }: { serviceHourId: string, companyId: string }): Promise<ServiceHour | Error> {
       return await new Promise(resolve => { resolve(fakeServiceHour) })
     }
   }
@@ -56,7 +71,7 @@ describe('DeleteServiceHour Controller', () => {
 
     const httpResponse = await sut.handle(fakeRequest)
 
-    expect(deleteSpy).toHaveBeenCalledWith('any_id')
+    expect(deleteSpy).toHaveBeenCalledWith({ serviceHourId: fakeRequest.params.serviceHourId, companyId: fakeRequest.user?.companyId })
     expect(httpResponse).toEqual(okNoContent())
   })
   it('should return serverError if DeleteServiceHour throws', async () => {
