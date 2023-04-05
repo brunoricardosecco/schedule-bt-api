@@ -1,4 +1,4 @@
-import { IUpdateAccount, UpdateAccountRepository, Hasher, UpdateAccountReturn, UpdateAccountParams } from './update-account.protocols'
+import { IUpdateAccount, UpdateAccountRepository, Hasher, UpdateAccountReturn, UpdateAccountParams, LoadAccountByIdRepository, HashComparer } from './update-account.protocols'
 
 const MIN_PASSWORD_LENGTH = 8
 const HAS_AT_LEAST_ONE_LETTER_REGEX = /[a-zA-Z]/
@@ -6,18 +6,32 @@ const HAS_AT_LEAST_ONE_NUMBER_REGEX = /[0-9]/
 
 export class UpdateAccount implements IUpdateAccount {
   constructor (
-    private readonly hasher: Hasher,
-    private readonly accountRepository: UpdateAccountRepository
+    private readonly hasher: Hasher & HashComparer,
+    private readonly accountRepository: UpdateAccountRepository & LoadAccountByIdRepository
   ) {}
 
   async update (userId: string, params: UpdateAccountParams): UpdateAccountReturn {
-    const { password, name } = params
+    const { password, currentPassword, name } = params
 
     const paramsToUpdate: Record<string, any> = {
       name
     }
 
     if (password) {
+      if (!currentPassword) {
+        return new Error('É obrigatório envio da senha atual')
+      }
+
+      const hashedCurrentPassword = await this.hasher.hash(currentPassword)
+      const isCurrentPasswordCorrect = await this.hasher.isEqual(
+        currentPassword,
+        hashedCurrentPassword
+      )
+
+      if (!isCurrentPasswordCorrect) {
+        return new Error('Senha atual incorreta')
+      }
+
       if (password.length < MIN_PASSWORD_LENGTH) {
         return new Error('A senha deve possuir no mínimo 8 caracteres')
       }

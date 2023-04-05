@@ -1,4 +1,4 @@
-import { Hasher, AccountModel, UpdateAccountRepository } from './update-account.protocols'
+import { Hasher, AccountModel, UpdateAccountRepository, LoadAccountByIdRepository, HashComparer } from './update-account.protocols'
 import { UpdateAccount } from './update-account'
 import { RoleEnum } from '@/domain/enums/role-enum'
 
@@ -17,20 +17,30 @@ const makeFakeAccount = (hashedPassword: string): AccountModel => ({
   updatedAt: new Date()
 })
 
-const makeAccountRepository = (): UpdateAccountRepository => {
-  class UpdateAccountRepositoryStub implements UpdateAccountRepository {
+const defaultAccount = makeFakeAccount('hashed_password')
+
+const makeAccountRepository = (): UpdateAccountRepository & LoadAccountByIdRepository => {
+  class AccountRepositoryStub implements UpdateAccountRepository, LoadAccountByIdRepository {
     async update (): Promise<AccountModel> {
       return makeFakeAccount('any_hashed_password')
     }
+
+    async loadById (): Promise<AccountModel | null> {
+      return defaultAccount
+    }
   }
 
-  return new UpdateAccountRepositoryStub()
+  return new AccountRepositoryStub()
 }
 
-const makeHasher = (): Hasher => {
+const makeHasher = (): Hasher & HashComparer => {
   class HasherStub implements Hasher {
     async hash (): Promise<string> {
       return 'hashed_password'
+    }
+
+    async isEqual (): Promise<boolean> {
+      return true
     }
   }
 
@@ -39,8 +49,8 @@ const makeHasher = (): Hasher => {
 
 type SutTypes = {
   sut: UpdateAccount
-  HasherStub: Hasher
-  accountRepositoryStub: UpdateAccountRepository
+  HasherStub: Hasher & HashComparer
+  accountRepositoryStub: UpdateAccountRepository & LoadAccountByIdRepository
 }
 
 const makeSut = (): SutTypes => {
@@ -60,9 +70,12 @@ describe('UpdateAccount Usecase', () => {
     const { sut } = makeSut()
 
     const userId = 'valid_id'
-    const password = 'a'
+    const paramsToUpdate = {
+      password: 'a',
+      currentPassword: '1234567AB'
+    }
 
-    const error = await sut.update(userId, { password }) as Error
+    const error = await sut.update(userId, paramsToUpdate) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir no mínimo 8 caracteres')
@@ -72,9 +85,13 @@ describe('UpdateAccount Usecase', () => {
     const { sut } = makeSut()
 
     const userId = 'valid_id'
-    const password = '12345678'
 
-    const error = await sut.update(userId, { password }) as Error
+    const paramsToUpdate = {
+      password: '12345678',
+      currentPassword: '1234567AB'
+    }
+
+    const error = await sut.update(userId, paramsToUpdate) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir ao menos uma letra')
@@ -83,10 +100,13 @@ describe('UpdateAccount Usecase', () => {
   it('should return error if the password doesn`t contain at least one number', async () => {
     const { sut } = makeSut()
 
-    const password = 'abcdefghijk'
+    const paramsToUpdate = {
+      password: 'abcdefghijk',
+      currentPassword: '1234567AB'
+    }
 
     const userId = 'valid_id'
-    const error = await sut.update(userId, { password }) as Error
+    const error = await sut.update(userId, paramsToUpdate) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir ao menos um número')
@@ -98,8 +118,11 @@ describe('UpdateAccount Usecase', () => {
     jest.spyOn(HasherStub, 'hash').mockRejectedValueOnce(new Error())
 
     const userId = 'valid_id'
-    const password = 'rajsiad21i'
-    const promise = sut.update(userId, { password })
+    const paramsToUpdate = {
+      password: 'a',
+      currentPassword: 'abcdefghijk1'
+    }
+    const promise = sut.update(userId, paramsToUpdate)
 
     await expect(promise).rejects.toThrow()
   })
@@ -119,6 +142,7 @@ describe('UpdateAccount Usecase', () => {
     const userId = 'valid_id'
     const params = {
       name: 'New name',
+      currentPassword: 'abcdefghijk1',
       password: 'rajsiad21i'
     }
     const account = await sut.update(userId, params) as AccountModel

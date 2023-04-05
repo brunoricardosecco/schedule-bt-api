@@ -39,7 +39,8 @@ describe('Account Routes', () => {
         .set('Authorization', `Bearer ${loginResponse.body.accessToken}`)
         .send({
           name: 'Novo Nome',
-          password: '1235611AB'
+          password: '1235611AB',
+          currentPassword: password
         })
         .expect(200)
     })

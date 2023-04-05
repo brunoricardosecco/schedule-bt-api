@@ -9,12 +9,13 @@ export class UpdateAccountController implements Controller {
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const { user } = httpRequest
-      const { password, name } = httpRequest.body
+      const { password, currentPassword, name } = httpRequest.body
 
       const accountOrError = await this.updateAccount.update(
         user?.id as string,
         {
           password,
+          currentPassword,
           name
         }
       )

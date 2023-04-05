@@ -5,6 +5,7 @@ export type UpdateAccountReturn = Promise<AccountModel | Error>
 export type UpdateAccountParams = {
   name?: string
   password?: string
+  currentPassword?: string
 }
 
 export interface IUpdateAccount {
