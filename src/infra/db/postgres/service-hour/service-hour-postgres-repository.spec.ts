@@ -138,4 +138,28 @@ describe('Service Hour Postgres Repository', () => {
 
     expect(serviceHours.length).toEqual(0)
   })
+  it('should delete a service hour and return the deleted service hour', async () => {
+    const sut = makeSut()
+    const company = await db.companies.create({
+      data: {
+        name: 'any_name',
+        reservationPrice: 60,
+        reservationTimeInMinutes: 80
+      }
+    })
+    const serviceHour = await db.serviceHours.create({
+      data: {
+        weekday: 0,
+        startTime: '11:00',
+        endTime: '20:00',
+        companyId: company.id
+      }
+    })
+
+    const deletedServiceHour = await sut.delete(serviceHour.id)
+    const serviceHours = await db.serviceHours.findMany()
+
+    expect(deletedServiceHour).toEqual(serviceHour)
+    expect(serviceHours.length).toEqual(0)
+  })
 })
