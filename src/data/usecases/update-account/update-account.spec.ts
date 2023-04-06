@@ -66,6 +66,37 @@ const makeSut = (): SutTypes => {
 }
 
 describe('UpdateAccount Usecase', () => {
+  it('should return error if the password is sent but the currentPassword is not sent', async () => {
+    const { sut } = makeSut()
+
+    const userId = 'valid_id'
+    const paramsToUpdate = {
+      password: 'a'
+    }
+
+    const error = await sut.update(userId, paramsToUpdate) as Error
+
+    expect(error).toBeInstanceOf(Error)
+    expect(error.message).toBe('É obrigatório envio da senha atual')
+  })
+
+  it('should return error if the currentPassword is incorrect', async () => {
+    const { sut, HasherStub } = makeSut()
+
+    const userId = 'valid_id'
+    const paramsToUpdate = {
+      password: 'a',
+      currentPassword: 'any_password'
+    }
+
+    jest.spyOn(HasherStub, 'isEqual').mockResolvedValueOnce(false)
+
+    const error = await sut.update(userId, paramsToUpdate) as Error
+
+    expect(error).toBeInstanceOf(Error)
+    expect(error.message).toBe('Senha atual incorreta')
+  })
+
   it('should return error if the password length is lower than the minimum', async () => {
     const { sut } = makeSut()
 
@@ -127,7 +158,33 @@ describe('UpdateAccount Usecase', () => {
     await expect(promise).rejects.toThrow()
   })
 
-  it('should update account', async () => {
+  it('should update the name of the account', async () => {
+    const { sut, accountRepositoryStub } = makeSut()
+
+    const hashedPassword = 'hashed_password'
+    const expectedResult = makeFakeAccount(hashedPassword)
+
+    const updateSpy = jest.spyOn(accountRepositoryStub, 'update')
+
+    updateSpy.mockResolvedValueOnce(expectedResult)
+
+    const userId = 'valid_id'
+    const params = {
+      name: 'New name'
+    }
+    const account = await sut.update(userId, params) as AccountModel
+
+    expect(updateSpy).toHaveBeenCalledWith(
+      userId,
+      {
+        name: params.name
+      }
+    )
+    expect(account).toEqual(expectedResult)
+    expect(account.hashedPassword).toEqual(hashedPassword)
+  })
+
+  it('should update all the possible value of the account', async () => {
     const { sut, accountRepositoryStub, HasherStub } = makeSut()
 
     const hashedPassword = 'hashed_password'
