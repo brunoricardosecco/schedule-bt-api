@@ -1,8 +1,8 @@
 
-import { badRequest, notFound, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { notFound, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import MockDate from 'mockdate'
 import { UpdateCourtByIdController } from './update-court-by-id-controller'
-import { AccountModel, Court, HttpRequest, IUpdateCourtById, MissingParamError, NotFoundError, RoleEnum, Validation } from './update-court-by-id.protocols'
+import { AccountModel, Court, HttpRequest, IUpdateCourtById, NotFoundError, RoleEnum } from './update-court-by-id.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -48,31 +48,18 @@ const makeUpdateCourtById = (): IUpdateCourtById => {
   return new UpdateCourtByIdStub()
 }
 
-const makeValidation = (): Validation => {
-  class ValidationStub implements Validation {
-    validate (): Error | null {
-      return null
-    }
-  }
-
-  return new ValidationStub()
-}
-
 type SutTypes = {
   sut: UpdateCourtByIdController
   updateCourtByIdStub: IUpdateCourtById
-  validationStub: Validation
 }
 
 const makeSut = (): SutTypes => {
   const updateCourtByIdStub = makeUpdateCourtById()
-  const validationStub = makeValidation()
-  const sut = new UpdateCourtByIdController(updateCourtByIdStub, validationStub)
+  const sut = new UpdateCourtByIdController(updateCourtByIdStub)
 
   return {
     sut,
-    updateCourtByIdStub,
-    validationStub
+    updateCourtByIdStub
   }
 }
 
@@ -83,14 +70,6 @@ describe('UpdateeCourtByIdController', () => {
 
   afterAll(() => {
     MockDate.reset()
-  })
-
-  it('should return 400 if Validation returns an error', async () => {
-    const { sut, validationStub } = makeSut()
-    jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('any_field'))
-    const httpResponse = await sut.handle({})
-
-    expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })
 
   it('should returns 500 if UpdateCourtById throws', async () => {

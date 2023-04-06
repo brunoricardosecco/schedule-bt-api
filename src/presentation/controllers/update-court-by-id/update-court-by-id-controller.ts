@@ -1,20 +1,13 @@
-import { badRequest, notFound, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { Controller, HttpRequest, HttpResponse, IUpdateCourtById, NotFoundError, Validation } from './update-court-by-id.protocols'
+import { notFound, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { Controller, HttpRequest, HttpResponse, IUpdateCourtById, NotFoundError } from './update-court-by-id.protocols'
 
 export class UpdateCourtByIdController implements Controller {
   constructor (
-    private readonly updateCourt: IUpdateCourtById,
-    private readonly validation: Validation
+    private readonly updateCourt: IUpdateCourtById
   ) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const error = this.validation.validate(httpRequest.body)
-
-      if (error) {
-        return badRequest(error)
-      }
-
       const { params, user } = httpRequest
 
       const updatedCourtOrError = await this.updateCourt.updateById({

@@ -162,21 +162,6 @@ describe('Company Routes', () => {
         .expect(200)
     })
 
-    it('should return 400 on PATCH /company/court/:courtId if new court name not provided', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: companyAdminEmail,
-          password
-        })
-
-      await request(app)
-        .patch('/api/company/court/id_01')
-        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
-        .send({})
-        .expect(400)
-    })
-
     it('should return 404 on PATCH /company/court/:courtId if court not exists', async () => {
       const loginResponse = await request(app)
         .post('/api/authenticate-by-password')
