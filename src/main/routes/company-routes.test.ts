@@ -143,7 +143,7 @@ describe('Company Routes', () => {
         .expect(200)
     })
   })
-
+  
   describe('PATCH /company/court/:courtId', () => {
     it('should return 200 on PATCH /company/court/:courtId', async () => {
       const loginResponse = await request(app)

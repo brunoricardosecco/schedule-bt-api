@@ -10,6 +10,7 @@ import { updateCourtByIdControllerFactory } from '@/main/factories/controllers/u
 import { makeAuthenticateMiddleware } from '@/main/factories/middlewares/authenticate-middleware/authenticate-middleware-factory'
 import { makeAuthorizeMiddleware } from '@/main/factories/middlewares/authorize-middleware/authorize-middleware-factory'
 import { Router } from 'express'
+import { makeDeleteCompanyServiceHourController } from '../factories/controllers/delete-company-service-hour/delete-company-service-hour-factory'
 
 export default (router: Router): void => {
   router.post(
@@ -52,5 +53,12 @@ export default (router: Router): void => {
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
     expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.EMPLOYEE, RoleEnum.COMPANY_ADMIN])),
     routeAdapter(makeFindCompanyServiceHoursController())
+  )
+
+  router.delete(
+    '/company/service-hour/:serviceHourId',
+    expressMiddlewareAdapter(makeAuthenticateMiddleware()),
+    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
+    routeAdapter(makeDeleteCompanyServiceHourController())
   )
 }
