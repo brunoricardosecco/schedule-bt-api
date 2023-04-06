@@ -5,7 +5,7 @@ import { CompanyPostgresRepository } from '@/infra/db/postgres/company/company-p
 import { ReservationPostgresRepository } from '@/infra/db/postgres/reservation/reservation-postgres-repository'
 import { ServiceHourPostgresRepository } from '@/infra/db/postgres/service-hour/service-hour-postgres-repository'
 
-export const makeReservationIntervals = (): IFindReservationIntervals => {
+export const makeFindReservationIntervals = (): IFindReservationIntervals => {
   const serviceHourPostgresRepository = new ServiceHourPostgresRepository()
   const companyPostgresRepository = new CompanyPostgresRepository()
   const reservationPostgresRepository = new ReservationPostgresRepository()

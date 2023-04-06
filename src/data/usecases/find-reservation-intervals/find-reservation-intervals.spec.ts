@@ -1,26 +1,13 @@
 import {
-  FindCompaniesRepository,
-  FindCompaniesRepositoryParams
-} from '@/data/protocols/db/company/find-company-repository'
-import { IFindReservationIntervals } from '@/domain/usecases/find-reservation-intervals'
-import { Company } from '../add-company/db-add-company.protocols'
-import {
-  FindServiceHoursRepository,
-  FindServiceHoursRepositoryParams,
-  ServiceHour
-} from '../find-service-hours/find-service-hours.protocols'
+  FindCompaniesRepository, IFindReservationIntervals, FindServiceHoursRepository, FindReservationsRepository, TimeConflictChecker, FindCompaniesRepositoryParams, FindServiceHoursRepositoryParams,
+  FindReservationsRepositoryParams, ServiceHourTimeModel,
+  TimeOverlappingCheckerModel
+} from './find-reservation-intervals.protocols'
+import { Company } from '@/domain/models/company'
+import { ServiceHour } from '@/domain/models/service-hour'
 import { FindReservationIntervals } from './find-reservation-intervals'
 import { Reservation } from '@/domain/models/reservation'
-import {
-  FindReservationsRepository,
-  FindReservationsRepositoryParams
-} from '@/data/protocols/db/reservation/find-reservation-repository'
 import { ReservationStatusEnum } from '@/domain/enums/reservation-status-enum'
-import {
-  ServiceHourTimeModel,
-  TimeConflictChecker,
-  TimeOverlappingCheckerModel
-} from '../add-service-hour/add-service-hour.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',

@@ -3,7 +3,7 @@ import { FindReservationIntervalsParams, IFindReservationIntervals } from '@/dom
 import { Controller, HttpRequest, Validation } from '../add-company/add-company-controller.protocols'
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { FindReservationIntervalsController } from './find-reservation-intervals'
+import { FindReservationIntervalsController } from './find-reservation-intervals-controller'
 
 const makeFakeRequest = (): HttpRequest => {
   return {

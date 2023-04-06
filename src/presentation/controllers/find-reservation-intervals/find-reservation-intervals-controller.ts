@@ -1,6 +1,6 @@
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { Controller, HttpRequest, HttpResponse, Validation } from '../add-company/add-company-controller.protocols'
-import { IFindReservationIntervals } from '@/domain/usecases/find-reservation-intervals'
+import { Controller, HttpRequest, HttpResponse, Validation } from '@/presentation/protocols'
+import { IFindReservationIntervals } from './find-reservation-intervals-controller.protocols'
 
 export class FindReservationIntervalsController implements Controller {
   constructor (

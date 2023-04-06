@@ -1,10 +1,4 @@
-import { FindCompaniesRepository } from '@/data/protocols/db/company/find-company-repository'
-import { ReservationInterval } from '@/domain/models/reservation-interval'
-import { FindReservationIntervalsParams, IFindReservationIntervals } from '@/domain/usecases/find-reservation-intervals'
-import { FindServiceHoursRepository } from '../find-service-hours/find-service-hours.protocols'
-import { FindReservationsRepository } from '@/data/protocols/db/reservation/find-reservation-repository'
-import { getServiceHourTimeFormatted } from '@/data/helpers/service-hour-time-formatter'
-import { TimeConflictChecker } from '../add-service-hour/add-service-hour.protocols'
+import { FindCompaniesRepository, ReservationInterval, FindReservationIntervalsParams, IFindReservationIntervals, FindServiceHoursRepository, FindReservationsRepository, getServiceHourTimeFormatted, TimeConflictChecker } from './find-reservation-intervals.protocols'
 
 export class FindReservationIntervals implements IFindReservationIntervals {
   constructor (

@@ -1,4 +1,4 @@
-import { ServiceHour } from '../usecases/add-service-hour/add-service-hour.protocols'
+import { ServiceHour } from '@/domain/models/service-hour'
 
 type FormattedTimes = {
   start: Date
