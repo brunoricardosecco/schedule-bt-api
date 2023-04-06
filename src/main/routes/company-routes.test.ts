@@ -151,4 +151,28 @@ describe('Company Routes', () => {
         .expect(204)
     })
   })
+  describe('GET /company/find-reservation-intervals', () => {
+    it('should return 200 on GET /company/find-reservation-intervals', async () => {
+      const loginResponse = await request(app)
+        .post('/api/authenticate-by-password')
+        .send({
+          email: companyAdminEmail,
+          password
+        })
+
+      await db.serviceHours.create({
+        data: {
+          startTime: '09:00',
+          endTime: '12:00',
+          weekday: new Date().getDay(),
+          companyId: createdCompany.id
+        }
+      })
+
+      await request(app)
+        .get(`/api/company/find-reservation-intervals?date=${new Date()}`)
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
+        .expect(200)
+    })
+  })
 })

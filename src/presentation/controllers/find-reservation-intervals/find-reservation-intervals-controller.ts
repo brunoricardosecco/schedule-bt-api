@@ -24,6 +24,7 @@ export class FindReservationIntervalsController implements Controller {
       })
 
       if (intervalsOrError instanceof Error) {
+        console.log('AAA', intervalsOrError)
         return badRequest(intervalsOrError)
       }
 
