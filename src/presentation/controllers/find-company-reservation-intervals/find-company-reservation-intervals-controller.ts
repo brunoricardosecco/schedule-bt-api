@@ -1,8 +1,8 @@
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { Controller, HttpRequest, HttpResponse, Validation } from '@/presentation/protocols'
-import { IFindReservationIntervals } from './find-reservation-intervals-controller.protocols'
+import { IFindReservationIntervals } from './find-company-reservation-intervals-controller.protocols'
 
-export class FindReservationIntervalsController implements Controller {
+export class FindCompanyReservationIntervalsController implements Controller {
   constructor (
     private readonly validation: Validation,
     private readonly findReservationIntervals: IFindReservationIntervals
@@ -24,7 +24,6 @@ export class FindReservationIntervalsController implements Controller {
       })
 
       if (intervalsOrError instanceof Error) {
-        console.log('AAA', intervalsOrError)
         return badRequest(intervalsOrError)
       }
 

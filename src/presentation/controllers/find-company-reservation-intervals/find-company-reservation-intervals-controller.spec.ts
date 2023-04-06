@@ -3,7 +3,7 @@ import { FindReservationIntervalsParams, IFindReservationIntervals } from '@/dom
 import { Controller, HttpRequest, Validation } from '../add-company/add-company-controller.protocols'
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { FindReservationIntervalsController } from './find-reservation-intervals-controller'
+import { FindCompanyReservationIntervalsController } from './find-company-reservation-intervals-controller'
 
 const makeFakeRequest = (): HttpRequest => {
   return {
@@ -58,7 +58,7 @@ type SutTypes = {
 const makeSut = (): SutTypes => {
   const findReservationIntervalsStub = makeFindReservationIntervals()
   const validationStub = makeValidation()
-  const sut = new FindReservationIntervalsController(validationStub, findReservationIntervalsStub)
+  const sut = new FindCompanyReservationIntervalsController(validationStub, findReservationIntervalsStub)
 
   return {
     sut,

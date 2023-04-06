@@ -10,7 +10,7 @@ import { Router } from 'express'
 import { deleteCourtByIdControllerFactory } from '../factories/controllers/delete-court-by-id/delete-court-by-id-controller-factory'
 import { makeFindCompanyServiceHoursController } from '../factories/controllers/find-company-service-hours/find-company-service-hours-factory'
 import { makeDeleteCompanyServiceHourController } from '../factories/controllers/delete-company-service-hour/delete-company-service-hour-factory'
-import { makeReservationIntervalsController } from '../factories/controllers/find-reservation-intervals/find-reservation-intervals-factory'
+import { makeCompanyReservationIntervalsController } from '../factories/controllers/find-company-reservation-intervals/find-company-reservation-intervals-factory'
 
 export default (router: Router): void => {
   router.post(
@@ -59,6 +59,6 @@ export default (router: Router): void => {
     '/company/find-reservation-intervals',
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
     expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN, RoleEnum.EMPLOYEE])),
-    routeAdapter(makeReservationIntervalsController())
+    routeAdapter(makeCompanyReservationIntervalsController())
   )
 }
