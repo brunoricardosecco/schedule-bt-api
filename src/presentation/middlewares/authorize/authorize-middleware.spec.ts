@@ -3,7 +3,8 @@ import { AccountModel } from '@/domain/models/account'
 import { Role } from '@/domain/models/role'
 import { IAuthorize } from '@/domain/usecases/authorize'
 import { ServerError } from '@/presentation/errors'
-import { ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
+import { UnauthorizedError } from '@/presentation/errors/unauthorized-error'
+import { forbidden, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { AuthorizeMiddleware } from './authorize-middleware'
 
 const makeFakeAccount = (): AccountModel => ({
@@ -56,7 +57,7 @@ describe('Authorize Middleware', () => {
 
     const httpResponse = await authorizeMiddleware.handle({})
 
-    expect(httpResponse).toEqual(unauthorized())
+    expect(httpResponse).toEqual(forbidden(new UnauthorizedError()))
   })
 
   it('should return 401 if Authorize returns false', async () => {
@@ -66,7 +67,7 @@ describe('Authorize Middleware', () => {
 
     const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
-    expect(httpResponse).toEqual(unauthorized())
+    expect(httpResponse).toEqual(forbidden(new UnauthorizedError()))
   })
 
   it('should return 500 if Authorize throws an error', async () => {

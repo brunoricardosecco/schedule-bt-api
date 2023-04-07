@@ -1,8 +1,8 @@
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { AccountModel } from '@/domain/models/account'
 import { IAuthenticate, IAuthenticateReturn } from '@/domain/usecases/authenticate'
-import { AccessDeniedError, ServerError } from '@/presentation/errors'
-import { forbidden, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { ServerError } from '@/presentation/errors'
+import { ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
 import { AuthenticateMiddleware } from './authenticate-middleware'
 
 const makeFakeAccount = (): AccountModel => ({
@@ -51,7 +51,7 @@ describe('Authenticate Middleware', () => {
 
     const httpResponse = await authenticateMiddleware.handle({})
 
-    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+    expect(httpResponse).toEqual(unauthorized())
   })
 
   it('should return 403 if token is invalid', async () => {
@@ -63,7 +63,7 @@ describe('Authenticate Middleware', () => {
       },
     })
 
-    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+    expect(httpResponse).toEqual(unauthorized())
   })
 
   it('should return 403 if Authenticate returns an error', async () => {
@@ -77,7 +77,7 @@ describe('Authenticate Middleware', () => {
       },
     })
 
-    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+    expect(httpResponse).toEqual(unauthorized())
   })
 
   it('should return 500 if Authenticate throws an error', async () => {
