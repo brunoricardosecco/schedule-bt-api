@@ -56,7 +56,7 @@ export default (router: Router): void => {
   )
 
   router.get(
-    '/company/find-reservation-intervals',
+    '/company/reservation-intervals',
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
     expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN, RoleEnum.EMPLOYEE])),
     routeAdapter(makeCompanyReservationIntervalsController())

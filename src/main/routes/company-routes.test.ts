@@ -151,8 +151,8 @@ describe('Company Routes', () => {
         .expect(204)
     })
   })
-  describe('GET /company/find-reservation-intervals', () => {
-    it('should return 200 on GET /company/find-reservation-intervals', async () => {
+  describe('GET /company/reservation-intervals', () => {
+    it('should return 200 on GET /company/reservation-intervals', async () => {
       const loginResponse = await request(app)
         .post('/api/authenticate-by-password')
         .send({
@@ -170,7 +170,7 @@ describe('Company Routes', () => {
       })
 
       await request(app)
-        .get(`/api/company/find-reservation-intervals?date=${new Date()}`)
+        .get(`/api/company/reservation-intervals?date=${new Date()}`)
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .expect(200)
     })
