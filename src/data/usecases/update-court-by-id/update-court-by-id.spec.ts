@@ -1,7 +1,6 @@
 
-import { NotFoundError } from '@/domain/errors/not-found-error'
-import { DeleteCourtById } from './delete-court-by-id'
-import { Court, DeleteCourtByIdRepository, FindCourtByIdAndCompanyIdRepository } from './delete-court-by-id.protocols'
+import { UpdateCourtById } from './update-court-by-id'
+import { Court, FindCourtByIdAndCompanyIdRepository, NotFoundError, UpdateCourtByIdParamsToRepository, UpdateCourtByIdRepository } from './update-court-by-id.protocols'
 
 const mockCourt = (): Court => ({
   id: 'any_id',
@@ -11,15 +10,15 @@ const mockCourt = (): Court => ({
   updatedAt: new Date()
 })
 
-const makeDeleteCourtByIdRepository = (): DeleteCourtByIdRepository => {
-  class DeleteCourtByIdRepositoryStub implements DeleteCourtByIdRepository {
-    async deleteById (courtId: string): Promise<Court> {
+const makeUpdateCourtByIdRepository = (): UpdateCourtByIdRepository => {
+  class UpdateCourtByIdRepositoryStub implements UpdateCourtByIdRepository {
+    async updateById ({ id, data }: UpdateCourtByIdParamsToRepository): Promise<Court> {
       const fakeCourt = mockCourt()
       return await Promise.resolve(fakeCourt)
     }
   }
 
-  return new DeleteCourtByIdRepositoryStub()
+  return new UpdateCourtByIdRepositoryStub()
 }
 
 const makeFindCourtByIdAndCompanyIdRepository = (): FindCourtByIdAndCompanyIdRepository => {
@@ -34,44 +33,44 @@ const makeFindCourtByIdAndCompanyIdRepository = (): FindCourtByIdAndCompanyIdRep
 }
 
 type SutTypes = {
-  sut: DeleteCourtById
-  deleteCourtByIdRepositoryStub: DeleteCourtByIdRepository
+  sut: UpdateCourtById
+  updateCourtByIdRepositoryStub: UpdateCourtByIdRepository
   findCourtByIdAndCompanyIdRepositoryStub: FindCourtByIdAndCompanyIdRepository
 }
 
 const makeSut = (): SutTypes => {
-  const deleteCourtByIdRepositoryStub = makeDeleteCourtByIdRepository()
+  const updateCourtByIdRepositoryStub = makeUpdateCourtByIdRepository()
   const findCourtByIdAndCompanyIdRepositoryStub = makeFindCourtByIdAndCompanyIdRepository()
-  const sut = new DeleteCourtById(deleteCourtByIdRepositoryStub, findCourtByIdAndCompanyIdRepositoryStub)
+  const sut = new UpdateCourtById(updateCourtByIdRepositoryStub, findCourtByIdAndCompanyIdRepositoryStub)
 
   return {
     sut,
-    deleteCourtByIdRepositoryStub,
+    updateCourtByIdRepositoryStub,
     findCourtByIdAndCompanyIdRepositoryStub
   }
 }
 
-describe('DeleteCourtById Usecase', () => {
-  it('should call DeleteCourtByIdRepository with correct values', async () => {
-    const { sut, deleteCourtByIdRepositoryStub } = makeSut()
-    const deleteByIdSpy = jest.spyOn(deleteCourtByIdRepositoryStub, 'deleteById')
-    await sut.deleteById('any_id', 'any_company_id')
+describe('DbUpdateCourtById Usecase', () => {
+  it('should call UpdateCourtByIdRepository with correct values', async () => {
+    const { sut, updateCourtByIdRepositoryStub } = makeSut()
+    const updateByIdSpy = jest.spyOn(updateCourtByIdRepositoryStub, 'updateById')
+    await sut.updateById({ id: 'any_id', companyId: 'any_company_id', data: { name: 'any_name' } })
 
-    expect(deleteByIdSpy).toHaveBeenCalledWith('any_id')
+    expect(updateByIdSpy).toHaveBeenCalledWith({ id: 'any_id', data: { name: 'any_name' } })
   })
 
   it('should call FindCourtByIdAndCompanyIdRepository with correct values', async () => {
     const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut()
     const findByIdAndCompanyIdSpy = jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId')
-    await sut.deleteById('any_id', 'any_company_id')
+    await sut.updateById({ id: 'any_id', companyId: 'any_company_id', data: { name: 'any_name' } })
 
     expect(findByIdAndCompanyIdSpy).toHaveBeenCalledWith('any_id', 'any_company_id')
   })
 
-  it('should throw an exception if DeleteCourtByIdRepository throws an expection', async () => {
-    const { sut, deleteCourtByIdRepositoryStub } = makeSut()
-    jest.spyOn(deleteCourtByIdRepositoryStub, 'deleteById').mockReturnValueOnce(Promise.reject(new Error()))
-    const promise = sut.deleteById('any_id', 'any_company_id')
+  it('should throw an exception if UpdateCourtByIdRepository throws an expection', async () => {
+    const { sut, updateCourtByIdRepositoryStub } = makeSut()
+    jest.spyOn(updateCourtByIdRepositoryStub, 'updateById').mockReturnValueOnce(Promise.reject(new Error()))
+    const promise = sut.updateById({ id: 'any_id', companyId: 'any_company_id', data: { name: 'any_name' } })
 
     await expect(promise).rejects.toThrow()
   })
@@ -79,7 +78,7 @@ describe('DeleteCourtById Usecase', () => {
   it('should throw an exception if FindCourtByIdAndCompanyIdRepository throws an expection', async () => {
     const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut()
     jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockReturnValueOnce(Promise.reject(new Error()))
-    const promise = sut.deleteById('any_id', 'any_company_id')
+    const promise = sut.updateById({ id: 'any_id', companyId: 'any_company_id', data: { name: 'any_name' } })
 
     await expect(promise).rejects.toThrow()
   })
@@ -87,7 +86,7 @@ describe('DeleteCourtById Usecase', () => {
   it('should return NotFoundError if FindCourtByIdAndCompanyIdRepository returns null', async () => {
     const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut()
     jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockReturnValueOnce(Promise.resolve(null))
-    const error = await sut.deleteById('any_id', 'any_company_id')
+    const error = await sut.updateById({ id: 'invalid_id', companyId: 'any_company_id', data: { name: 'any_name' } })
 
     expect(error).toEqual(new NotFoundError('Quadra não encontrada'))
   })
@@ -95,7 +94,7 @@ describe('DeleteCourtById Usecase', () => {
   it('should return a court on success', async () => {
     const { sut } = makeSut()
     const fakeCourt = mockCourt()
-    const court = await sut.deleteById('any_id', 'any_company_id')
+    const court = await sut.updateById({ id: 'any_id', companyId: 'any_company_id', data: { name: 'any_name' } })
 
     expect(court).toEqual(fakeCourt)
   })

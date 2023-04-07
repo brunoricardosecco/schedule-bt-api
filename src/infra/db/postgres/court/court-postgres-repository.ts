@@ -2,6 +2,7 @@ import { CreateCourtModelToRepository, CreateCourtsRepository } from '@/data/pro
 import { DeleteCourtByIdRepository } from '@/data/protocols/db/court/delete-court-by-id-repository'
 import { FindCourtByIdAndCompanyIdRepository } from '@/data/protocols/db/court/find-court-by-id-and-company-id.repository'
 import { FindCourtsParamsToRepository, FindCourtsRepository } from '@/data/protocols/db/court/find-courts-repository'
+import { UpdateCourtByIdParamsToRepository } from '@/data/protocols/db/court/update-court-by-id-repository'
 import { Court } from '@/domain/models/court'
 import { db } from '@/infra/db/orm/prisma'
 
@@ -31,6 +32,17 @@ export class CourtPostgresRepository implements CreateCourtsRepository, FindCour
         id: courtId,
         companyId
       }
+    })
+
+    return court
+  }
+
+  async updateById ({ id, data }: UpdateCourtByIdParamsToRepository): Promise<Court> {
+    const court = await db.courts.update({
+      where: {
+        id
+      },
+      data
     })
 
     return court
