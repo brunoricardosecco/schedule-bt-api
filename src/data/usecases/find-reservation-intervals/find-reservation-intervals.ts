@@ -62,10 +62,10 @@ export class FindReservationIntervals implements IFindReservationIntervals {
 
   private getIntervals (start: Date, end: Date, intervalInMinutes: number): ReservationInterval[] {
     const intervals: ReservationInterval[] = []
-    let current = new Date(start)
+    let current = start
     let next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)
 
-    while (current < new Date(end)) {
+    while (current < end) {
       intervals.push({
         start: current,
         end: next,
