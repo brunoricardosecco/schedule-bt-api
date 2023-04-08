@@ -1,11 +1,11 @@
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { AuthenticateByPassword } from './authenticate-by-password'
 import {
-  TAuthenticateByPasswordParams,
-  HashComparer,
+  AccountModel,
   Encrypter,
+  HashComparer,
   LoadAccountByEmailRepository,
-  AccountModel
+  TAuthenticateByPasswordParams,
 } from './authenticate-by-password.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
@@ -20,18 +20,20 @@ const makeFakeAccount = (): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const makeFakeAuthenticate = (): TAuthenticateByPasswordParams => ({
   email: 'any_email@mail.com',
-  password: 'any_password'
+  password: 'any_password',
 })
 
 const makeLoadAccountByEmailRepository = (): LoadAccountByEmailRepository => {
   class LoadAccountByEmailRepositoryStub implements LoadAccountByEmailRepository {
-    async loadByEmail (email: string): Promise<AccountModel> {
-      return await new Promise(resolve => { resolve(makeFakeAccount()) })
+    async loadByEmail(email: string): Promise<AccountModel> {
+      return await new Promise(resolve => {
+        resolve(makeFakeAccount())
+      })
     }
   }
   return new LoadAccountByEmailRepositoryStub()
@@ -39,8 +41,10 @@ const makeLoadAccountByEmailRepository = (): LoadAccountByEmailRepository => {
 
 const makeHashComparer = (): HashComparer => {
   class HashComparerStub implements HashComparer {
-    async isEqual (value: string, hash: string): Promise<boolean> {
-      return await new Promise(resolve => { resolve(true) })
+    async isEqual(value: string, hash: string): Promise<boolean> {
+      return await new Promise(resolve => {
+        resolve(true)
+      })
     }
   }
   return new HashComparerStub()
@@ -48,8 +52,10 @@ const makeHashComparer = (): HashComparer => {
 
 const makeEncrypter = (): Encrypter => {
   class EncrypterStub implements Encrypter {
-    async encrypt (value: string): Promise<string> {
-      return await new Promise(resolve => { resolve('any_token') })
+    async encrypt(value: string): Promise<string> {
+      return await new Promise(resolve => {
+        resolve('any_token')
+      })
     }
   }
 
@@ -67,17 +73,13 @@ const makeSut = (): SutTypes => {
   const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepository()
   const hashComparerStub = makeHashComparer()
   const EncrypterStub = makeEncrypter()
-  const sut = new AuthenticateByPassword(
-    loadAccountByEmailRepositoryStub,
-    hashComparerStub,
-    EncrypterStub
-  )
+  const sut = new AuthenticateByPassword(loadAccountByEmailRepositoryStub, hashComparerStub, EncrypterStub)
 
   return {
     sut,
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
-    EncrypterStub
+    EncrypterStub,
   }
 }
 
@@ -92,7 +94,11 @@ describe('AuthenticateByPassword Usecase', () => {
 
   it('should throw if LoadAccountByEmailRepository throws', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(
+      new Promise((resolve, reject) => {
+        reject(new Error())
+      })
+    )
 
     const promise = sut.auth(makeFakeAuthenticate())
     await expect(promise).rejects.toThrow()
@@ -100,7 +106,11 @@ describe('AuthenticateByPassword Usecase', () => {
 
   it('should returns null if LoadAccountByEmailRepository returns null', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(new Promise(resolve => { resolve(null) }))
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(
+      new Promise(resolve => {
+        resolve(null)
+      })
+    )
 
     const accessToken = await sut.auth(makeFakeAuthenticate())
     expect(accessToken).toBe(null)
@@ -116,7 +126,11 @@ describe('AuthenticateByPassword Usecase', () => {
 
   it('should throw if HashComparer throws', async () => {
     const { sut, hashComparerStub } = makeSut()
-    jest.spyOn(hashComparerStub, 'isEqual').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(hashComparerStub, 'isEqual').mockReturnValueOnce(
+      new Promise((resolve, reject) => {
+        reject(new Error())
+      })
+    )
 
     const promise = sut.auth(makeFakeAuthenticate())
     await expect(promise).rejects.toThrow()
@@ -124,7 +138,11 @@ describe('AuthenticateByPassword Usecase', () => {
 
   it('should returns null if HashComparer returns false', async () => {
     const { sut, hashComparerStub } = makeSut()
-    jest.spyOn(hashComparerStub, 'isEqual').mockReturnValueOnce(new Promise(resolve => { resolve(false) }))
+    jest.spyOn(hashComparerStub, 'isEqual').mockReturnValueOnce(
+      new Promise(resolve => {
+        resolve(false)
+      })
+    )
 
     const accessToken = await sut.auth(makeFakeAuthenticate())
     expect(accessToken).toBe(null)
@@ -140,7 +158,11 @@ describe('AuthenticateByPassword Usecase', () => {
 
   it('should throw if Encrypter throws', async () => {
     const { sut, EncrypterStub } = makeSut()
-    jest.spyOn(EncrypterStub, 'encrypt').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(EncrypterStub, 'encrypt').mockReturnValueOnce(
+      new Promise((resolve, reject) => {
+        reject(new Error())
+      })
+    )
 
     const promise = sut.auth(makeFakeAuthenticate())
     await expect(promise).rejects.toThrow()

@@ -1,22 +1,24 @@
-import { IAddServiceHour, AddServiceHourModel, ServiceHour } from './add-service-hour-controller.protocols'
+import { RoleEnum } from '@/domain/enums/role-enum'
 import { MissingParamError, ServerError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, Validation } from '@/presentation/protocols'
 import { AddServiceHourController } from './add-service-hour-controller'
-import { RoleEnum } from '@/domain/enums/role-enum'
+import { AddServiceHourModel, IAddServiceHour, ServiceHour } from './add-service-hour-controller.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   companyId: 'any_company_id',
   endTime: 'any_start_time',
   startTime: 'any_end_time',
   weekday: 0,
-  id: 'any_id'
+  id: 'any_id',
 })
 
 const makeAddServiceHour = (): IAddServiceHour => {
   class AddServiceHourStub implements IAddServiceHour {
-    async add (serviceHour: AddServiceHourModel): Promise<ServiceHour | Error> {
-      return await new Promise(resolve => { resolve(makeFakeServiceHour()) })
+    async add(serviceHour: AddServiceHourModel): Promise<ServiceHour | Error> {
+      return await new Promise(resolve => {
+        resolve(makeFakeServiceHour())
+      })
     }
   }
 
@@ -25,7 +27,7 @@ const makeAddServiceHour = (): IAddServiceHour => {
 
 const makeValidation = (): Validation => {
   class ValidationStub implements Validation {
-    validate (input: any): Error | null {
+    validate(input: any): Error | null {
       return null
     }
   }
@@ -37,7 +39,7 @@ const makeFakeServiceHourData = (): AddServiceHourModel => ({
   companyId: 'any_company_id',
   endTime: 'any_start_time',
   startTime: 'any_end_time',
-  weekday: 0
+  weekday: 0,
 })
 
 const serviceHour = makeFakeServiceHour()
@@ -58,8 +60,8 @@ const makeFakeRequest = (): HttpRequest => {
       emailValidationTokenExpiration: null,
       isConfirmed: false,
       createdAt: new Date(),
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    },
   }
 }
 
@@ -78,7 +80,7 @@ const makeSut = (): SutTypes => {
   return {
     validationStub,
     addServiceHourStub,
-    sut
+    sut,
   }
 }
 
@@ -94,7 +96,11 @@ describe('AddServiceHour Controller', () => {
   })
   it('should return 500 if AddServiceHour throws', async () => {
     const { sut, addServiceHourStub } = makeSut()
-    jest.spyOn(addServiceHourStub, 'add').mockImplementationOnce(async () => { return await new Promise((resolve, reject) => { reject(new Error()) }) })
+    jest.spyOn(addServiceHourStub, 'add').mockImplementationOnce(async () => {
+      return await new Promise((resolve, reject) => {
+        reject(new Error())
+      })
+    })
 
     const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(serverError(new ServerError()))
@@ -104,9 +110,11 @@ describe('AddServiceHour Controller', () => {
 
     const httpResponse = await sut.handle(makeFakeRequest())
 
-    expect(httpResponse).toEqual(ok({
-      serviceHour
-    }))
+    expect(httpResponse).toEqual(
+      ok({
+        serviceHour,
+      })
+    )
   })
   it('should call Validation with correct values', async () => {
     const { sut, validationStub } = makeSut()
@@ -131,7 +139,11 @@ describe('AddServiceHour Controller', () => {
   it('should return 400 if AddServiceHour returns an Error', async () => {
     const { sut, addServiceHourStub } = makeSut()
 
-    jest.spyOn(addServiceHourStub, 'add').mockReturnValueOnce(new Promise((resolve) => { resolve(new Error('any_error')) }))
+    jest.spyOn(addServiceHourStub, 'add').mockReturnValueOnce(
+      new Promise(resolve => {
+        resolve(new Error('any_error'))
+      })
+    )
 
     const httpResponse = await sut.handle(makeFakeRequest())
 

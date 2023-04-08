@@ -6,5 +6,8 @@ export type LoadServiceHoursByCompanyIdRepositoryModel = {
 }
 
 export interface LoadServiceHoursByCompanyIdAndWeekdayRepository {
-  loadByCompanyIdAndWeekday: ({ companyId, weekday }: LoadServiceHoursByCompanyIdRepositoryModel) => Promise<ServiceHour[]>
+  loadByCompanyIdAndWeekday: ({
+    companyId,
+    weekday,
+  }: LoadServiceHoursByCompanyIdRepositoryModel) => Promise<ServiceHour[]>
 }

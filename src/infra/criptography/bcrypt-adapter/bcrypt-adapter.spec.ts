@@ -2,12 +2,16 @@ import bcrypt from 'bcrypt'
 import { BcryptAdapter } from './bcrypt-adapter'
 
 jest.mock('bcrypt', () => ({
-  async hash (): Promise<string> {
-    return await new Promise(resolve => { resolve('hash') })
+  async hash(): Promise<string> {
+    return await new Promise(resolve => {
+      resolve('hash')
+    })
   },
-  async compare (): Promise<boolean> {
-    return await new Promise(resolve => { resolve(true) })
-  }
+  async compare(): Promise<boolean> {
+    return await new Promise(resolve => {
+      resolve(true)
+    })
+  },
 }))
 
 const salt = 12
@@ -36,7 +40,9 @@ describe('Bcrypt Adapter', () => {
   it('should throw if hash throws', async () => {
     const sut = makeSut()
 
-    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(() => { throw new Error() })
+    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(() => {
+      throw new Error()
+    })
 
     const promise = sut.hash('any_value')
     await expect(promise).rejects.toThrow()
@@ -70,7 +76,9 @@ describe('Bcrypt Adapter', () => {
   it('should throw if isEqual throws', async () => {
     const sut = makeSut()
 
-    jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => { throw new Error() })
+    jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => {
+      throw new Error()
+    })
 
     const promise = sut.isEqual('any_value', 'hashed_value')
     await expect(promise).rejects.toThrow()

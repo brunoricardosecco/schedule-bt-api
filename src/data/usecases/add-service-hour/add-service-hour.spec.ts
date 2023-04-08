@@ -2,12 +2,12 @@ import { AddServiceHour } from './add-service-hour'
 import {
   AddServiceHourRepository,
   AddServiceHourRepositoryModel,
-  ServiceHour,
   IAddServiceHour,
   LoadServiceHoursByCompanyIdAndWeekdayRepository,
   LoadServiceHoursByCompanyIdRepositoryModel,
+  ServiceHour,
   ServiceHourTimeModel,
-  TimeConflictChecker
+  TimeConflictChecker,
 } from './add-service-hour.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
@@ -15,22 +15,20 @@ const makeFakeServiceHour = (): ServiceHour => ({
   companyId: 'company_id',
   startTime: '09:00',
   endTime: '12:00',
-  weekday: 0
+  weekday: 0,
 })
 
 const makeFakeServiceHourData = (): AddServiceHourRepositoryModel => ({
   weekday: 0,
   startTime: '09:00',
   endTime: '12:00',
-  companyId: 'company_id'
+  companyId: 'company_id',
 })
 
 const makeAddServiceHourRepository = (): AddServiceHourRepository => {
   class AddServiceHourRepositoryStub implements AddServiceHourRepository {
-    async add (
-      serviceHourData: AddServiceHourRepositoryModel
-    ): Promise<ServiceHour> {
-      return await new Promise((resolve) => {
+    async add(serviceHourData: AddServiceHourRepositoryModel): Promise<ServiceHour> {
+      return await new Promise(resolve => {
         resolve(makeFakeServiceHour())
       })
     }
@@ -39,33 +37,28 @@ const makeAddServiceHourRepository = (): AddServiceHourRepository => {
   return new AddServiceHourRepositoryStub()
 }
 
-const makeLoadServiceHoursByCompanyIdAndWeekday =
-  (): LoadServiceHoursByCompanyIdAndWeekdayRepository => {
-    class LoadServiceHoursByCompanyIdAndWeekdayRepositoryStub
-    implements LoadServiceHoursByCompanyIdAndWeekdayRepository {
-      async loadByCompanyIdAndWeekday ({
-        companyId,
-        weekday
-      }: LoadServiceHoursByCompanyIdRepositoryModel): Promise<ServiceHour[]> {
-        return await new Promise((resolve) => {
-          resolve([makeFakeServiceHour()])
-        })
-      }
+const makeLoadServiceHoursByCompanyIdAndWeekday = (): LoadServiceHoursByCompanyIdAndWeekdayRepository => {
+  class LoadServiceHoursByCompanyIdAndWeekdayRepositoryStub implements LoadServiceHoursByCompanyIdAndWeekdayRepository {
+    async loadByCompanyIdAndWeekday({
+      companyId,
+      weekday,
+    }: LoadServiceHoursByCompanyIdRepositoryModel): Promise<ServiceHour[]> {
+      return await new Promise(resolve => {
+        resolve([makeFakeServiceHour()])
+      })
     }
-
-    return new LoadServiceHoursByCompanyIdAndWeekdayRepositoryStub()
   }
+
+  return new LoadServiceHoursByCompanyIdAndWeekdayRepositoryStub()
+}
 
 const makeTimeConflictChecker = (): TimeConflictChecker => {
   class TimeConflictCheckerStub implements TimeConflictChecker {
-    hasConflicts ({ newDateTime, storedDateTimes }: any): boolean {
+    hasConflicts({ newDateTime, storedDateTimes }: any): boolean {
       return false
     }
 
-    isEndTimeGreaterThanStartTime ({
-      startTime,
-      endTime
-    }: ServiceHourTimeModel): boolean {
+    isEndTimeGreaterThanStartTime({ startTime, endTime }: ServiceHourTimeModel): boolean {
       return true
     }
   }
@@ -82,8 +75,7 @@ type SutTypes = {
 
 const makeSut = (): SutTypes => {
   const addServiceHourRepository = makeAddServiceHourRepository()
-  const loadServiceHoursByCompanyIdAndWeekdayRepository =
-    makeLoadServiceHoursByCompanyIdAndWeekday()
+  const loadServiceHoursByCompanyIdAndWeekdayRepository = makeLoadServiceHoursByCompanyIdAndWeekday()
   const timeConflictChecker = makeTimeConflictChecker()
   const sut = new AddServiceHour(
     addServiceHourRepository,
@@ -95,7 +87,7 @@ const makeSut = (): SutTypes => {
     addServiceHourRepository,
     loadServiceHoursByCompanyIdAndWeekdayRepository,
     timeConflictChecker,
-    sut
+    sut,
   }
 }
 
@@ -138,7 +130,7 @@ describe('AddServiceHour UseCase', () => {
       companyId: 'company_id',
       startTime: '10:00',
       endTime: '14:00',
-      weekday: 0
+      weekday: 0,
     }
 
     const error = await sut.add(conflictingServiceHour)
@@ -150,15 +142,13 @@ describe('AddServiceHour UseCase', () => {
   it('should returns an error on trying to add an service hour with the start time greater than the end time', async () => {
     const { sut, timeConflictChecker } = makeSut()
 
-    jest
-      .spyOn(timeConflictChecker, 'isEndTimeGreaterThanStartTime')
-      .mockReturnValueOnce(false)
+    jest.spyOn(timeConflictChecker, 'isEndTimeGreaterThanStartTime').mockReturnValueOnce(false)
 
     const conflictingServiceHour: AddServiceHourRepositoryModel = {
       companyId: 'company_id',
       startTime: '10:00',
       endTime: '14:00',
-      weekday: 0
+      weekday: 0,
     }
 
     const error = await sut.add(conflictingServiceHour)

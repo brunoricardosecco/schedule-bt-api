@@ -1,8 +1,5 @@
 import { Authorize } from './authorize'
-import {
-  AccountModel,
-  RoleEnum
-} from './authorize.protocols'
+import { AccountModel, RoleEnum } from './authorize.protocols'
 
 const makeFakeAccount = (role: RoleEnum): AccountModel => ({
   role,
@@ -16,17 +13,18 @@ const makeFakeAccount = (role: RoleEnum): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 type SutTypes = {
-  sut: Authorize }
+  sut: Authorize
+}
 
 const makeSut = (): SutTypes => {
   const sut = new Authorize()
 
   return {
-    sut
+    sut,
   }
 }
 

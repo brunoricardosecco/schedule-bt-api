@@ -5,11 +5,9 @@ import { HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Middleware } from '@/presentation/protocols/middleware'
 
 export class AuthenticateMiddleware implements Middleware {
-  constructor (
-    private readonly authenticate: IAuthenticate
-  ) {}
+  constructor(private readonly authenticate: IAuthenticate) {}
 
-  async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       if (!httpRequest.headers?.authorization) {
         return forbidden(new AccessDeniedError())

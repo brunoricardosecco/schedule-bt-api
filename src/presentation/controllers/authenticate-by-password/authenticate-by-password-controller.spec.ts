@@ -1,22 +1,24 @@
 import { IAuthenticateByPassword } from '@/domain/usecases/authenticate-by-password'
+import { HttpRequest, Validation } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { MissingParamError } from '@/presentation/errors'
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
-import { Validation, HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { AuthenticateByPasswordController } from './authenticate-by-password-controller'
 
 const makeFakeRequest = (): HttpRequest => {
-  return ({
+  return {
     body: {
       email: 'any_email@mail.com',
-      password: 'any_password'
-    }
-  })
+      password: 'any_password',
+    },
+  }
 }
 
 const makeAuthenticate = (): IAuthenticateByPassword => {
   class AuthenticateStub implements IAuthenticateByPassword {
-    async auth (): Promise<string> {
-      return await new Promise(resolve => { resolve('any_token') })
+    async auth(): Promise<string> {
+      return await new Promise(resolve => {
+        resolve('any_token')
+      })
     }
   }
 
@@ -25,7 +27,7 @@ const makeAuthenticate = (): IAuthenticateByPassword => {
 
 const makeValidation = (): Validation => {
   class ValidationStub implements Validation {
-    validate (input: any): Error | null {
+    validate(input: any): Error | null {
       return null
     }
   }
@@ -47,7 +49,7 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     validationStub,
-    authenticateStub
+    authenticateStub,
   }
 }
 
@@ -62,14 +64,19 @@ describe('AuthenticateByPasswordController', () => {
     await sut.handle(httpRequest)
 
     expect(authSpy).toHaveBeenCalledWith({
-      ...httpRequest.body
+      ...httpRequest.body,
     })
   })
 
   it('should returns 401 if invalid credentials are provided', async () => {
     const { sut, authenticateStub } = makeSut()
 
-    jest.spyOn(authenticateStub, 'auth').mockImplementationOnce(async () => await new Promise(resolve => { resolve('') }))
+    jest.spyOn(authenticateStub, 'auth').mockImplementationOnce(
+      async () =>
+        await new Promise(resolve => {
+          resolve('')
+        })
+    )
 
     const httpRequest = makeFakeRequest()
 
@@ -82,7 +89,9 @@ describe('AuthenticateByPasswordController', () => {
     const { sut, authenticateStub } = makeSut()
 
     jest.spyOn(authenticateStub, 'auth').mockReturnValueOnce(
-      new Promise((resolve, reject) => { reject(new Error()) })
+      new Promise((resolve, reject) => {
+        reject(new Error())
+      })
     )
 
     const httpRequest = makeFakeRequest()
@@ -99,9 +108,11 @@ describe('AuthenticateByPasswordController', () => {
 
     const httpResponse = await sut.handle(httpRequest)
 
-    expect(httpResponse).toEqual(ok({
-      accessToken: 'any_token'
-    }))
+    expect(httpResponse).toEqual(
+      ok({
+        accessToken: 'any_token',
+      })
+    )
   })
 
   it('should call Validation with correct values', async () => {

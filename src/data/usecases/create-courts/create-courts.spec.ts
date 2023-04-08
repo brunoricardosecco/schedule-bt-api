@@ -1,11 +1,12 @@
-
-import { CreateCourtsRepository } from './create-courts.protocols'
 import { CreateCourts } from './create-courts'
+import { CreateCourtsRepository } from './create-courts.protocols'
 
 const makeCreateCourtsRepository = (): CreateCourtsRepository => {
   class CreateCourtsRepositoryStub implements CreateCourtsRepository {
-    async createMany (): Promise<number> {
-      return await new Promise(resolve => { resolve(1) })
+    async createMany(): Promise<number> {
+      return await new Promise(resolve => {
+        resolve(1)
+      })
     }
   }
 
@@ -23,7 +24,7 @@ const makeSut = (): SutTypes => {
 
   return {
     sut,
-    createCourtsRepositoryStub
+    createCourtsRepositoryStub,
   }
 }
 
@@ -41,8 +42,8 @@ describe('CreateCourts Usecase', () => {
     expect(createManySpy).toHaveBeenCalledWith([
       {
         name: courts[0].name,
-        companyId
-      }
+        companyId,
+      },
     ])
     expect(response).toBe(courts.length)
   })

@@ -15,7 +15,7 @@ describe('Company Postgres Repository', () => {
     const params = {
       name: 'any_name',
       reservationPrice: 60,
-      reservationTimeInMinutes: 80
+      reservationTimeInMinutes: 80,
     }
     const company = await sut.add(params)
 

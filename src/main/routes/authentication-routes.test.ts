@@ -1,23 +1,19 @@
-import request from 'supertest'
-import { db } from '@/infra/db/orm/prisma'
-import { hash } from 'bcrypt'
-import app from '@/main/config/app'
 import { RoleEnum } from '@/domain/enums/role-enum'
+import { db } from '@/infra/db/orm/prisma'
+import app from '@/main/config/app'
+import { hash } from 'bcrypt'
+import request from 'supertest'
 
 describe('Login Routes', () => {
   afterAll(async () => {
     const deleteAccounts = db.accounts.deleteMany()
-    await db.$transaction([
-      deleteAccounts
-    ])
+    await db.$transaction([deleteAccounts])
     await db.$disconnect()
   })
 
   afterEach(async () => {
     const deleteAccounts = db.accounts.deleteMany()
-    await db.$transaction([
-      deleteAccounts
-    ])
+    await db.$transaction([deleteAccounts])
   })
 
   describe('POST /signup', () => {
@@ -26,8 +22,8 @@ describe('Login Routes', () => {
         data: {
           name: 'Empresa X',
           reservationPrice: 70,
-          reservationTimeInMinutes: 60
-        }
+          reservationTimeInMinutes: 60,
+        },
       })
 
       await request(app)
@@ -38,7 +34,7 @@ describe('Login Routes', () => {
           password: 'any_password',
           passwordConfirmation: 'any_password',
           companyId: createdCompany.id,
-          role: RoleEnum.EMPLOYEE
+          role: RoleEnum.EMPLOYEE,
         })
         .expect(200)
     })
@@ -51,14 +47,14 @@ describe('Login Routes', () => {
         data: {
           name: 'any_name',
           email: 'any_email@mail.com',
-          hashedPassword: password
-        }
+          hashedPassword: password,
+        },
       })
       await request(app)
         .post('/api/authenticate-by-password')
         .send({
           email: 'any_email@mail.com',
-          password: 'any_password'
+          password: 'any_password',
         })
         .expect(200)
     })
@@ -69,14 +65,14 @@ describe('Login Routes', () => {
         data: {
           name: 'any_name',
           email: 'any_email@mail.com',
-          hashedPassword: password
-        }
+          hashedPassword: password,
+        },
       })
       await request(app)
         .post('/api/authenticate-by-password')
         .send({
           email: 'any_email@mail.com',
-          password: 'wrong_password'
+          password: 'wrong_password',
         })
         .expect(401)
     })

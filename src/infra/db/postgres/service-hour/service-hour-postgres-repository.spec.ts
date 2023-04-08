@@ -9,20 +9,14 @@ describe('Service Hour Postgres Repository', () => {
   afterAll(async () => {
     const deleteServiceHours = db.serviceHours.deleteMany()
     const deleteCompanies = db.companies.deleteMany()
-    await db.$transaction([
-      deleteServiceHours,
-      deleteCompanies
-    ])
+    await db.$transaction([deleteServiceHours, deleteCompanies])
     await db.$disconnect()
   })
 
   afterEach(async () => {
     const deleteServiceHours = db.serviceHours.deleteMany({})
     const deleteCompanies = db.companies.deleteMany()
-    await db.$transaction([
-      deleteServiceHours,
-      deleteCompanies
-    ])
+    await db.$transaction([deleteServiceHours, deleteCompanies])
   })
 
   it('should return an service hour on success', async () => {
@@ -32,15 +26,15 @@ describe('Service Hour Postgres Repository', () => {
       data: {
         name: 'any_name',
         reservationPrice: 60,
-        reservationTimeInMinutes: 80
-      }
+        reservationTimeInMinutes: 80,
+      },
     })
 
     const params = {
       weekday: 0,
       startTime: '09:00',
       endTime: '20:00',
-      companyId: company.id
+      companyId: company.id,
     }
 
     const serviceHour = await sut.add(params)
@@ -59,8 +53,8 @@ describe('Service Hour Postgres Repository', () => {
       data: {
         name: 'any_name',
         reservationPrice: 60,
-        reservationTimeInMinutes: 80
-      }
+        reservationTimeInMinutes: 80,
+      },
     })
 
     await db.serviceHours.create({
@@ -68,13 +62,13 @@ describe('Service Hour Postgres Repository', () => {
         weekday: 0,
         startTime: '09:00',
         endTime: '20:00',
-        companyId: company.id
-      }
+        companyId: company.id,
+      },
     })
 
     const serviceHours = await sut.loadByCompanyIdAndWeekday({
       companyId: company.id,
-      weekday: 0
+      weekday: 0,
     })
 
     expect(serviceHours.length).toBeGreaterThan(0)
@@ -83,7 +77,7 @@ describe('Service Hour Postgres Repository', () => {
       startTime: '09:00',
       endTime: '20:00',
       companyId: company.id,
-      id: expect.any(String)
+      id: expect.any(String),
     })
   })
   it('should return an empty array if there is no service hour for a specific companyId', async () => {
@@ -93,13 +87,13 @@ describe('Service Hour Postgres Repository', () => {
       data: {
         name: 'any_name',
         reservationPrice: 60,
-        reservationTimeInMinutes: 80
-      }
+        reservationTimeInMinutes: 80,
+      },
     })
 
     const serviceHours = await sut.loadByCompanyIdAndWeekday({
       companyId: company.id,
-      weekday: 0
+      weekday: 0,
     })
 
     expect(serviceHours.length).toEqual(0)
@@ -111,8 +105,8 @@ describe('Service Hour Postgres Repository', () => {
       data: {
         name: 'any_name',
         reservationPrice: 60,
-        reservationTimeInMinutes: 80
-      }
+        reservationTimeInMinutes: 80,
+      },
     })
 
     await db.serviceHours.create({
@@ -120,12 +114,12 @@ describe('Service Hour Postgres Repository', () => {
         weekday: 0,
         startTime: '09:00',
         endTime: '20:00',
-        companyId: company.id
-      }
+        companyId: company.id,
+      },
     })
 
     const serviceHours = await sut.findBy({
-      companyId: company.id
+      companyId: company.id,
     })
 
     expect(serviceHours.length).toBeGreaterThan(0)
@@ -134,14 +128,14 @@ describe('Service Hour Postgres Repository', () => {
       startTime: '09:00',
       endTime: '20:00',
       companyId: company.id,
-      id: expect.any(String)
+      id: expect.any(String),
     })
   })
   it('should return an empty array if there is no service hour for a query', async () => {
     const sut = makeSut()
 
     const serviceHours = await sut.findBy({
-      weekday: 0
+      weekday: 0,
     })
 
     expect(serviceHours.length).toEqual(0)
@@ -152,16 +146,16 @@ describe('Service Hour Postgres Repository', () => {
       data: {
         name: 'any_name',
         reservationPrice: 60,
-        reservationTimeInMinutes: 80
-      }
+        reservationTimeInMinutes: 80,
+      },
     })
     const serviceHour = await db.serviceHours.create({
       data: {
         weekday: 0,
         startTime: '11:00',
         endTime: '20:00',
-        companyId: company.id
-      }
+        companyId: company.id,
+      },
     })
 
     const deletedServiceHour = await sut.delete(serviceHour.id)

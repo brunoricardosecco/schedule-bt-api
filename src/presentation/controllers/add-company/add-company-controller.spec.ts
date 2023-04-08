@@ -1,7 +1,7 @@
 import { MissingParamError, ServerError } from '@/presentation/errors'
-import { Company, AddCompany, HttpRequest, Validation, AddCompanyModel } from './add-company-controller.protocols'
-import { AddCompanyController } from './add-company-controller'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { AddCompanyController } from './add-company-controller'
+import { AddCompany, AddCompanyModel, Company, HttpRequest, Validation } from './add-company-controller.protocols'
 
 const makeFakeCompany = (): Company => ({
   id: 'valid_id',
@@ -9,13 +9,13 @@ const makeFakeCompany = (): Company => ({
   reservationPrice: 60,
   reservationTimeInMinutes: 80,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const makeFakeCompanyData = (): AddCompanyModel => ({
   name: 'verona',
   reservationPrice: 60,
-  reservationTimeInMinutes: 60
+  reservationTimeInMinutes: 60,
 })
 
 const company = makeFakeCompany()
@@ -23,14 +23,16 @@ const addCompanyData = makeFakeCompanyData()
 
 const makeFakeRequest = (): HttpRequest => {
   return {
-    body: addCompanyData
+    body: addCompanyData,
   }
 }
 
 const makeAddCompany = (): AddCompany => {
   class AddCompanyStub implements AddCompany {
-    async add (): Promise<Company> {
-      return await new Promise(resolve => { resolve(company) })
+    async add(): Promise<Company> {
+      return await new Promise(resolve => {
+        resolve(company)
+      })
     }
   }
 
@@ -39,7 +41,7 @@ const makeAddCompany = (): AddCompany => {
 
 const makeValidation = (): Validation => {
   class ValidationStub implements Validation {
-    validate (input: any): Error | null {
+    validate(input: any): Error | null {
       return null
     }
   }
@@ -61,7 +63,7 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     addCompanyStub,
-    validationStub
+    validationStub,
   }
 }
 
@@ -78,7 +80,11 @@ describe('AddCompany Controller', () => {
 
   it('should return 500 if AddCompany throws', async () => {
     const { sut, addCompanyStub } = makeSut()
-    jest.spyOn(addCompanyStub, 'add').mockImplementationOnce(async () => { return await new Promise((resolve, reject) => { reject(new Error()) }) })
+    jest.spyOn(addCompanyStub, 'add').mockImplementationOnce(async () => {
+      return await new Promise((resolve, reject) => {
+        reject(new Error())
+      })
+    })
 
     const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(serverError(new ServerError()))
@@ -89,9 +95,11 @@ describe('AddCompany Controller', () => {
 
     const httpResponse = await sut.handle(makeFakeRequest())
 
-    expect(httpResponse).toEqual(ok({
-      company
-    }))
+    expect(httpResponse).toEqual(
+      ok({
+        company,
+      })
+    )
   })
 
   it('should call Validation with correct values', async () => {

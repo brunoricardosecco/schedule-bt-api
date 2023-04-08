@@ -9,7 +9,7 @@ export const routeAdapter = (controller: Controller): RequestHandler => {
       params: req.params,
       headers: req.headers,
       query: req.query,
-      user: req.user
+      user: req.user,
     }
     const httpResponse = await controller.handle(httpRequest)
 

@@ -1,8 +1,8 @@
-import request from 'supertest'
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
 import { db } from '@/infra/db/orm/prisma'
 import app from '@/main/config/app'
-import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
-import { RoleEnum } from '@/domain/enums/role-enum'
+import request from 'supertest'
 
 describe('ServiceHour Routes', () => {
   const password = 'password'
@@ -15,8 +15,8 @@ describe('ServiceHour Routes', () => {
       data: {
         name: 'Empresa X',
         reservationPrice: 70,
-        reservationTimeInMinutes: 60
-      }
+        reservationTimeInMinutes: 60,
+      },
     })
 
     const hashedPassword = await new BcryptAdapter(12).hash(password)
@@ -25,8 +25,8 @@ describe('ServiceHour Routes', () => {
         name: 'any_name',
         email: generalAdminEmail,
         hashedPassword,
-        role: RoleEnum.GENERAL_ADMIN
-      }
+        role: RoleEnum.GENERAL_ADMIN,
+      },
     })
 
     await db.accounts.create({
@@ -35,8 +35,8 @@ describe('ServiceHour Routes', () => {
         email: companyAdminEmail,
         hashedPassword,
         companyId: createdCompany.id,
-        role: RoleEnum.COMPANY_ADMIN
-      }
+        role: RoleEnum.COMPANY_ADMIN,
+      },
     })
   })
 
@@ -44,12 +44,7 @@ describe('ServiceHour Routes', () => {
     const deleteCompanies = db.companies.deleteMany()
     const deleteServiceHours = db.serviceHours.deleteMany()
     const deleteAccounts = db.accounts.deleteMany()
-    await db.$transaction([
-      deleteAccounts,
-      deleteServiceHours,
-      deleteCompanies,
-      deleteAccounts
-    ])
+    await db.$transaction([deleteAccounts, deleteServiceHours, deleteCompanies, deleteAccounts])
     await db.$disconnect()
   })
 
@@ -57,12 +52,7 @@ describe('ServiceHour Routes', () => {
     const deleteCompanies = db.companies.deleteMany()
     const deleteServiceHours = db.serviceHours.deleteMany()
     const deleteAccounts = db.accounts.deleteMany()
-    await db.$transaction([
-      deleteAccounts,
-      deleteServiceHours,
-      deleteCompanies,
-      deleteAccounts
-    ])
+    await db.$transaction([deleteAccounts, deleteServiceHours, deleteCompanies, deleteAccounts])
   })
 
   describe('GET /service-hour', () => {
@@ -72,13 +62,11 @@ describe('ServiceHour Routes', () => {
           companyId: createdCompany.id as string,
           startTime: '09:00',
           endTime: '12:00',
-          weekday: 0
-        }
+          weekday: 0,
+        },
       })
 
-      await request(app)
-        .get(`/api/service-hour?companyId=${createdCompany.id}&weekday=${0}`)
-        .expect(200)
+      await request(app).get(`/api/service-hour?companyId=${createdCompany.id}&weekday=${0}`).expect(200)
     })
   })
 })

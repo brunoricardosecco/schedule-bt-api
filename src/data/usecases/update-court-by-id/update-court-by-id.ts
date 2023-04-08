@@ -1,12 +1,19 @@
-import { Court, FindCourtByIdAndCompanyIdRepository, IUpdateCourtById, NotFoundError, UpdateCourtByIdParams, UpdateCourtByIdRepository } from './update-court-by-id.protocols'
+import {
+  Court,
+  FindCourtByIdAndCompanyIdRepository,
+  IUpdateCourtById,
+  NotFoundError,
+  UpdateCourtByIdParams,
+  UpdateCourtByIdRepository,
+} from './update-court-by-id.protocols'
 
 export class UpdateCourtById implements IUpdateCourtById {
-  constructor (
+  constructor(
     private readonly updateCourt: UpdateCourtByIdRepository,
     private readonly findCourt: FindCourtByIdAndCompanyIdRepository
   ) {}
 
-  async updateById ({ id, companyId, data }: UpdateCourtByIdParams): Promise<Error | Court> {
+  async updateById({ id, companyId, data }: UpdateCourtByIdParams): Promise<Error | Court> {
     const court = await this.findCourt.findByIdAndCompanyId(id, companyId)
 
     if (!court) {

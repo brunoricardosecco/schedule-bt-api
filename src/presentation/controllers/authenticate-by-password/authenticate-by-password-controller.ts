@@ -1,13 +1,19 @@
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
-import { IAuthenticateByPassword, Controller, HttpRequest, HttpResponse, Validation } from './authenticate-by-password-controller.protocols'
+import {
+  Controller,
+  HttpRequest,
+  HttpResponse,
+  IAuthenticateByPassword,
+  Validation,
+} from './authenticate-by-password-controller.protocols'
 
 export class AuthenticateByPasswordController implements Controller {
-  constructor (
+  constructor(
     private readonly authenticateByPassword: IAuthenticateByPassword,
     private readonly validation: Validation
   ) {}
 
-  async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const error = this.validation.validate(httpRequest.body)
 
@@ -24,7 +30,7 @@ export class AuthenticateByPasswordController implements Controller {
       }
 
       return ok({
-        accessToken
+        accessToken,
       })
     } catch (error) {
       return serverError(error)

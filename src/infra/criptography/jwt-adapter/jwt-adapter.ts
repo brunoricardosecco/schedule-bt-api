@@ -5,20 +5,18 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Encrypter } from '@/data/protocols/cryptography/encrypter'
 
 export class JWTAdapter implements Encrypter, Decrypter {
-  constructor (
-    private readonly secret: string
-  ) {}
+  constructor(private readonly secret: string) {}
 
-  async encrypt (value: string): Promise<string> {
+  async encrypt(value: string): Promise<string> {
     return jwt.sign({ userId: value }, this.secret)
   }
 
-  async decrypt (token: string): Promise<TokenPayload | null> {
+  async decrypt(token: string): Promise<TokenPayload | null> {
     try {
       const payload = (await jwt.verify(token, this.secret)) as JwtPayload
 
       return {
-        userId: payload.userId
+        userId: payload.userId,
       }
     } catch (error) {
       return null

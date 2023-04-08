@@ -6,24 +6,24 @@ jest.setSystemTime(new Date())
 
 const makeFakeServiceHourTimes = (): ServiceHourTimeModel => ({
   startTime: '09:00',
-  endTime: '20:00'
+  endTime: '20:00',
 })
 
 const makeFakeWrongServiceHourTimes = (): ServiceHourTimeModel => ({
   startTime: '09:00',
-  endTime: '08:00'
+  endTime: '08:00',
 })
 
-const makeFakeStoredServiceHours = (): ServiceHourTimeModel[] => ([
+const makeFakeStoredServiceHours = (): ServiceHourTimeModel[] => [
   {
     startTime: '09:00',
-    endTime: '12:00'
+    endTime: '12:00',
   },
   {
     startTime: '13:00',
-    endTime: '18:00'
-  }
-])
+    endTime: '18:00',
+  },
+]
 
 const makeSut = (): DateFnsAdapter => {
   return new DateFnsAdapter()
@@ -60,9 +60,9 @@ describe('date-fns Adapter', () => {
       const value = sut.hasConflicts({
         newTime: {
           startTime: '17:00',
-          endTime: '20:00'
+          endTime: '20:00',
         },
-        existingTimes: makeFakeStoredServiceHours()
+        existingTimes: makeFakeStoredServiceHours(),
       })
 
       expect(value).toBeTruthy()
@@ -73,9 +73,9 @@ describe('date-fns Adapter', () => {
       const value = sut.hasConflicts({
         newTime: {
           startTime: '07:00',
-          endTime: '23:00'
+          endTime: '23:00',
         },
-        existingTimes: makeFakeStoredServiceHours()
+        existingTimes: makeFakeStoredServiceHours(),
       })
 
       expect(value).toBeTruthy()
@@ -86,9 +86,9 @@ describe('date-fns Adapter', () => {
       const value = sut.hasConflicts({
         newTime: {
           startTime: '19:00',
-          endTime: '20:00'
+          endTime: '20:00',
         },
-        existingTimes: makeFakeStoredServiceHours()
+        existingTimes: makeFakeStoredServiceHours(),
       })
 
       expect(value).toBeFalsy()
