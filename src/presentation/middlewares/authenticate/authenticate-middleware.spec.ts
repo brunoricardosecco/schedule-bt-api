@@ -46,7 +46,7 @@ const makeSut = (): {
 }
 
 describe('Authenticate Middleware', () => {
-  it('should return 403 if no authorization is found in headers', async () => {
+  it('should return unauthorized if no authorization is found in headers', async () => {
     const { authenticateMiddleware } = makeSut()
 
     const httpResponse = await authenticateMiddleware.handle({})
@@ -54,7 +54,7 @@ describe('Authenticate Middleware', () => {
     expect(httpResponse).toEqual(unauthorized())
   })
 
-  it('should return 403 if token is invalid', async () => {
+  it('should return unauthorized if token is invalid', async () => {
     const { authenticateMiddleware } = makeSut()
 
     const httpResponse = await authenticateMiddleware.handle({
@@ -66,7 +66,7 @@ describe('Authenticate Middleware', () => {
     expect(httpResponse).toEqual(unauthorized())
   })
 
-  it('should return 403 if Authenticate returns an error', async () => {
+  it('should return unauthorized if Authenticate returns an error', async () => {
     const { authenticateMiddleware, authenticate } = makeSut()
 
     jest.spyOn(authenticate, 'auth').mockResolvedValueOnce(new Error('Erro'))
@@ -80,7 +80,7 @@ describe('Authenticate Middleware', () => {
     expect(httpResponse).toEqual(unauthorized())
   })
 
-  it('should return 500 if Authenticate throws an error', async () => {
+  it('should throw an error if Authenticate throws an error', async () => {
     const { authenticateMiddleware, authenticate } = makeSut()
 
     jest.spyOn(authenticate, 'auth').mockRejectedValueOnce(new Error('Erro'))
@@ -94,7 +94,7 @@ describe('Authenticate Middleware', () => {
     expect(httpResponse).toEqual(serverError(new ServerError()))
   })
 
-  it('should return 200', async () => {
+  it('should authenticate the user', async () => {
     const { authenticateMiddleware } = makeSut()
 
     const httpResponse = await authenticateMiddleware.handle({
