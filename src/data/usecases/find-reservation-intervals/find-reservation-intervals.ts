@@ -29,14 +29,12 @@ export class FindReservationIntervals implements IFindReservationIntervals {
       endAt: new Date(date.setHours(23, 59, 59, 999))
     })
 
-    const intervals: ReservationInterval[] = []
+    let intervals: ReservationInterval[] = []
 
     serviceHours.forEach(serviceHour => {
-      const { start, end } = getServiceHourTimeFormatted(serviceHour)
+      const { start, end } = getServiceHourTimeFormatted(serviceHour, date)
 
-      const serviceHourIntervals = this.getIntervals(start, end, company.reservationTimeInMinutes)
-
-      serviceHourIntervals.forEach(serviceHourInterval => intervals.push(serviceHourInterval))
+      intervals = this.getIntervals(start, end, company.reservationTimeInMinutes)
     })
 
     const checkedIntervals = intervals.map(interval => {
