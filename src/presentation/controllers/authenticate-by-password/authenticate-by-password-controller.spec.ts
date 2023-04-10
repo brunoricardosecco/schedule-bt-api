@@ -68,7 +68,7 @@ describe('AuthenticateByPasswordController', () => {
     })
   })
 
-  it('should returns 401 if invalid credentials are provided', async () => {
+  it('should return unauthorized error if invalid credentials are provided', async () => {
     const { sut, authenticateStub } = makeSut()
 
     jest.spyOn(authenticateStub, 'auth').mockImplementationOnce(
@@ -85,7 +85,7 @@ describe('AuthenticateByPasswordController', () => {
     expect(httpResponse).toEqual(unauthorized())
   })
 
-  it('should returns 500 if Authenticate throws', async () => {
+  it('should throw error if Authenticate throws', async () => {
     const { sut, authenticateStub } = makeSut()
 
     jest.spyOn(authenticateStub, 'auth').mockReturnValueOnce(
@@ -101,7 +101,7 @@ describe('AuthenticateByPasswordController', () => {
     expect(httpResponse).toEqual(serverError(new Error()))
   })
 
-  it('should returns 200 if valid credentials are provided', async () => {
+  it('should authenticate the user', async () => {
     const { sut } = makeSut()
 
     const httpRequest = makeFakeRequest()
@@ -127,7 +127,7 @@ describe('AuthenticateByPasswordController', () => {
     expect(validateSpy).toHaveBeenCalledWith(httpRequest.body)
   })
 
-  it('should return 400 if Validation returns an error', async () => {
+  it('should return badRequest if Validation returns an error', async () => {
     const { sut, validationStub } = makeSut()
 
     jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('any_field'))

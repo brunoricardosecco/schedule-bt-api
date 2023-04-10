@@ -1,8 +1,8 @@
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { AccountModel } from '@/domain/models/account'
 import { IAuthenticate, IAuthenticateReturn } from '@/domain/usecases/authenticate'
-import { AccessDeniedError, ServerError } from '@/presentation/errors'
-import { forbidden, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { ServerError } from '@/presentation/errors'
+import { ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
 import { AuthenticateMiddleware } from './authenticate-middleware'
 
 const makeFakeAccount = (): AccountModel => ({
@@ -46,15 +46,15 @@ const makeSut = (): {
 }
 
 describe('Authenticate Middleware', () => {
-  it('should return 403 if no authorization is found in headers', async () => {
+  it('should return unauthorized if no authorization is found in headers', async () => {
     const { authenticateMiddleware } = makeSut()
 
     const httpResponse = await authenticateMiddleware.handle({})
 
-    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+    expect(httpResponse).toEqual(unauthorized())
   })
 
-  it('should return 403 if token is invalid', async () => {
+  it('should return unauthorized if token is invalid', async () => {
     const { authenticateMiddleware } = makeSut()
 
     const httpResponse = await authenticateMiddleware.handle({
@@ -63,10 +63,10 @@ describe('Authenticate Middleware', () => {
       },
     })
 
-    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+    expect(httpResponse).toEqual(unauthorized())
   })
 
-  it('should return 403 if Authenticate returns an error', async () => {
+  it('should return unauthorized if Authenticate returns an error', async () => {
     const { authenticateMiddleware, authenticate } = makeSut()
 
     jest.spyOn(authenticate, 'auth').mockResolvedValueOnce(new Error('Erro'))
@@ -77,10 +77,10 @@ describe('Authenticate Middleware', () => {
       },
     })
 
-    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+    expect(httpResponse).toEqual(unauthorized())
   })
 
-  it('should return 500 if Authenticate throws an error', async () => {
+  it('should throw an error if Authenticate throws an error', async () => {
     const { authenticateMiddleware, authenticate } = makeSut()
 
     jest.spyOn(authenticate, 'auth').mockRejectedValueOnce(new Error('Erro'))
@@ -94,7 +94,7 @@ describe('Authenticate Middleware', () => {
     expect(httpResponse).toEqual(serverError(new ServerError()))
   })
 
-  it('should return 200', async () => {
+  it('should authenticate the user', async () => {
     const { authenticateMiddleware } = makeSut()
 
     const httpResponse = await authenticateMiddleware.handle({

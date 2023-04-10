@@ -3,7 +3,7 @@ import { AccountModel } from '@/domain/models/account'
 import { Role } from '@/domain/models/role'
 import { IAuthorize } from '@/domain/usecases/authorize'
 import { ServerError } from '@/presentation/errors'
-import { ok, serverError, unauthorized } from '@/presentation/helpers/http/httpHelper'
+import { forbidden, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { AuthorizeMiddleware } from './authorize-middleware'
 
 const makeFakeAccount = (): AccountModel => ({
@@ -51,25 +51,25 @@ const makeSut = (
 }
 
 describe('Authorize Middleware', () => {
-  it('should return 401 if user id is not present in the httpRequest', async () => {
+  it('should return forbidden if user id is not present in the httpRequest', async () => {
     const { authorizeMiddleware } = makeSut([RoleEnum.EMPLOYEE])
 
     const httpResponse = await authorizeMiddleware.handle({})
 
-    expect(httpResponse).toEqual(unauthorized())
+    expect(httpResponse).toEqual(forbidden())
   })
 
-  it('should return 401 if Authorize returns false', async () => {
+  it('should return forbidden if Authorize returns false', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
     jest.spyOn(authorize, 'authorize').mockResolvedValueOnce(false)
 
     const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
-    expect(httpResponse).toEqual(unauthorized())
+    expect(httpResponse).toEqual(forbidden())
   })
 
-  it('should return 500 if Authorize throws an error', async () => {
+  it('should return serverError if Authorize throws an error', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
     jest.spyOn(authorize, 'authorize').mockRejectedValueOnce(new Error('Erro'))
@@ -79,7 +79,7 @@ describe('Authorize Middleware', () => {
     expect(httpResponse).toEqual(serverError(new ServerError()))
   })
 
-  it('should return 200', async () => {
+  it('should authorize the user', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
     jest.spyOn(authorize, 'authorize').mockResolvedValueOnce(true)

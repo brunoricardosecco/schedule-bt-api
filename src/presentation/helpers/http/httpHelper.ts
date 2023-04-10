@@ -1,4 +1,4 @@
-import { ServerError } from '@/presentation/errors'
+import { AccessDeniedError, ServerError } from '@/presentation/errors'
 import { NotFoundError } from '@/presentation/errors/not-found-error'
 import { UnauthorizedError } from '@/presentation/errors/unauthorized-error'
 import { HttpResponse } from '@/presentation/protocols'
@@ -23,9 +23,9 @@ export const unauthorized = (): HttpResponse => ({
   body: new UnauthorizedError(),
 })
 
-export const forbidden = (error: Error): HttpResponse => ({
+export const forbidden = (): HttpResponse => ({
   statusCode: 403,
-  body: error,
+  body: new AccessDeniedError(),
 })
 
 export const notFound = (message: string): HttpResponse => ({
