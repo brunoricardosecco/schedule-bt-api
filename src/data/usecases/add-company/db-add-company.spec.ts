@@ -8,19 +8,21 @@ const makeFakeCompany = (): Company => ({
   reservationPrice: 60,
   reservationTimeInMinutes: 60,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const makeFakeCompanyData = (): AddCompanyModel => ({
   name: 'verona',
   reservationPrice: 60,
-  reservationTimeInMinutes: 60
+  reservationTimeInMinutes: 60,
 })
 
 const makeAddCompanyRepository = (): AddCompanyRepository => {
   class AddCompanyRepositoryStub implements AddCompanyRepository {
-    async add (accountData: AddCompanyModel): Promise<Company> {
-      return await new Promise(resolve => { resolve(makeFakeCompany()) })
+    async add(accountData: AddCompanyModel): Promise<Company> {
+      return await new Promise(resolve => {
+        resolve(makeFakeCompany())
+      })
     }
   }
 
@@ -38,7 +40,7 @@ const makeSut = (): SutTypes => {
 
   return {
     sut,
-    addCompanyRepositoryStub
+    addCompanyRepositoryStub,
   }
 }
 
@@ -66,7 +68,11 @@ describe('DbAddCompany Usecase', () => {
   it('should throw if AddCompanyRepository throws', async () => {
     const { sut, addCompanyRepositoryStub } = makeSut()
 
-    jest.spyOn(addCompanyRepositoryStub, 'add').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(addCompanyRepositoryStub, 'add').mockReturnValueOnce(
+      new Promise((resolve, reject) => {
+        reject(new Error())
+      })
+    )
 
     const promise = sut.add(makeFakeCompanyData())
 

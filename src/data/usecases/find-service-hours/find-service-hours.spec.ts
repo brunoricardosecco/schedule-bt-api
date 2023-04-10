@@ -1,20 +1,27 @@
-import { ServiceHour, FindServiceHoursRepository, FindServiceHoursRepositoryParams, IFindServiceHours } from './find-service-hours.protocols'
 import { FindServiceHours } from './find-service-hours'
+import {
+  FindServiceHoursRepository,
+  FindServiceHoursRepositoryParams,
+  IFindServiceHours,
+  ServiceHour,
+} from './find-service-hours.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
   companyId: 'company_id',
   startTime: '09:00',
   endTime: '12:00',
-  weekday: 0
+  weekday: 0,
 })
 
 const fakeServiceHour = makeFakeServiceHour()
 
 const makeFindServiceHoursRepository = (): FindServiceHoursRepository => {
   class FindServiceHoursRepositoryStub implements FindServiceHoursRepository {
-    async findBy (params: FindServiceHoursRepositoryParams): Promise<ServiceHour[]> {
-      return await new Promise(resolve => { resolve([fakeServiceHour]) })
+    async findBy(params: FindServiceHoursRepositoryParams): Promise<ServiceHour[]> {
+      return await new Promise(resolve => {
+        resolve([fakeServiceHour])
+      })
     }
   }
 
@@ -32,7 +39,7 @@ const makeSut = (): SutTypes => {
 
   return {
     sut,
-    findServiceHoursRepository: findServiceHoursRepositoryStub
+    findServiceHoursRepository: findServiceHoursRepositoryStub,
   }
 }
 
@@ -44,7 +51,7 @@ describe('FindServiceHours', () => {
 
     const params = {
       companyId: 'any_id',
-      weekday: 0
+      weekday: 0,
     }
 
     const serviceHours = await sut.find(params)

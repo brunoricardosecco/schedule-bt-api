@@ -1,13 +1,10 @@
-import { Controller, HttpRequest, HttpResponse, ICreateCourts, Validation } from './create-courts.protocols'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { Controller, HttpRequest, HttpResponse, ICreateCourts, Validation } from './create-courts.protocols'
 
 export class CreateCourtsController implements Controller {
-  constructor (
-    private readonly createCourts: ICreateCourts,
-    private readonly validation: Validation
-  ) {}
+  constructor(private readonly createCourts: ICreateCourts, private readonly validation: Validation) {}
 
-  async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const error = this.validation.validate(httpRequest.body)
 
@@ -21,7 +18,7 @@ export class CreateCourtsController implements Controller {
       const courtsCount = await this.createCourts.create(user?.companyId as string, courts)
 
       return ok({
-        courtsCount
+        courtsCount,
       })
     } catch (error) {
       return serverError(error)

@@ -1,10 +1,10 @@
-import { CreateCourtsReturn, ICreateCourts } from '@/domain/usecases/create-courts'
-import { MissingParamError } from '@/presentation/errors'
-import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { Validation, HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
-import { CreateCourtsController } from './create-courts-controller'
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { AccountModel } from '@/domain/models/account'
+import { CreateCourtsReturn, ICreateCourts } from '@/domain/usecases/create-courts'
+import { HttpRequest, Validation } from '@/presentation/controllers/signup/signup-controller.protocols'
+import { MissingParamError } from '@/presentation/errors'
+import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { CreateCourtsController } from './create-courts-controller'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -18,26 +18,28 @@ const makeFakeAccount = (): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const makeFakeRequest = (): HttpRequest => {
-  return ({
+  return {
     user: makeFakeAccount(),
     body: {
       courts: [
         {
-          name: 'Quadra 1'
-        }
-      ]
-    }
-  })
+          name: 'Quadra 1',
+        },
+      ],
+    },
+  }
 }
 
 const makeCreateCourts = (): ICreateCourts => {
   class CreateCourtsStub implements ICreateCourts {
-    async create (): CreateCourtsReturn {
-      return await new Promise(resolve => { resolve(2) })
+    async create(): CreateCourtsReturn {
+      return await new Promise(resolve => {
+        resolve(2)
+      })
     }
   }
 
@@ -46,7 +48,7 @@ const makeCreateCourts = (): ICreateCourts => {
 
 const makeValidation = (): Validation => {
   class ValidationStub implements Validation {
-    validate (): Error | null {
+    validate(): Error | null {
       return null
     }
   }
@@ -68,7 +70,7 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     validationStub,
-    createCourtsStub
+    createCourtsStub,
   }
 }
 
@@ -106,8 +108,10 @@ describe('CreateCourtsController', () => {
     const response = await sut.handle(httpRequest)
 
     expect(createCourtsSpy).toHaveBeenCalledWith(httpRequest.user?.companyId, httpRequest.body.courts)
-    expect(response).toEqual(ok({
-      courtsCount: httpRequest.body.courts.length
-    }))
+    expect(response).toEqual(
+      ok({
+        courtsCount: httpRequest.body.courts.length,
+      })
+    )
   })
 })

@@ -15,7 +15,7 @@ const makeFakeAccount = (): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const mockCourt = (): Court => ({
@@ -23,19 +23,19 @@ const mockCourt = (): Court => ({
   companyId: 'any_id',
   name: 'any_name',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const makeFakeRequest = (courtId?: string): HttpRequest => {
-  return ({
+  return {
     user: makeFakeAccount(),
-    params: { courtId }
-  })
+    params: { courtId },
+  }
 }
 
 const makeDeleteCourtById = (): IDeleteCourtById => {
   class DeleteCourtByIdStub implements IDeleteCourtById {
-    async deleteById (courtId: string): Promise<Court> {
+    async deleteById(courtId: string): Promise<Court> {
       const fakeCourt = mockCourt()
       return await Promise.resolve(fakeCourt)
     }
@@ -55,7 +55,7 @@ const makeSut = (): SutTypes => {
 
   return {
     sut,
-    deleteCourtByIdStub
+    deleteCourtByIdStub,
   }
 }
 
@@ -81,7 +81,9 @@ describe('DeleteCourtByIdController', () => {
   it('should return 404 if court_id not exists', async () => {
     const { sut, deleteCourtByIdStub } = makeSut()
     const httpRequest = makeFakeRequest()
-    jest.spyOn(deleteCourtByIdStub, 'deleteById').mockReturnValueOnce(Promise.resolve(new NotFoundError('Quadra não encontrada')))
+    jest
+      .spyOn(deleteCourtByIdStub, 'deleteById')
+      .mockReturnValueOnce(Promise.resolve(new NotFoundError('Quadra não encontrada')))
     const response = await sut.handle(httpRequest)
 
     expect(response).toStrictEqual(notFound('Quadra não encontrada'))

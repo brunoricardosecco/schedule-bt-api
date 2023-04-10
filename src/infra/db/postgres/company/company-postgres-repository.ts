@@ -4,9 +4,9 @@ import { AddCompanyModel } from '@/domain/usecases/add-company'
 import { db } from '@/infra/db/orm/prisma'
 
 export class CompanyPostgresRepository implements AddCompanyRepository {
-  async add (companyData: AddCompanyModel): Promise<Company> {
+  async add(companyData: AddCompanyModel): Promise<Company> {
     const company = await db.companies.create({
-      data: companyData
+      data: companyData,
     })
 
     return company

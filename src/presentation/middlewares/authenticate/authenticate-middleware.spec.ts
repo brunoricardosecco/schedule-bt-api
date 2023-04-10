@@ -2,7 +2,7 @@ import { RoleEnum } from '@/domain/enums/role-enum'
 import { AccountModel } from '@/domain/models/account'
 import { IAuthenticate, IAuthenticateReturn } from '@/domain/usecases/authenticate'
 import { AccessDeniedError, ServerError } from '@/presentation/errors'
-import { forbidden, serverError, ok } from '@/presentation/helpers/http/httpHelper'
+import { forbidden, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { AuthenticateMiddleware } from './authenticate-middleware'
 
 const makeFakeAccount = (): AccountModel => ({
@@ -17,14 +17,14 @@ const makeFakeAccount = (): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const defaultAccount = makeFakeAccount()
 
 const makeAuthenticate = (): IAuthenticate => {
   class AuthenticateStub implements IAuthenticate {
-    async auth (): Promise<IAuthenticateReturn | Error> {
+    async auth(): Promise<IAuthenticateReturn | Error> {
       return { user: defaultAccount }
     }
   }
@@ -41,7 +41,7 @@ const makeSut = (): {
 
   return {
     authenticate,
-    authenticateMiddleware
+    authenticateMiddleware,
   }
 }
 
@@ -59,8 +59,8 @@ describe('Authenticate Middleware', () => {
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
-        authorization: 'Bearer'
-      }
+        authorization: 'Bearer',
+      },
     })
 
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
@@ -73,8 +73,8 @@ describe('Authenticate Middleware', () => {
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
-        authorization: 'Bearer token'
-      }
+        authorization: 'Bearer token',
+      },
     })
 
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
@@ -87,8 +87,8 @@ describe('Authenticate Middleware', () => {
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
-        authorization: 'Bearer token'
-      }
+        authorization: 'Bearer token',
+      },
     })
 
     expect(httpResponse).toEqual(serverError(new ServerError()))
@@ -99,12 +99,14 @@ describe('Authenticate Middleware', () => {
 
     const httpResponse = await authenticateMiddleware.handle({
       headers: {
-        authorization: 'Bearer token'
-      }
+        authorization: 'Bearer token',
+      },
     })
 
-    expect(httpResponse).toEqual(ok({
-      user: defaultAccount
-    }))
+    expect(httpResponse).toEqual(
+      ok({
+        user: defaultAccount,
+      })
+    )
   })
 })

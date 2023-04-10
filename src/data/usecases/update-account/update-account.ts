@@ -1,20 +1,28 @@
-import { IUpdateAccount, UpdateAccountRepository, Hasher, UpdateAccountReturn, UpdateAccountParams, LoadAccountByIdRepository, HashComparer } from './update-account.protocols'
+import {
+  HashComparer,
+  Hasher,
+  IUpdateAccount,
+  LoadAccountByIdRepository,
+  UpdateAccountParams,
+  UpdateAccountRepository,
+  UpdateAccountReturn,
+} from './update-account.protocols'
 
 const MIN_PASSWORD_LENGTH = 8
 const HAS_AT_LEAST_ONE_LETTER_REGEX = /[a-zA-Z]/
 const HAS_AT_LEAST_ONE_NUMBER_REGEX = /[0-9]/
 
 export class UpdateAccount implements IUpdateAccount {
-  constructor (
+  constructor(
     private readonly hasher: Hasher & HashComparer,
     private readonly accountRepository: UpdateAccountRepository & LoadAccountByIdRepository
   ) {}
 
-  async update (userId: string, params: UpdateAccountParams): UpdateAccountReturn {
+  async update(userId: string, params: UpdateAccountParams): UpdateAccountReturn {
     const { password, currentPassword, name } = params
 
     const paramsToUpdate: Record<string, any> = {
-      name
+      name,
     }
 
     if (password) {
@@ -23,10 +31,7 @@ export class UpdateAccount implements IUpdateAccount {
       }
 
       const hashedCurrentPassword = await this.hasher.hash(currentPassword)
-      const isCurrentPasswordCorrect = await this.hasher.isEqual(
-        currentPassword,
-        hashedCurrentPassword
-      )
+      const isCurrentPasswordCorrect = await this.hasher.isEqual(currentPassword, hashedCurrentPassword)
 
       if (!isCurrentPasswordCorrect) {
         return new Error('Senha atual incorreta')
@@ -49,10 +54,7 @@ export class UpdateAccount implements IUpdateAccount {
       paramsToUpdate.hashedPassword = hashedPassword
     }
 
-    const account = await this.accountRepository.update(
-      userId,
-      paramsToUpdate
-    )
+    const account = await this.accountRepository.update(userId, paramsToUpdate)
 
     return account
   }

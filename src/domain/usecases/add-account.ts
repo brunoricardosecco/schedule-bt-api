@@ -1,5 +1,5 @@
-import { Role } from '@/domain/models/role'
 import { AccountModel } from '@/domain/models/account'
+import { Role } from '@/domain/models/role'
 
 export type AddAccountModel = {
   name: string

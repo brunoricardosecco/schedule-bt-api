@@ -1,11 +1,5 @@
 import { Authenticate } from './authenticate'
-import {
-  Decrypter,
-  TokenPayload,
-  AccountModel,
-  LoadAccountByIdRepository,
-  RoleEnum
-} from './authenticate.protocols'
+import { AccountModel, Decrypter, LoadAccountByIdRepository, RoleEnum, TokenPayload } from './authenticate.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -19,7 +13,7 @@ const makeFakeAccount = (): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const defaultPayload = { userId: '1' }
@@ -27,7 +21,7 @@ const defaultAccount: AccountModel = makeFakeAccount()
 
 const makeLoadAccountByIdRepository = (): LoadAccountByIdRepository => {
   class LoadAccountByIdRepositoryStub implements LoadAccountByIdRepository {
-    async loadById (): Promise<AccountModel | null> {
+    async loadById(): Promise<AccountModel | null> {
       return defaultAccount
     }
   }
@@ -37,7 +31,7 @@ const makeLoadAccountByIdRepository = (): LoadAccountByIdRepository => {
 
 const makeDecrypter = (): Decrypter => {
   class DecrypterStub implements Decrypter {
-    async decrypt (): Promise<TokenPayload | null> {
+    async decrypt(): Promise<TokenPayload | null> {
       return defaultPayload
     }
   }
@@ -59,7 +53,7 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     DecrypterStub,
-    LoadAccountByIdRepositoryStub
+    LoadAccountByIdRepositoryStub,
   }
 }
 
@@ -69,7 +63,7 @@ describe('Authenticate Usecase', () => {
 
     jest.spyOn(DecrypterStub, 'decrypt').mockResolvedValueOnce(null)
 
-    const error = await sut.auth('token') as Error
+    const error = (await sut.auth('token')) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('Token inválido')
@@ -80,7 +74,7 @@ describe('Authenticate Usecase', () => {
 
     jest.spyOn(LoadAccountByIdRepositoryStub, 'loadById').mockResolvedValueOnce(null)
 
-    const error = await sut.auth('token') as Error
+    const error = (await sut.auth('token')) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('Usuário não encontrado')
@@ -98,7 +92,7 @@ describe('Authenticate Usecase', () => {
     expect(decryptSpy).toHaveBeenCalledWith(token)
     expect(loadAccountByIdRepositorySpy).toHaveBeenCalledWith(defaultPayload.userId)
     expect(response).toStrictEqual({
-      user: defaultAccount
+      user: defaultAccount,
     })
   })
 })

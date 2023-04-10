@@ -9,14 +9,14 @@ import request from 'supertest'
 const makeFakeCompanyData = (): AddCompanyModel => ({
   name: 'verona',
   reservationPrice: 60,
-  reservationTimeInMinutes: 60
+  reservationTimeInMinutes: 60,
 })
 
 const makeFakeServiceHourData = (companyId: string): AddServiceHourModel => ({
   companyId,
   startTime: '09:00',
   endTime: '12:00',
-  weekday: 0
+  weekday: 0,
 })
 
 describe('Company Routes', () => {
@@ -31,8 +31,8 @@ describe('Company Routes', () => {
         id: 'company_id_01',
         name: 'Empresa X',
         reservationPrice: 70,
-        reservationTimeInMinutes: 60
-      }
+        reservationTimeInMinutes: 60,
+      },
     })
 
     const hashedPassword = await new BcryptAdapter(12).hash(password)
@@ -41,8 +41,8 @@ describe('Company Routes', () => {
         name: 'any_name',
         email: generalAdminEmail,
         hashedPassword,
-        role: RoleEnum.GENERAL_ADMIN
-      }
+        role: RoleEnum.GENERAL_ADMIN,
+      },
     })
 
     await db.accounts.create({
@@ -51,16 +51,16 @@ describe('Company Routes', () => {
         email: companyAdminEmail,
         hashedPassword,
         companyId: createdCompany.id,
-        role: RoleEnum.COMPANY_ADMIN
-      }
+        role: RoleEnum.COMPANY_ADMIN,
+      },
     })
 
     await db.courts.create({
       data: {
         id: 'id_01',
         name: 'any court name',
-        companyId: 'company_id_01'
-      }
+        companyId: 'company_id_01',
+      },
     })
   })
 
@@ -76,12 +76,10 @@ describe('Company Routes', () => {
 
   describe('POST /company', () => {
     it('should return 200 on POST /company', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: generalAdminEmail,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email: generalAdminEmail,
+        password,
+      })
 
       await request(app)
         .post('/api/company')
@@ -93,12 +91,10 @@ describe('Company Routes', () => {
 
   describe('GET /company/court', () => {
     it('should return 200 on GET /company/court', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: companyAdminEmail,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email: companyAdminEmail,
+        password,
+      })
 
       await request(app)
         .get('/api/company/court')
@@ -109,15 +105,13 @@ describe('Company Routes', () => {
 
   describe('POST /company/service-hour', () => {
     it('should return 200 on POST /company/service-hour', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: companyAdminEmail,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email: companyAdminEmail,
+        password,
+      })
 
       const company = await db.companies.create({
-        data: makeFakeCompanyData()
+        data: makeFakeCompanyData(),
       })
 
       await request(app)
@@ -130,12 +124,10 @@ describe('Company Routes', () => {
 
   describe('GET /company/service-hour', () => {
     it('should return 200 on GET /company/service-hour', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: companyAdminEmail,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email: companyAdminEmail,
+        password,
+      })
 
       await request(app)
         .get('/api/company/service-hour')
@@ -143,38 +135,34 @@ describe('Company Routes', () => {
         .expect(200)
     })
   })
-  
+
   describe('PATCH /company/court/:courtId', () => {
     it('should return 200 on PATCH /company/court/:courtId', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: companyAdminEmail,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email: companyAdminEmail,
+        password,
+      })
 
       await request(app)
         .patch('/api/company/court/id_01')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .send({
-          name: 'updated_name'
+          name: 'updated_name',
         })
         .expect(200)
     })
 
     it('should return 404 on PATCH /company/court/:courtId if court not exists', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: companyAdminEmail,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email: companyAdminEmail,
+        password,
+      })
 
       await request(app)
         .patch('/api/company/court/non_existent_id')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
         .send({
-          name: 'updated_name'
+          name: 'updated_name',
         })
         .expect(404)
     })

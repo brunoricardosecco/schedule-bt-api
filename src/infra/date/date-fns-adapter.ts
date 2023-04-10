@@ -1,7 +1,7 @@
 import {
   ServiceHourTimeModel,
   TimeConflictChecker,
-  TimeConflictCheckerModel
+  TimeConflictCheckerModel,
 } from '@/data/protocols/date/time-conflict-checker'
 import { areIntervalsOverlapping as areIntervalsOverlappingFunc } from 'date-fns'
 
@@ -11,14 +11,9 @@ type FormattedTimes = {
 }
 
 export class DateFnsAdapter implements TimeConflictChecker {
-  private getFormattedTimes ({
-    startTime,
-    endTime
-  }: ServiceHourTimeModel): FormattedTimes {
-    const splittedStartTime = startTime
-      .split(':')
-      .map((piece) => Number(piece))
-    const splittedEndTime = endTime.split(':').map((piece) => Number(piece))
+  private getFormattedTimes({ startTime, endTime }: ServiceHourTimeModel): FormattedTimes {
+    const splittedStartTime = startTime.split(':').map(piece => Number(piece))
+    const splittedEndTime = endTime.split(':').map(piece => Number(piece))
 
     const startDateTime = new Date()
     const endDateTime = new Date()
@@ -28,51 +23,48 @@ export class DateFnsAdapter implements TimeConflictChecker {
 
     return {
       startDateTime,
-      endDateTime
+      endDateTime,
     }
   }
 
-  isEndTimeGreaterThanStartTime ({
+  isEndTimeGreaterThanStartTime({
     startTime: receivedStartTime,
-    endTime: receivedEndTime
+    endTime: receivedEndTime,
   }: ServiceHourTimeModel): boolean {
     const { startDateTime, endDateTime } = this.getFormattedTimes({
       startTime: receivedStartTime,
-      endTime: receivedEndTime
+      endTime: receivedEndTime,
     })
 
     return endDateTime.getTime() > startDateTime.getTime()
   }
 
-  hasConflicts ({
-    newTime,
-    existingTimes
-  }: TimeConflictCheckerModel): boolean {
+  hasConflicts({ newTime, existingTimes }: TimeConflictCheckerModel): boolean {
     let areIntervalsOverlapping = false
 
     const formattedExistingTimes = existingTimes.map(interval => {
       const { startDateTime, endDateTime } = this.getFormattedTimes({
         startTime: interval.startTime,
-        endTime: interval.endTime
+        endTime: interval.endTime,
       })
 
       return {
         start: startDateTime,
-        end: endDateTime
+        end: endDateTime,
       }
     })
 
     const { startDateTime: intervalNewStartTime, endDateTime: intervalNewEndTime } = this.getFormattedTimes({
       startTime: newTime.startTime,
-      endTime: newTime.endTime
+      endTime: newTime.endTime,
     })
 
     const formattedNewInterval = {
       start: intervalNewStartTime,
-      end: intervalNewEndTime
+      end: intervalNewEndTime,
     }
 
-    formattedExistingTimes.forEach((storedInterval) => {
+    formattedExistingTimes.forEach(storedInterval => {
       if (areIntervalsOverlappingFunc(formattedNewInterval, storedInterval, { inclusive: true })) {
         areIntervalsOverlapping = true
       }

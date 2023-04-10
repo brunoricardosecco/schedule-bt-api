@@ -16,8 +16,8 @@ describe('Court Routes', () => {
         id: 'company_id_01',
         name: 'Empresa X',
         reservationPrice: 70,
-        reservationTimeInMinutes: 60
-      }
+        reservationTimeInMinutes: 60,
+      },
     })
 
     const hashedPassword = await new BcryptAdapter(12).hash(password)
@@ -27,16 +27,16 @@ describe('Court Routes', () => {
         email,
         hashedPassword,
         companyId: createdCompany.id,
-        role: RoleEnum.COMPANY_ADMIN
-      }
+        role: RoleEnum.COMPANY_ADMIN,
+      },
     })
 
     await db.courts.create({
       data: {
         id: 'id_01',
         name: 'any court name',
-        companyId: 'company_id_01'
-      }
+        companyId: 'company_id_01',
+      },
     })
   })
 
@@ -44,24 +44,22 @@ describe('Court Routes', () => {
     await db.courts.deleteMany()
     await db.companies.delete({
       where: {
-        id: createdCompany.id
-      }
+        id: createdCompany.id,
+      },
     })
     await db.accounts.delete({
       where: {
-        id: createdAccount.id
-      }
+        id: createdAccount.id,
+      },
     })
   })
 
   describe('POST /court/bulk', () => {
     it('should return 200 on POST /court/bulk', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email,
+        password,
+      })
 
       await request(app)
         .post('/api/court/bulk')
@@ -69,12 +67,12 @@ describe('Court Routes', () => {
         .send({
           courts: [
             {
-              name: 'Quadra 1'
+              name: 'Quadra 1',
             },
             {
-              name: 'Quadra 2'
-            }
-          ]
+              name: 'Quadra 2',
+            },
+          ],
         })
         .expect(200)
     })
@@ -82,12 +80,10 @@ describe('Court Routes', () => {
 
   describe('DELETE /company/court/:courtId', () => {
     it('should return 204 on DELETE /company/court/:courtId', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email,
+        password,
+      })
 
       await request(app)
         .delete('/api/company/court/id_01')
@@ -96,12 +92,10 @@ describe('Court Routes', () => {
     })
 
     it('should return 404 on DELETE /company/court/:courtId if court not exists', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email,
+        password,
+      })
 
       await request(app)
         .delete('/api/company/court/non_existent_id')

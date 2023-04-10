@@ -1,4 +1,4 @@
-import { IFindServiceHours, FindServiceHoursModel } from '@/domain/usecases/find-service-hours'
+import { FindServiceHoursModel, IFindServiceHours } from '@/domain/usecases/find-service-hours'
 import { ServerError } from '@/presentation/errors'
 import { ok, serverError } from '../../helpers/http/httpHelper'
 import { HttpRequest, ServiceHour } from '../add-service-hour/add-service-hour-controller.protocols'
@@ -9,7 +9,7 @@ const makeFakeServiceHour = (): ServiceHour => ({
   endTime: 'any_start_time',
   startTime: 'any_end_time',
   weekday: 0,
-  id: 'any_id'
+  id: 'any_id',
 })
 const fakeServiceHour = makeFakeServiceHour()
 
@@ -18,16 +18,18 @@ const makeFakeRequest = (): HttpRequest => {
     body: {},
     query: {
       companyId: 'any_id',
-      weekday: '0'
-    }
+      weekday: '0',
+    },
   }
 }
 const fakeRequest = makeFakeRequest()
 
 const makeFindServiceHours = (): IFindServiceHours => {
   class FindServiceHoursStub implements IFindServiceHours {
-    async find ({ companyId, weekday }: FindServiceHoursModel): Promise<ServiceHour[]> {
-      return await new Promise(resolve => { resolve([fakeServiceHour]) })
+    async find({ companyId, weekday }: FindServiceHoursModel): Promise<ServiceHour[]> {
+      return await new Promise(resolve => {
+        resolve([fakeServiceHour])
+      })
     }
   }
 
@@ -45,7 +47,7 @@ const makeSut = (): SutTypes => {
 
   return {
     findServiceHours,
-    sut
+    sut,
   }
 }
 
@@ -58,16 +60,20 @@ describe('FindServiceHours Controller', () => {
 
     expect(findSpy).toHaveBeenCalledWith({
       companyId: 'any_id',
-      weekday: 0
+      weekday: 0,
     })
-    expect(httpResponse).toEqual(ok({
-      serviceHours: [fakeServiceHour]
-    }))
+    expect(httpResponse).toEqual(
+      ok({
+        serviceHours: [fakeServiceHour],
+      })
+    )
   })
   it('should return 500 if FindServiceHour throws', async () => {
     const { sut, findServiceHours } = makeSut()
     jest.spyOn(findServiceHours, 'find').mockImplementationOnce(async () => {
-      return await new Promise((resolve, reject) => { reject(new Error()) })
+      return await new Promise((resolve, reject) => {
+        reject(new Error())
+      })
     })
 
     const httpResponse = await sut.handle(fakeRequest)

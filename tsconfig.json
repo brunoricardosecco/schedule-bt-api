@@ -13,7 +13,10 @@
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "jest.config.js",
+    "jest-integration-config.js",
+    "jest-unit-config.js",
   ],
   "exclude": []
 }

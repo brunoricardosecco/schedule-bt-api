@@ -1,18 +1,25 @@
-import { AddServiceHourRepository, ServiceHour, IAddServiceHour, AddServiceHourModel, LoadServiceHoursByCompanyIdAndWeekdayRepository, TimeConflictChecker } from './add-service-hour.protocols'
+import {
+  AddServiceHourModel,
+  AddServiceHourRepository,
+  IAddServiceHour,
+  LoadServiceHoursByCompanyIdAndWeekdayRepository,
+  ServiceHour,
+  TimeConflictChecker,
+} from './add-service-hour.protocols'
 
 export class AddServiceHour implements IAddServiceHour {
-  constructor (
+  constructor(
     private readonly addServiceHourRepository: AddServiceHourRepository,
     private readonly dbLoadServiceHoursByCompanyIdAndWeekdayRepository: LoadServiceHoursByCompanyIdAndWeekdayRepository,
     private readonly timeConflictChecker: TimeConflictChecker
   ) {}
 
-  async add (serviceHourData: AddServiceHourModel): Promise<ServiceHour | Error> {
+  async add(serviceHourData: AddServiceHourModel): Promise<ServiceHour | Error> {
     const { companyId, endTime, startTime, weekday } = serviceHourData
 
     const isValidTimes = this.timeConflictChecker.isEndTimeGreaterThanStartTime({
       startTime,
-      endTime
+      endTime,
     })
 
     if (!isValidTimes) {
@@ -21,20 +28,20 @@ export class AddServiceHour implements IAddServiceHour {
 
     const serviceHours = await this.dbLoadServiceHoursByCompanyIdAndWeekdayRepository.loadByCompanyIdAndWeekday({
       companyId,
-      weekday
+      weekday,
     })
 
     const storedTimes = serviceHours.map(({ startTime: storedStartTime, endTime: storedEndTime }) => ({
       startTime: storedStartTime,
-      endTime: storedEndTime
+      endTime: storedEndTime,
     }))
 
     const hasConflict = this.timeConflictChecker.hasConflicts({
       existingTimes: storedTimes,
       newTime: {
         startTime,
-        endTime
-      }
+        endTime,
+      },
     })
 
     if (hasConflict) {
