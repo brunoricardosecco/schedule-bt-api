@@ -22,7 +22,9 @@
     "migrate:dev": "npx prisma migrate dev --schema=src/infra/db/orm/prisma/schema.prisma",
     "generate": "npx prisma generate --schema=src/infra/db/orm/prisma/schema.prisma",
     "studio:dev": "npx prisma studio dev",
-    "tsc:watch": "npx tsc -w"
+    "tsc:watch": "npx tsc -w",
+    "lint:fix": "eslint \"**/*.ts\" --fix",
+    "lint": "eslint \"**/*.ts\""
   },
   "keywords": [],
   "author": "",
