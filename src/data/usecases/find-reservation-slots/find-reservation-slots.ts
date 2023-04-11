@@ -1,4 +1,4 @@
-import { FindCompaniesRepository, ReservationSlot, FindReservationSlotsParams, IFindReservationSlots, FindServiceHoursRepository, FindReservationsRepository, getServiceHourTimeFormatted, TimeConflictChecker } from './find-reservation-slots.protocols'
+import { FindCompaniesRepository, ReservationSlot, FindReservationSlotsParams, IFindReservationSlots, FindServiceHoursRepository, FindReservationsRepository, getServiceHourTimeFormatted, TimeConflictChecker, UnformattedReservationSlot } from './find-reservation-slots.protocols'
 
 export class FindReservationSlots implements IFindReservationSlots {
   constructor (
@@ -29,7 +29,7 @@ export class FindReservationSlots implements IFindReservationSlots {
       endAt: new Date(new Date(date.getTime()).setHours(23, 59, 59, 999))
     })
 
-    let slots: ReservationSlot[] = []
+    let slots: UnformattedReservationSlot[] = []
 
     serviceHours.forEach(serviceHour => {
       const { start, end } = getServiceHourTimeFormatted(serviceHour)
@@ -54,11 +54,17 @@ export class FindReservationSlots implements IFindReservationSlots {
       }
     })
 
-    return checkedSlots
+    const formattedSlots = checkedSlots.map(slot => ({
+      ...slot,
+      start: slot.start.toISOString().substring(11, 16),
+      end: slot.end.toISOString().substring(11, 16)
+    }))
+
+    return formattedSlots
   }
 
-  private getSlots (start: Date, end: Date, intervalInMinutes: number): ReservationSlot[] {
-    const slots: ReservationSlot[] = []
+  private getSlots (start: Date, end: Date, intervalInMinutes: number): UnformattedReservationSlot[] {
+    const slots: UnformattedReservationSlot[] = []
     let current = start
     let next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)
 

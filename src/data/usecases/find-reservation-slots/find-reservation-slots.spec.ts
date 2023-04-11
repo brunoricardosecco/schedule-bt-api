@@ -277,18 +277,18 @@ describe('FindReservationSlots', () => {
 
     expect(reservationSlots).toEqual([
       {
-        start: new Date(params.date.setHours(9, 0, 0, 0)),
-        end: new Date(params.date.setHours(10, 0, 0, 0)),
+        start: '12:00',
+        end: '13:00',
         isAvailable: true
       },
       {
-        start: new Date(params.date.setHours(10, 0, 0, 0)),
-        end: new Date(params.date.setHours(11, 0, 0, 0)),
+        start: '13:00',
+        end: '14:00',
         isAvailable: true
       },
       {
-        start: new Date(params.date.setHours(11, 0, 0, 0)),
-        end: new Date(params.date.setHours(12, 0, 0, 0)),
+        start: '14:00',
+        end: '15:00',
         isAvailable: true
       }
     ])
@@ -309,18 +309,18 @@ describe('FindReservationSlots', () => {
 
     expect(reservationSlots).toEqual([
       {
-        start: new Date(params.date.setHours(9, 0, 0, 0)),
-        end: new Date(params.date.setHours(10, 0, 0, 0)),
+        start: '12:00',
+        end: '13:00',
         isAvailable: true
       },
       {
-        start: new Date(params.date.setHours(10, 0, 0, 0)),
-        end: new Date(params.date.setHours(11, 0, 0, 0)),
+        start: '13:00',
+        end: '14:00',
         isAvailable: false
       },
       {
-        start: new Date(params.date.setHours(11, 0, 0, 0)),
-        end: new Date(params.date.setHours(12, 0, 0, 0)),
+        start: '14:00',
+        end: '15:00',
         isAvailable: true
       }
     ])
