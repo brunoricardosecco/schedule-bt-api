@@ -1,6 +1,12 @@
-import { Hasher, AccountModel, UpdateAccountRepository, LoadAccountByIdRepository, HashComparer } from './update-account.protocols'
-import { UpdateAccount } from './update-account'
 import { RoleEnum } from '@/domain/enums/role-enum'
+import { UpdateAccount } from './update-account'
+import {
+  AccountModel,
+  HashComparer,
+  Hasher,
+  LoadAccountByIdRepository,
+  UpdateAccountRepository,
+} from './update-account.protocols'
 
 const makeFakeAccount = (hashedPassword: string): AccountModel => ({
   id: 'valid_id',
@@ -14,18 +20,18 @@ const makeFakeAccount = (hashedPassword: string): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const defaultAccount = makeFakeAccount('hashed_password')
 
 const makeAccountRepository = (): UpdateAccountRepository & LoadAccountByIdRepository => {
   class AccountRepositoryStub implements UpdateAccountRepository, LoadAccountByIdRepository {
-    async update (): Promise<AccountModel> {
+    async update(): Promise<AccountModel> {
       return makeFakeAccount('any_hashed_password')
     }
 
-    async loadById (): Promise<AccountModel | null> {
+    async loadById(): Promise<AccountModel | null> {
       return defaultAccount
     }
   }
@@ -35,11 +41,11 @@ const makeAccountRepository = (): UpdateAccountRepository & LoadAccountByIdRepos
 
 const makeHasher = (): Hasher & HashComparer => {
   class HasherStub implements Hasher {
-    async hash (): Promise<string> {
+    async hash(): Promise<string> {
       return 'hashed_password'
     }
 
-    async isEqual (): Promise<boolean> {
+    async isEqual(): Promise<boolean> {
       return true
     }
   }
@@ -61,7 +67,7 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     HasherStub,
-    accountRepositoryStub
+    accountRepositoryStub,
   }
 }
 
@@ -71,10 +77,10 @@ describe('UpdateAccount Usecase', () => {
 
     const userId = 'valid_id'
     const paramsToUpdate = {
-      password: 'a'
+      password: 'a',
     }
 
-    const error = await sut.update(userId, paramsToUpdate) as Error
+    const error = (await sut.update(userId, paramsToUpdate)) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('É obrigatório envio da senha atual')
@@ -86,12 +92,12 @@ describe('UpdateAccount Usecase', () => {
     const userId = 'valid_id'
     const paramsToUpdate = {
       password: 'a',
-      currentPassword: 'any_password'
+      currentPassword: 'any_password',
     }
 
     jest.spyOn(HasherStub, 'isEqual').mockResolvedValueOnce(false)
 
-    const error = await sut.update(userId, paramsToUpdate) as Error
+    const error = (await sut.update(userId, paramsToUpdate)) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('Senha atual incorreta')
@@ -103,10 +109,10 @@ describe('UpdateAccount Usecase', () => {
     const userId = 'valid_id'
     const paramsToUpdate = {
       password: 'a',
-      currentPassword: '1234567AB'
+      currentPassword: '1234567AB',
     }
 
-    const error = await sut.update(userId, paramsToUpdate) as Error
+    const error = (await sut.update(userId, paramsToUpdate)) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir no mínimo 8 caracteres')
@@ -119,10 +125,10 @@ describe('UpdateAccount Usecase', () => {
 
     const paramsToUpdate = {
       password: '12345678',
-      currentPassword: '1234567AB'
+      currentPassword: '1234567AB',
     }
 
-    const error = await sut.update(userId, paramsToUpdate) as Error
+    const error = (await sut.update(userId, paramsToUpdate)) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir ao menos uma letra')
@@ -133,11 +139,11 @@ describe('UpdateAccount Usecase', () => {
 
     const paramsToUpdate = {
       password: 'abcdefghijk',
-      currentPassword: '1234567AB'
+      currentPassword: '1234567AB',
     }
 
     const userId = 'valid_id'
-    const error = await sut.update(userId, paramsToUpdate) as Error
+    const error = (await sut.update(userId, paramsToUpdate)) as Error
 
     expect(error).toBeInstanceOf(Error)
     expect(error.message).toBe('A senha deve possuir ao menos um número')
@@ -151,7 +157,7 @@ describe('UpdateAccount Usecase', () => {
     const userId = 'valid_id'
     const paramsToUpdate = {
       password: 'a',
-      currentPassword: 'abcdefghijk1'
+      currentPassword: 'abcdefghijk1',
     }
     const promise = sut.update(userId, paramsToUpdate)
 
@@ -170,16 +176,13 @@ describe('UpdateAccount Usecase', () => {
 
     const userId = 'valid_id'
     const params = {
-      name: 'New name'
+      name: 'New name',
     }
-    const account = await sut.update(userId, params) as AccountModel
+    const account = (await sut.update(userId, params)) as AccountModel
 
-    expect(updateSpy).toHaveBeenCalledWith(
-      userId,
-      {
-        name: params.name
-      }
-    )
+    expect(updateSpy).toHaveBeenCalledWith(userId, {
+      name: params.name,
+    })
     expect(account).toEqual(expectedResult)
     expect(account.hashedPassword).toEqual(hashedPassword)
   })
@@ -200,18 +203,15 @@ describe('UpdateAccount Usecase', () => {
     const params = {
       name: 'New name',
       currentPassword: 'abcdefghijk1',
-      password: 'rajsiad21i'
+      password: 'rajsiad21i',
     }
-    const account = await sut.update(userId, params) as AccountModel
+    const account = (await sut.update(userId, params)) as AccountModel
 
     expect(hashSpy).toHaveBeenCalledWith(params.password)
-    expect(updateSpy).toHaveBeenCalledWith(
-      userId,
-      {
-        hashedPassword,
-        name: params.name
-      }
-    )
+    expect(updateSpy).toHaveBeenCalledWith(userId, {
+      hashedPassword,
+      name: params.name,
+    })
     expect(account).toEqual(expectedResult)
     expect(account.hashedPassword).toEqual(hashedPassword)
   })

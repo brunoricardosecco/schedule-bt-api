@@ -1,36 +1,55 @@
 import { DeleteServiceHourRepository } from '@/data/protocols/db/service-hour/delete-service-hour'
-import { FindServiceHoursRepository, FindServiceHoursRepositoryParams } from '@/data/protocols/db/service-hour/find-service-hours'
-import { LoadServiceHoursByCompanyIdAndWeekdayRepository, LoadServiceHoursByCompanyIdRepositoryModel } from '@/data/protocols/db/service-hour/load-service-hours-by-company-id-and-weekday'
-import { AddServiceHourRepository, AddServiceHourRepositoryModel, ServiceHour } from '@/data/usecases/add-service-hour/add-service-hour.protocols'
+import {
+  FindServiceHoursRepository,
+  FindServiceHoursRepositoryParams,
+} from '@/data/protocols/db/service-hour/find-service-hours'
+import {
+  LoadServiceHoursByCompanyIdAndWeekdayRepository,
+  LoadServiceHoursByCompanyIdRepositoryModel,
+} from '@/data/protocols/db/service-hour/load-service-hours-by-company-id-and-weekday'
+import {
+  AddServiceHourRepository,
+  AddServiceHourRepositoryModel,
+  ServiceHour,
+} from '@/data/usecases/add-service-hour/add-service-hour.protocols'
 import { db } from '@/infra/db/orm/prisma'
 
-export class ServiceHourPostgresRepository implements AddServiceHourRepository, LoadServiceHoursByCompanyIdAndWeekdayRepository, FindServiceHoursRepository, DeleteServiceHourRepository {
-  async add (serviceHourData: AddServiceHourRepositoryModel): Promise<ServiceHour> {
+export class ServiceHourPostgresRepository
+  implements
+    AddServiceHourRepository,
+    LoadServiceHoursByCompanyIdAndWeekdayRepository,
+    FindServiceHoursRepository,
+    DeleteServiceHourRepository
+{
+  async add(serviceHourData: AddServiceHourRepositoryModel): Promise<ServiceHour> {
     return await db.serviceHours.create({
-      data: serviceHourData
+      data: serviceHourData,
     })
   }
 
-  async loadByCompanyIdAndWeekday ({ companyId, weekday }: LoadServiceHoursByCompanyIdRepositoryModel): Promise<ServiceHour[]> {
+  async loadByCompanyIdAndWeekday({
+    companyId,
+    weekday,
+  }: LoadServiceHoursByCompanyIdRepositoryModel): Promise<ServiceHour[]> {
     return await db.serviceHours.findMany({
       where: {
         companyId,
-        weekday
-      }
+        weekday,
+      },
     })
   }
 
-  async findBy (params: FindServiceHoursRepositoryParams): Promise<ServiceHour[]> {
+  async findBy(params: FindServiceHoursRepositoryParams): Promise<ServiceHour[]> {
     return await db.serviceHours.findMany({
-      where: params
+      where: params,
     })
   }
 
-  async delete (serviceHourId: string): Promise<ServiceHour> {
+  async delete(serviceHourId: string): Promise<ServiceHour> {
     return await db.serviceHours.delete({
       where: {
-        id: serviceHourId
-      }
+        id: serviceHourId,
+      },
     })
   }
 }

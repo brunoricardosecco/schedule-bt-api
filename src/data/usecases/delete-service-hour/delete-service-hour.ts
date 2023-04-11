@@ -1,15 +1,21 @@
 import { FindServiceHoursRepository } from '../find-service-hours/find-service-hours.protocols'
-import { ServiceHour, IDeleteServiceHour, DeleteServiceHourRepository } from './delete-service-hour.protocols'
+import { DeleteServiceHourRepository, IDeleteServiceHour, ServiceHour } from './delete-service-hour.protocols'
 
 export class DeleteServiceHour implements IDeleteServiceHour {
-  constructor (
+  constructor(
     private readonly deleteServiceHourRepository: DeleteServiceHourRepository,
     private readonly findServiceHourRepository: FindServiceHoursRepository
   ) {}
 
-  async delete ({ serviceHourId, companyId }: { serviceHourId: string, companyId: string }): Promise<ServiceHour | Error> {
+  async delete({
+    serviceHourId,
+    companyId,
+  }: {
+    serviceHourId: string
+    companyId: string
+  }): Promise<ServiceHour | Error> {
     const serviceHours = await this.findServiceHourRepository.findBy({
-      companyId
+      companyId,
     })
 
     const found = serviceHours.find(serviceHour => serviceHour.id === serviceHourId)

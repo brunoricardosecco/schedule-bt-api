@@ -1,17 +1,9 @@
-import {
-  Decrypter,
-  IAuthenticate,
-  LoadAccountByIdRepository,
-  IAuthenticateReturn
-} from './authenticate.protocols'
+import { Decrypter, IAuthenticate, IAuthenticateReturn, LoadAccountByIdRepository } from './authenticate.protocols'
 
 export class Authenticate implements IAuthenticate {
-  constructor (
-    private readonly decrypter: Decrypter,
-    private readonly accountRepository: LoadAccountByIdRepository
-  ) {}
+  constructor(private readonly decrypter: Decrypter, private readonly accountRepository: LoadAccountByIdRepository) {}
 
-  async auth (token: string): Promise<IAuthenticateReturn | Error> {
+  async auth(token: string): Promise<IAuthenticateReturn | Error> {
     const tokenPayload = await this.decrypter.decrypt(token)
 
     if (!tokenPayload) {
@@ -25,7 +17,7 @@ export class Authenticate implements IAuthenticate {
     }
 
     return {
-      user
+      user,
     }
   }
 }

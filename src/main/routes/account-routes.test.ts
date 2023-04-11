@@ -1,8 +1,8 @@
-import request from 'supertest'
+import { RoleEnum } from '@/domain/enums/role-enum'
+import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
 import { db } from '@/infra/db/orm/prisma'
 import app from '@/main/config/app'
-import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
-import { RoleEnum } from '@/domain/enums/role-enum'
+import request from 'supertest'
 
 describe('Account Routes', () => {
   const name = 'Nome'
@@ -16,8 +16,8 @@ describe('Account Routes', () => {
         name,
         email: accountEmail,
         hashedPassword,
-        role: RoleEnum.GENERAL_ADMIN
-      }
+        role: RoleEnum.GENERAL_ADMIN,
+      },
     })
   })
 
@@ -27,12 +27,10 @@ describe('Account Routes', () => {
 
   describe('PATCH /account', () => {
     it('should return 200 on PATCH /account', async () => {
-      const loginResponse = await request(app)
-        .post('/api/authenticate-by-password')
-        .send({
-          email: accountEmail,
-          password
-        })
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email: accountEmail,
+        password,
+      })
 
       await request(app)
         .patch('/api/account')
@@ -40,7 +38,7 @@ describe('Account Routes', () => {
         .send({
           name: 'Novo Nome',
           password: '1235611AB',
-          currentPassword: password
+          currentPassword: password,
         })
         .expect(200)
     })

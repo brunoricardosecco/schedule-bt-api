@@ -1,10 +1,10 @@
-import { unauthorized, serverError, ok } from '@/presentation/helpers/http/httpHelper'
 import { RoleEnum } from '@/domain/enums/role-enum'
+import { AccountModel } from '@/domain/models/account'
 import { Role } from '@/domain/models/role'
 import { IAuthorize } from '@/domain/usecases/authorize'
 import { ServerError } from '@/presentation/errors'
+import { forbidden, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { AuthorizeMiddleware } from './authorize-middleware'
-import { AccountModel } from '@/domain/models/account'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -18,22 +18,26 @@ const makeFakeAccount = (): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const defaultPayload = false
 
 const makeAuthorize = (): IAuthorize => {
   class AuthorizeStub implements IAuthorize {
-    async authorize (): Promise<boolean> {
-      return await new Promise(resolve => { resolve(defaultPayload) })
+    async authorize(): Promise<boolean> {
+      return await new Promise(resolve => {
+        resolve(defaultPayload)
+      })
     }
   }
 
   return new AuthorizeStub()
 }
 
-const makeSut = (authorizedRoles: Role[]): {
+const makeSut = (
+  authorizedRoles: Role[]
+): {
   authorize: IAuthorize
   authorizeMiddleware: AuthorizeMiddleware
 } => {
@@ -42,40 +46,40 @@ const makeSut = (authorizedRoles: Role[]): {
 
   return {
     authorize,
-    authorizeMiddleware
+    authorizeMiddleware,
   }
 }
 
 describe('Authorize Middleware', () => {
-  it('should return 401 if user id is not present in the httpRequest', async () => {
+  it('should return forbidden if user id is not present in the httpRequest', async () => {
     const { authorizeMiddleware } = makeSut([RoleEnum.EMPLOYEE])
 
     const httpResponse = await authorizeMiddleware.handle({})
 
-    expect(httpResponse).toEqual(unauthorized())
+    expect(httpResponse).toEqual(forbidden())
   })
 
-  it('should return 401 if Authorize returns false', async () => {
+  it('should return forbidden if Authorize returns false', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
     jest.spyOn(authorize, 'authorize').mockResolvedValueOnce(false)
 
     const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
-    expect(httpResponse).toEqual(unauthorized())
+    expect(httpResponse).toEqual(forbidden())
   })
 
-  it('should return 500 if Authorize throws an error', async () => {
+  it('should return serverError if Authorize throws an error', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
-    jest.spyOn(authorize, 'authorize').mockRejectedValueOnce((new Error('Erro')))
+    jest.spyOn(authorize, 'authorize').mockRejectedValueOnce(new Error('Erro'))
 
     const httpResponse = await authorizeMiddleware.handle({ user: makeFakeAccount() })
 
     expect(httpResponse).toEqual(serverError(new ServerError()))
   })
 
-  it('should return 200', async () => {
+  it('should authorize the user', async () => {
     const { authorizeMiddleware, authorize } = makeSut([RoleEnum.EMPLOYEE])
 
     jest.spyOn(authorize, 'authorize').mockResolvedValueOnce(true)

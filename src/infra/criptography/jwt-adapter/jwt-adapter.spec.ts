@@ -1,17 +1,21 @@
+import { TokenPayload } from '@/data/protocols/cryptography/decrypter'
 import jwt from 'jsonwebtoken'
 import { JWTAdapter } from './jwt-adapter'
-import { TokenPayload } from '@/data/protocols/cryptography/decrypter'
 
 const defaultPayload = { userId: 'any_id' }
 
 jest.mock('jsonwebtoken', () => ({
   ...jest.requireActual('jsonwebtoken'),
-  async sign (): Promise<string> {
-    return await new Promise(resolve => { resolve('any_token') })
+  async sign(): Promise<string> {
+    return await new Promise(resolve => {
+      resolve('any_token')
+    })
   },
-  async verify (): Promise<TokenPayload | null> {
-    return await new Promise(resolve => { resolve(defaultPayload) })
-  }
+  async verify(): Promise<TokenPayload | null> {
+    return await new Promise(resolve => {
+      resolve(defaultPayload)
+    })
+  },
 }))
 
 const makeSut = (): JWTAdapter => {
@@ -39,7 +43,9 @@ describe('JWT Adapter', () => {
     it('should throws if sign throws', async () => {
       const sut = makeSut()
 
-      jest.spyOn(jwt, 'sign').mockImplementationOnce(() => { throw new Error() })
+      jest.spyOn(jwt, 'sign').mockImplementationOnce(() => {
+        throw new Error()
+      })
 
       const promise = sut.encrypt('any_id')
       await expect(promise).rejects.toThrow()
@@ -64,7 +70,9 @@ describe('JWT Adapter', () => {
       const sut = makeSut()
       const token = 'token'
 
-      jest.spyOn(jwt, 'verify').mockImplementationOnce(() => { throw new Error() })
+      jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+        throw new Error()
+      })
 
       const response = await sut.decrypt(token)
 

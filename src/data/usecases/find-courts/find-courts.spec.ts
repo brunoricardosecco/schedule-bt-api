@@ -1,11 +1,12 @@
-
-import { FindCourtsRepository, Court } from './find-courts.protocols'
 import { FindCourts } from './find-courts'
+import { Court, FindCourtsRepository } from './find-courts.protocols'
 
 const makeFindCourtsRepository = (): FindCourtsRepository => {
   class FindCourtsRepositoryStub implements FindCourtsRepository {
-    async findMany (): Promise<Court[]> {
-      return await new Promise(resolve => { resolve([]) })
+    async findMany(): Promise<Court[]> {
+      return await new Promise(resolve => {
+        resolve([])
+      })
     }
   }
 
@@ -23,7 +24,7 @@ const makeSut = (): SutTypes => {
 
   return {
     sut,
-    findManyCourtsRepositoryStub
+    findManyCourtsRepositoryStub,
   }
 }
 
@@ -39,7 +40,7 @@ describe('FindCourts Usecase', () => {
         company: null,
         companyId,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       {
         id: '2',
@@ -47,8 +48,8 @@ describe('FindCourts Usecase', () => {
         company: null,
         companyId,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     ]
 
     const findManySpy = jest.spyOn(findManyCourtsRepositoryStub, 'findMany')
@@ -58,7 +59,7 @@ describe('FindCourts Usecase', () => {
     const response = await sut.findMany({ companyId })
 
     expect(findManySpy).toHaveBeenCalledWith({
-      companyId
+      companyId,
     })
     expect(response).toStrictEqual(courts)
   })

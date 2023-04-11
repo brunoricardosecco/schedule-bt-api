@@ -1,20 +1,23 @@
-import { ServiceHour, DeleteServiceHourRepository, IDeleteServiceHour } from './delete-service-hour.protocols'
+import {
+  FindServiceHoursRepository,
+  FindServiceHoursRepositoryParams,
+} from '../find-service-hours/find-service-hours.protocols'
 import { DeleteServiceHour } from './delete-service-hour'
-import { FindServiceHoursRepository, FindServiceHoursRepositoryParams } from '../find-service-hours/find-service-hours.protocols'
+import { DeleteServiceHourRepository, IDeleteServiceHour, ServiceHour } from './delete-service-hour.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
   companyId: 'company_id',
   startTime: '09:00',
   endTime: '12:00',
-  weekday: 0
+  weekday: 0,
 })
 
 const fakeServiceHour = makeFakeServiceHour()
 
 const makeDeleteServiceHourRepository = (): DeleteServiceHourRepository => {
   class DeleteServiceHourRepositoryStub implements DeleteServiceHourRepository {
-    async delete (serviceHourId: string): Promise<ServiceHour> {
+    async delete(serviceHourId: string): Promise<ServiceHour> {
       return fakeServiceHour
     }
   }
@@ -24,7 +27,7 @@ const makeDeleteServiceHourRepository = (): DeleteServiceHourRepository => {
 
 const makeFindServiceHoursRepository = (): FindServiceHoursRepository => {
   class FindServiceHoursRepositoryStub implements FindServiceHoursRepository {
-    async findBy (params: FindServiceHoursRepositoryParams): Promise<ServiceHour[]> {
+    async findBy(params: FindServiceHoursRepositoryParams): Promise<ServiceHour[]> {
       return [fakeServiceHour]
     }
   }
@@ -46,7 +49,7 @@ const makeSut = (): SutTypes => {
   return {
     deleteServiceHourRepository,
     findServiceHoursRepository,
-    sut
+    sut,
   }
 }
 

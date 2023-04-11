@@ -1,49 +1,70 @@
-import { CreateCourtModelToRepository, CreateCourtsRepository } from '@/data/protocols/db/court/create-courts-repository'
+import {
+  CreateCourtModelToRepository,
+  CreateCourtsRepository,
+} from '@/data/protocols/db/court/create-courts-repository'
 import { DeleteCourtByIdRepository } from '@/data/protocols/db/court/delete-court-by-id-repository'
 import { FindCourtByIdAndCompanyIdRepository } from '@/data/protocols/db/court/find-court-by-id-and-company-id.repository'
 import { FindCourtsParamsToRepository, FindCourtsRepository } from '@/data/protocols/db/court/find-courts-repository'
+import { UpdateCourtByIdParamsToRepository } from '@/data/protocols/db/court/update-court-by-id-repository'
 import { Court } from '@/domain/models/court'
 import { db } from '@/infra/db/orm/prisma'
 
-export class CourtPostgresRepository implements CreateCourtsRepository, FindCourtsRepository, FindCourtByIdAndCompanyIdRepository, DeleteCourtByIdRepository {
-  async createMany (courts: CreateCourtModelToRepository[]): Promise<number> {
+export class CourtPostgresRepository
+  implements
+    CreateCourtsRepository,
+    FindCourtsRepository,
+    FindCourtByIdAndCompanyIdRepository,
+    DeleteCourtByIdRepository
+{
+  async createMany(courts: CreateCourtModelToRepository[]): Promise<number> {
     const createdCourts = await db.courts.createMany({
-      data: courts
+      data: courts,
     })
 
     return createdCourts.count
   }
 
-  async findMany ({ companyId }: FindCourtsParamsToRepository): Promise<Court[]> {
+  async findMany({ companyId }: FindCourtsParamsToRepository): Promise<Court[]> {
     const courts = await db.courts.findMany({
       where: {
         companyId,
-        isDeleted: false
-      }
+        isDeleted: false,
+      },
     })
 
     return courts
   }
 
-  async findByIdAndCompanyId (courtId: string, companyId: string): Promise<Court | null> {
+  async findByIdAndCompanyId(courtId: string, companyId: string): Promise<Court | null> {
     const court = await db.courts.findFirst({
       where: {
         id: courtId,
-        companyId
-      }
+        companyId,
+      },
     })
 
     return court
   }
 
-  async deleteById (courtId: string): Promise<Court> {
+  async updateById({ id, data }: UpdateCourtByIdParamsToRepository): Promise<Court> {
     const court = await db.courts.update({
       where: {
-        id: courtId
+        id,
+      },
+      data,
+    })
+
+    return court
+  }
+
+  async deleteById(courtId: string): Promise<Court> {
+    const court = await db.courts.update({
+      where: {
+        id: courtId,
       },
       data: {
-        isDeleted: true
-      }
+        isDeleted: true,
+      },
     })
 
     return court

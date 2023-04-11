@@ -1,13 +1,20 @@
 import { RoleEnum } from '@/domain/enums/role-enum'
-import { AccountModel, AddAccount, AddAccountModel, AddAccountRepository, Hasher, LoadAccountByEmailRepository } from './db-add-account.protocols'
+import {
+  AccountModel,
+  AddAccount,
+  AddAccountModel,
+  AddAccountRepository,
+  Hasher,
+  LoadAccountByEmailRepository,
+} from './db-add-account.protocols'
 
 export class DbAddAccount implements AddAccount {
-  constructor (
+  constructor(
     private readonly hasher: Hasher,
     private readonly accountRepository: AddAccountRepository & LoadAccountByEmailRepository
   ) {}
 
-  async add (accountData: AddAccountModel): Promise<AccountModel | Error> {
+  async add(accountData: AddAccountModel): Promise<AccountModel | Error> {
     if (accountData.role !== RoleEnum.EMPLOYEE && accountData.role !== RoleEnum.COMPANY_ADMIN) {
       return new Error('Role must be EMPLOYEE or COMPANY_ADMIN')
     }
@@ -25,7 +32,7 @@ export class DbAddAccount implements AddAccount {
       name: accountData.name,
       email: accountData.email,
       companyId: accountData.companyId,
-      role: accountData.role
+      role: accountData.role,
     })
 
     return account

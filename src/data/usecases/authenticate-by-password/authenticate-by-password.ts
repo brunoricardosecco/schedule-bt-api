@@ -1,19 +1,19 @@
 import {
-  TAuthenticateByPasswordParams,
-  HashComparer,
   Encrypter,
+  HashComparer,
+  IAuthenticateByPassword,
   LoadAccountByEmailRepository,
-  IAuthenticateByPassword
+  TAuthenticateByPasswordParams,
 } from './authenticate-by-password.protocols'
 
 export class AuthenticateByPassword implements IAuthenticateByPassword {
-  constructor (
+  constructor(
     private readonly loadAccountByEmailRepository: LoadAccountByEmailRepository,
     private readonly hashComparer: HashComparer,
     private readonly encrypter: Encrypter
   ) {}
 
-  async auth (params: TAuthenticateByPasswordParams): Promise<string | null> {
+  async auth(params: TAuthenticateByPasswordParams): Promise<string | null> {
     const account = await this.loadAccountByEmailRepository.loadByEmail(params.email)
 
     if (!account) {

@@ -1,7 +1,7 @@
-import { IUpdateAccount, UpdateAccountReturn, AccountModel, RoleEnum } from './update-account.protocols'
-import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
+import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { UpdateAccountController } from './update-account-controller'
+import { AccountModel, IUpdateAccount, RoleEnum, UpdateAccountReturn } from './update-account.protocols'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -15,19 +15,19 @@ const makeFakeAccount = (): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const makeFakeRequest = (body: Record<string, any>): HttpRequest => {
-  return ({
+  return {
     user: makeFakeAccount(),
-    body
-  })
+    body,
+  }
 }
 
 const makeUpdateAccount = (): IUpdateAccount => {
   class UpdateAccountStub implements IUpdateAccount {
-    async update (): UpdateAccountReturn {
+    async update(): UpdateAccountReturn {
       return makeFakeAccount()
     }
   }
@@ -46,7 +46,7 @@ const makeSut = (): SutTypes => {
 
   return {
     sut,
-    updateAccountStub
+    updateAccountStub,
   }
 }
 
@@ -90,8 +90,10 @@ describe('UpdateAccountController', () => {
     const response = await sut.handle(httpRequest)
 
     expect(updateAccountSpy).toHaveBeenCalledWith(httpRequest.user?.id, httpRequest.body)
-    expect(response).toEqual(ok({
-      account: accountUpdated
-    }))
+    expect(response).toEqual(
+      ok({
+        account: accountUpdated,
+      })
+    )
   })
 })

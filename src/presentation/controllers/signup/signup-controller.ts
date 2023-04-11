@@ -1,14 +1,21 @@
-import { Controller, HttpRequest, HttpResponse, AddAccount, Validation, IAuthenticateByPassword } from './signup-controller.protocols'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import {
+  AddAccount,
+  Controller,
+  HttpRequest,
+  HttpResponse,
+  IAuthenticateByPassword,
+  Validation,
+} from './signup-controller.protocols'
 
 export class SignUpController implements Controller {
-  constructor (
+  constructor(
     private readonly addAccount: AddAccount,
     private readonly validation: Validation,
     private readonly authenticate: IAuthenticateByPassword
   ) {}
 
-  async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const error = this.validation.validate(httpRequest.body)
 
@@ -28,7 +35,7 @@ export class SignUpController implements Controller {
 
       return ok({
         account: accountOrError,
-        accessToken
+        accessToken,
       })
     } catch (error) {
       return serverError(error)

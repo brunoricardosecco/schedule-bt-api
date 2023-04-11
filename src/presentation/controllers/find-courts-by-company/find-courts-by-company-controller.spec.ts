@@ -1,10 +1,10 @@
+import { RoleEnum } from '@/domain/enums/role-enum'
 import { AccountModel } from '@/domain/models/account'
 import { Court } from '@/domain/models/court'
 import { FindCourtsReturn, IFindCourts } from '@/domain/usecases/find-courts'
-import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
+import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { FindCourtsByCompanyController } from './find-courts-by-company-controller'
-import { RoleEnum } from '@/domain/enums/role-enum'
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
@@ -18,7 +18,7 @@ const makeFakeAccount = (): AccountModel => ({
   emailValidationTokenExpiration: null,
   isConfirmed: false,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const makeFakeCourt = (): Court => ({
@@ -26,19 +26,21 @@ const makeFakeCourt = (): Court => ({
   name: 'any_name',
   companyId: 'company_id',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 })
 
 const makeFakeRequest = (): HttpRequest => {
-  return ({
-    user: makeFakeAccount()
-  })
+  return {
+    user: makeFakeAccount(),
+  }
 }
 
 const makeFindCourts = (): IFindCourts => {
   class FindCourtsStub implements IFindCourts {
-    async findMany (): FindCourtsReturn {
-      return await new Promise(resolve => { resolve([]) })
+    async findMany(): FindCourtsReturn {
+      return await new Promise(resolve => {
+        resolve([])
+      })
     }
   }
 
@@ -56,7 +58,7 @@ const makeSut = (): SutTypes => {
 
   return {
     sut,
-    findManyCourtsStub
+    findManyCourtsStub,
   }
 }
 
@@ -86,7 +88,7 @@ describe('FindCourtsController', () => {
     expect(findManyCourtsSpy).toHaveBeenCalledWith({ companyId: httpRequest.user?.companyId })
     expect(response).toStrictEqual(
       ok({
-        courts
+        courts,
       })
     )
   })

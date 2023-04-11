@@ -1,5 +1,5 @@
 import { Middleware } from '@/presentation/protocols/middleware'
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 export const expressMiddlewareAdapter = (middleware: Middleware) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +11,7 @@ export const expressMiddlewareAdapter = (middleware: Middleware) => {
       next()
     } else {
       res.status(httpResponse.statusCode).json({
-        error: httpResponse.body.message
+        error: httpResponse.body.message,
       })
     }
   }

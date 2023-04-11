@@ -1,4 +1,4 @@
-export const queryParser = (queryParams: Object): any => {
+export const queryParser = (queryParams: object): any => {
   const parsedObj = {}
 
   Object.keys(queryParams).forEach(key => Object.assign(parsedObj, { [key]: parseNumber(queryParams[key]) }))

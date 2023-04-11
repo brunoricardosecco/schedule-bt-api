@@ -14,8 +14,8 @@ describe('Court Postgres Repository', () => {
       data: {
         name: 'Empresa X',
         reservationPrice: 70,
-        reservationTimeInMinutes: 60
-      }
+        reservationTimeInMinutes: 60,
+      },
     })
   })
 
@@ -26,8 +26,8 @@ describe('Court Postgres Repository', () => {
   afterAll(async () => {
     await db.companies.delete({
       where: {
-        id: createdCompany.id
-      }
+        id: createdCompany.id,
+      },
     })
   })
 
@@ -36,12 +36,12 @@ describe('Court Postgres Repository', () => {
     const params = [
       {
         name: 'Quadra 1',
-        companyId: createdCompany.id
+        companyId: createdCompany.id,
       },
       {
         name: 'Quadra 2',
-        companyId: createdCompany.id
-      }
+        companyId: createdCompany.id,
+      },
     ]
     const courtCount = await sut.createMany(params)
 
@@ -57,7 +57,7 @@ describe('Court Postgres Repository', () => {
         companyId: createdCompany.id,
         isDeleted: false,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       {
         id: '2',
@@ -65,8 +65,8 @@ describe('Court Postgres Repository', () => {
         companyId: createdCompany.id,
         isDeleted: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     ]
     const courtCount = await sut.createMany(params)
     const courts = await sut.findMany({ companyId: createdCompany.id })
@@ -84,7 +84,7 @@ describe('Court Postgres Repository', () => {
         companyId: createdCompany.id,
         isDeleted: false,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       {
         id: '2',
@@ -92,8 +92,8 @@ describe('Court Postgres Repository', () => {
         companyId: createdCompany.id,
         isDeleted: false,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     ]
     await sut.createMany(params)
     const court = await sut.findByIdAndCompanyId(params[0].id, params[0].companyId)
@@ -110,7 +110,7 @@ describe('Court Postgres Repository', () => {
         companyId: createdCompany.id,
         isDeleted: false,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       {
         id: '2',
@@ -118,8 +118,8 @@ describe('Court Postgres Repository', () => {
         companyId: createdCompany.id,
         isDeleted: false,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     ]
     await sut.createMany(params)
     const court = await sut.findByIdAndCompanyId(params[0].id, params[0].companyId)

@@ -1,13 +1,11 @@
-import { IFindCourts, FindCourtsRepository, FindCourtsReturn, FindCourtsParams } from './find-courts.protocols'
+import { FindCourtsParams, FindCourtsRepository, FindCourtsReturn, IFindCourts } from './find-courts.protocols'
 
 export class FindCourts implements IFindCourts {
-  constructor (
-    private readonly courtRepository: FindCourtsRepository
-  ) {}
+  constructor(private readonly courtRepository: FindCourtsRepository) {}
 
-  async findMany ({ companyId }: FindCourtsParams): FindCourtsReturn {
+  async findMany({ companyId }: FindCourtsParams): FindCourtsReturn {
     const courts = await this.courtRepository.findMany({
-      companyId
+      companyId,
     })
 
     return courts

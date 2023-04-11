@@ -14,17 +14,15 @@ describe('Account Postgres Repository', () => {
       data: {
         name: 'Empresa X',
         reservationPrice: 70,
-        reservationTimeInMinutes: 60
-      }
+        reservationTimeInMinutes: 60,
+      },
     })
   })
 
   beforeEach(async () => {
     const deleteAccounts = db.accounts.deleteMany()
 
-    await db.$transaction([
-      deleteAccounts
-    ])
+    await db.$transaction([deleteAccounts])
     await db.$disconnect()
   })
 
@@ -32,14 +30,11 @@ describe('Account Postgres Repository', () => {
     const deleteAccounts = db.accounts.deleteMany()
     const deleteCompanyId = db.companies.delete({
       where: {
-        id: createdCompany.id
-      }
+        id: createdCompany.id,
+      },
     })
 
-    await db.$transaction([
-      deleteCompanyId,
-      deleteAccounts
-    ])
+    await db.$transaction([deleteCompanyId, deleteAccounts])
     await db.$disconnect()
   })
 
@@ -51,7 +46,7 @@ describe('Account Postgres Repository', () => {
         email: 'any_email@mail.com',
         hashedPassword: 'any_password',
         companyId: createdCompany.id,
-        role: RoleEnum.EMPLOYEE
+        role: RoleEnum.EMPLOYEE,
       }
 
       const account = await sut.add(params)
@@ -75,8 +70,8 @@ describe('Account Postgres Repository', () => {
           name: 'any_name',
           hashedPassword: 'any_password',
           companyId: createdCompany.id,
-          role: RoleEnum.EMPLOYEE
-        }
+          role: RoleEnum.EMPLOYEE,
+        },
       })
       const account = await sut.loadByEmail('any_email2@mail.com')
 
@@ -106,8 +101,8 @@ describe('Account Postgres Repository', () => {
           name: 'any_name',
           hashedPassword: 'any_password',
           companyId: createdCompany.id,
-          role: RoleEnum.EMPLOYEE
-        }
+          role: RoleEnum.EMPLOYEE,
+        },
       })
       const account = await sut.loadById(createdAccount.id)
 
@@ -118,6 +113,7 @@ describe('Account Postgres Repository', () => {
       expect(account?.hashedPassword).toBe('any_password')
       expect(account?.companyId).toBe(createdCompany.id)
       expect(account?.role).toBe(RoleEnum.EMPLOYEE)
+      expect(account?.company).not.toBeNull()
     })
 
     it('should return null on loadById fails', async () => {
