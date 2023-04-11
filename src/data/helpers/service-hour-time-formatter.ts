@@ -5,13 +5,11 @@ type FormattedTimes = {
   end: Date
 }
 
-export const getServiceHourTimeFormatted = (serviceHour: ServiceHour, date: Date): FormattedTimes => {
-  const splittedStartTime = serviceHour.startTime
-    .split(':')
-    .map((piece) => Number(piece))
-  const splittedEndTime = serviceHour.endTime.split(':').map((piece) => Number(piece))
-  const intervalStart = new Date(new Date(date.getTime()).setHours(splittedStartTime[0], splittedStartTime[1], 0, 0))
-  const intervalEnd = new Date(new Date(date.getTime()).setHours(splittedEndTime[0], splittedEndTime[1], 1, 0))
+export const getServiceHourTimeFormatted = (serviceHour: ServiceHour): FormattedTimes => {
+  const rawDate = new Date().toISOString().slice(0, 10)
+  // Doing it to pass on the date constructor something like '2023-04-11,09:00'
+  const intervalStart = new Date([rawDate, serviceHour.startTime].toString())
+  const intervalEnd = new Date([rawDate, serviceHour.endTime].toString())
 
   return {
     start: intervalStart,

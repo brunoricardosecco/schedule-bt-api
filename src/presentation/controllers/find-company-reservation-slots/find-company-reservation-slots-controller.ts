@@ -1,11 +1,11 @@
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { Controller, HttpRequest, HttpResponse, Validation } from '@/presentation/protocols'
-import { IFindReservationIntervals } from './find-company-reservation-intervals-controller.protocols'
+import { IFindReservationSlots } from './find-company-reservation-slots-controller.protocols'
 
-export class FindCompanyReservationIntervalsController implements Controller {
+export class FindCompanyReservationSlotsController implements Controller {
   constructor (
     private readonly validation: Validation,
-    private readonly findReservationIntervals: IFindReservationIntervals
+    private readonly findReservationSlots: IFindReservationSlots
   ) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
@@ -18,17 +18,17 @@ export class FindCompanyReservationIntervalsController implements Controller {
       const { user, query: { date } } = httpRequest
       const dateObj = new Date(date)
 
-      const intervalsOrError = await this.findReservationIntervals.find({
+      const slotsOrError = await this.findReservationSlots.find({
         date: dateObj,
         companyId: user?.companyId as string
       })
 
-      if (intervalsOrError instanceof Error) {
-        return badRequest(intervalsOrError)
+      if (slotsOrError instanceof Error) {
+        return badRequest(slotsOrError)
       }
 
       return ok({
-        intervals: intervalsOrError
+        slots: slotsOrError
       })
     } catch (error) {
       return serverError(error)

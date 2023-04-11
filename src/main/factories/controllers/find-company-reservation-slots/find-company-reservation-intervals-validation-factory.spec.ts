@@ -1,12 +1,12 @@
 import { ValidationComposite, RequiredFieldValidation } from '@/validation/validators'
 import { Validation } from '@/presentation/protocols/validation'
-import { findCompanyReservationIntervalsValidation } from './find-company-reservation-intervals-validation'
+import { findCompanyReservationSlotsValidation } from './find-company-reservation-slots-validation'
 
 jest.mock('@/validation/validators/validation-composite')
 
-describe('CompanyReservationIntervalsValidation Factory', () => {
+describe('CompanyReservationSlotsValidation Factory', () => {
   it('should call ValidationComposite with all validations', () => {
-    findCompanyReservationIntervalsValidation()
+    findCompanyReservationSlotsValidation()
     const validations: Validation[] = []
 
     for (const field of ['date']) {

@@ -1,7 +1,7 @@
 import { ValidationComposite, RequiredFieldValidation } from '@/validation/validators'
 import { Validation } from '@/presentation/protocols/validation'
 
-export const findCompanyReservationIntervalsValidation = (): ValidationComposite => {
+export const findCompanyReservationSlotsValidation = (): ValidationComposite => {
   const validations: Validation[] = []
 
   for (const field of ['date']) {

@@ -1,6 +1,6 @@
-import { FindCompaniesRepository, ReservationInterval, FindReservationIntervalsParams, IFindReservationIntervals, FindServiceHoursRepository, FindReservationsRepository, getServiceHourTimeFormatted, TimeConflictChecker } from './find-reservation-intervals.protocols'
+import { FindCompaniesRepository, ReservationSlot, FindReservationSlotsParams, IFindReservationSlots, FindServiceHoursRepository, FindReservationsRepository, getServiceHourTimeFormatted, TimeConflictChecker } from './find-reservation-slots.protocols'
 
-export class FindReservationIntervals implements IFindReservationIntervals {
+export class FindReservationSlots implements IFindReservationSlots {
   constructor (
     private readonly findServiceHoursRepository: FindServiceHoursRepository,
     private readonly findCompaniesRepository: FindCompaniesRepository,
@@ -8,7 +8,7 @@ export class FindReservationIntervals implements IFindReservationIntervals {
     private readonly timeConflictsChecker: TimeConflictChecker
   ) {}
 
-  async find ({ date, companyId }: FindReservationIntervalsParams): Promise<ReservationInterval[] | Error> {
+  async find ({ date, companyId }: FindReservationSlotsParams): Promise<ReservationSlot[] | Error> {
     const serviceHours = await this.findServiceHoursRepository.findBy({ companyId, weekday: date.getDay() })
 
     if (serviceHours.length === 0) {
@@ -25,46 +25,45 @@ export class FindReservationIntervals implements IFindReservationIntervals {
 
     const reservations = await this.findReservationsRepository.findBy({
       companyId,
-      startAt: new Date(date.setHours(0, 0, 0, 0)),
-      endAt: new Date(date.setHours(23, 59, 59, 999))
+      startAt: new Date(new Date(date.getTime()).setHours(0, 0, 0, 0)),
+      endAt: new Date(new Date(date.getTime()).setHours(23, 59, 59, 999))
     })
 
-    let intervals: ReservationInterval[] = []
+    let slots: ReservationSlot[] = []
 
     serviceHours.forEach(serviceHour => {
-      const { start, end } = getServiceHourTimeFormatted(serviceHour, date)
-
-      intervals = this.getIntervals(start, end, company.reservationTimeInMinutes)
+      const { start, end } = getServiceHourTimeFormatted(serviceHour)
+      slots = this.getSlots(start, end, company.reservationTimeInMinutes)
     })
 
-    const checkedIntervals = intervals.map(interval => {
+    const checkedSlots = slots.map(slot => {
       let isOverlapping = false
       reservations.forEach(reservation => {
         const formattedReservation = {
           start: reservation.reservationStartDateTime,
           end: reservation.reservationEndDateTime
         }
-        if (this.timeConflictsChecker.areIntervalsOverlapping({ firstTime: formattedReservation, secondTime: interval })) {
+        if (this.timeConflictsChecker.areIntervalsOverlapping({ firstTime: formattedReservation, secondTime: slot })) {
           isOverlapping = true
         }
       })
 
       return {
-        ...interval,
+        ...slot,
         isAvailable: !isOverlapping
       }
     })
 
-    return checkedIntervals
+    return checkedSlots
   }
 
-  private getIntervals (start: Date, end: Date, intervalInMinutes: number): ReservationInterval[] {
-    const intervals: ReservationInterval[] = []
+  private getSlots (start: Date, end: Date, intervalInMinutes: number): ReservationSlot[] {
+    const slots: ReservationSlot[] = []
     let current = start
     let next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)
 
     while (current < end) {
-      intervals.push({
+      slots.push({
         start: current,
         end: next,
         isAvailable: true
@@ -73,6 +72,6 @@ export class FindReservationIntervals implements IFindReservationIntervals {
       next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)
     }
 
-    return intervals
+    return slots
   }
 }

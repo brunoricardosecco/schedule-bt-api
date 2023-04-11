@@ -35,7 +35,7 @@ describe('Reservation Postgres Repository', () => {
     ])
   })
   describe('findBy', () => {
-    it('it should return reservation intervals on success', async () => {
+    it('it should return reservations on success', async () => {
       const sut = makeSut()
 
       const account = await db.accounts.create({

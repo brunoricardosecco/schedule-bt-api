@@ -1,13 +1,16 @@
 import {
-  FindCompaniesRepository, IFindReservationIntervals, FindServiceHoursRepository, FindReservationsRepository, TimeConflictChecker, FindCompaniesRepositoryParams, FindServiceHoursRepositoryParams,
+  FindCompaniesRepository, IFindReservationSlots, FindServiceHoursRepository, FindReservationsRepository, TimeConflictChecker, FindCompaniesRepositoryParams, FindServiceHoursRepositoryParams,
   FindReservationsRepositoryParams, ServiceHourTimeModel,
   TimeOverlappingCheckerModel
-} from './find-reservation-intervals.protocols'
+} from './find-reservation-slots.protocols'
 import { Company } from '@/domain/models/company'
 import { ServiceHour } from '@/domain/models/service-hour'
-import { FindReservationIntervals } from './find-reservation-intervals'
+import { FindReservationSlots } from './find-reservation-slots'
 import { Reservation } from '@/domain/models/reservation'
 import { ReservationStatusEnum } from '@/domain/enums/reservation-status-enum'
+
+jest.useFakeTimers()
+jest.setSystemTime(new Date('2023-04-10,09:00'))
 
 const makeFakeServiceHour = (): ServiceHour => ({
   id: 'valid_id',
@@ -101,7 +104,7 @@ const makeFindCompaniesRepository = (): FindCompaniesRepository => {
 }
 
 type SutTypes = {
-  sut: IFindReservationIntervals
+  sut: IFindReservationSlots
   findServiceHoursRepository: FindServiceHoursRepository
   findCompanyRepository: FindCompaniesRepository
   findReservationsRepository: FindReservationsRepository
@@ -113,7 +116,7 @@ const makeSut = (): SutTypes => {
   const findCompanyRepositoryStub = makeFindCompaniesRepository()
   const findReservationsRepositoryStub = makeFindReservationsRepository()
   const timeConflictChecker = makeTimeConflictChecker()
-  const sut = new FindReservationIntervals(
+  const sut = new FindReservationSlots(
     findServiceHoursRepositoryStub,
     findCompanyRepositoryStub,
     findReservationsRepositoryStub,
@@ -129,7 +132,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('FindReservationIntervals', () => {
+describe('FindReservationSlots', () => {
   it('should call FindServiceHoursRepository with correct values', async () => {
     const { findServiceHoursRepository, sut } = makeSut()
     const findBySpy = jest.spyOn(findServiceHoursRepository, 'findBy')
@@ -262,7 +265,7 @@ describe('FindReservationIntervals', () => {
 
     await expect(promise).rejects.toThrow()
   })
-  it('should return the reservation intervals for a given date', async () => {
+  it('should return the reservation slots for a given date', async () => {
     const { sut } = makeSut()
 
     const params = {
@@ -270,9 +273,9 @@ describe('FindReservationIntervals', () => {
       companyId: 'any_company_id'
     }
 
-    const reservationIntervals = await sut.find(params)
+    const reservationSlots = await sut.find(params)
 
-    expect(reservationIntervals).toEqual([
+    expect(reservationSlots).toEqual([
       {
         start: new Date(params.date.setHours(9, 0, 0, 0)),
         end: new Date(params.date.setHours(10, 0, 0, 0)),
@@ -290,7 +293,7 @@ describe('FindReservationIntervals', () => {
       }
     ])
   })
-  it('should set an interval as unavailable when there is a scheduled reservation for a specific interval', async () => {
+  it('should set an slot as unavailable when there is a scheduled reservation for a specific slot', async () => {
     const { sut, findReservationsRepository, timeConflictChecker } = makeSut()
     jest
       .spyOn(findReservationsRepository, 'findBy')
@@ -302,9 +305,9 @@ describe('FindReservationIntervals', () => {
       companyId: 'any_company_id'
     }
 
-    const reservationIntervals = await sut.find(params)
+    const reservationSlots = await sut.find(params)
 
-    expect(reservationIntervals).toEqual([
+    expect(reservationSlots).toEqual([
       {
         start: new Date(params.date.setHours(9, 0, 0, 0)),
         end: new Date(params.date.setHours(10, 0, 0, 0)),

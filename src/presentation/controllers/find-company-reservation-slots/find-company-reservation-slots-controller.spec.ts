@@ -1,9 +1,9 @@
-import { ReservationInterval } from '@/domain/models/reservation-interval'
-import { FindReservationIntervalsParams, IFindReservationIntervals } from '@/domain/usecases/find-reservation-intervals'
+import { ReservationSlot } from '@/domain/models/reservation-slot'
+import { FindReservationSlotsParams, IFindReservationSlots } from '@/domain/usecases/find-reservation-slots'
 import { Controller, HttpRequest, Validation } from '../add-company/add-company-controller.protocols'
 import { RoleEnum } from '@/domain/enums/role-enum'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { FindCompanyReservationIntervalsController } from './find-company-reservation-intervals-controller'
+import { FindCompanyReservationSlotsController } from './find-company-reservation-slots-controller'
 
 const makeFakeRequest = (): HttpRequest => {
   return {
@@ -29,14 +29,14 @@ const makeFakeRequest = (): HttpRequest => {
 }
 const fakeRequest = makeFakeRequest()
 
-const makeFindReservationIntervals = (): IFindReservationIntervals => {
-  class FindReservationIntervalsStub implements IFindReservationIntervals {
-    async find ({ date, companyId }: FindReservationIntervalsParams): Promise<ReservationInterval[] | Error> {
+const makeFindReservationSlots = (): IFindReservationSlots => {
+  class FindReservationSlotsStub implements IFindReservationSlots {
+    async find ({ date, companyId }: FindReservationSlotsParams): Promise<ReservationSlot[] | Error> {
       return await new Promise(resolve => { resolve([]) })
     }
   }
 
-  return new FindReservationIntervalsStub()
+  return new FindReservationSlotsStub()
 }
 
 const makeValidation = (): Validation => {
@@ -51,47 +51,47 @@ const makeValidation = (): Validation => {
 
 type SutTypes = {
   sut: Controller
-  findReservationIntervalsStub: IFindReservationIntervals
+  findReservationSlotsStub: IFindReservationSlots
   validationStub: Validation
 }
 
 const makeSut = (): SutTypes => {
-  const findReservationIntervalsStub = makeFindReservationIntervals()
+  const findReservationSlotsStub = makeFindReservationSlots()
   const validationStub = makeValidation()
-  const sut = new FindCompanyReservationIntervalsController(validationStub, findReservationIntervalsStub)
+  const sut = new FindCompanyReservationSlotsController(validationStub, findReservationSlotsStub)
 
   return {
     sut,
-    findReservationIntervalsStub,
+    findReservationSlotsStub,
     validationStub
   }
 }
 
-describe('FindReservationIntervals Controller', () => {
+describe('FindReservationSlots Controller', () => {
   it('should return ok on success', async () => {
-    const { sut, findReservationIntervalsStub, validationStub } = makeSut()
+    const { sut, findReservationSlotsStub, validationStub } = makeSut()
     const validateSpy = jest.spyOn(validationStub, 'validate')
-    const findBySpy = jest.spyOn(findReservationIntervalsStub, 'find')
+    const findBySpy = jest.spyOn(findReservationSlotsStub, 'find')
 
     const httpResponse = await sut.handle(fakeRequest)
 
     expect(validateSpy).toHaveBeenCalledWith(fakeRequest.query)
     expect(findBySpy).toHaveBeenCalledWith({ date: fakeRequest.query.date, companyId: fakeRequest.user?.companyId })
-    expect(httpResponse).toEqual(ok({ intervals: [] }))
+    expect(httpResponse).toEqual(ok({ slots: [] }))
   })
-  it('should return a server error if FindReservationIntervalsController throws', async () => {
-    const { sut, findReservationIntervalsStub } = makeSut()
+  it('should return a server error if FindReservationSlotsController throws', async () => {
+    const { sut, findReservationSlotsStub } = makeSut()
 
-    jest.spyOn(findReservationIntervalsStub, 'find').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(findReservationSlotsStub, 'find').mockImplementationOnce(async () => await new Promise((resolve, reject) => { reject(new Error()) }))
 
     const httpResponse = await sut.handle(fakeRequest)
 
     expect(httpResponse).toEqual(serverError(new Error()))
   })
-  it('should return a bad request if FindReservationIntervalsController returns an Error', async () => {
-    const { sut, findReservationIntervalsStub } = makeSut()
+  it('should return a bad request if FindReservationSlotsController returns an Error', async () => {
+    const { sut, findReservationSlotsStub } = makeSut()
 
-    jest.spyOn(findReservationIntervalsStub, 'find').mockImplementationOnce(async () => await new Promise((resolve) => { resolve(new Error('any_error')) }))
+    jest.spyOn(findReservationSlotsStub, 'find').mockImplementationOnce(async () => await new Promise((resolve) => { resolve(new Error('any_error')) }))
 
     const httpResponse = await sut.handle(fakeRequest)
 
