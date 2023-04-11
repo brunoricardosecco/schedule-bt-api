@@ -11,5 +11,10 @@ export const makeFindReservationSlots = (): IFindReservationSlots => {
   const reservationPostgresRepository = new ReservationPostgresRepository()
   const timeService = new DateFnsAdapter()
 
-  return new FindReservationSlots(serviceHourPostgresRepository, companyPostgresRepository, reservationPostgresRepository, timeService)
+  return new FindReservationSlots(
+    serviceHourPostgresRepository,
+    companyPostgresRepository,
+    reservationPostgresRepository,
+    timeService
+  )
 }

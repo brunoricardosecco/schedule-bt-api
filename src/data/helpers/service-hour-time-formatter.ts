@@ -13,6 +13,6 @@ export const getServiceHourTimeFormatted = (serviceHour: ServiceHour): Formatted
 
   return {
     start: intervalStart,
-    end: intervalEnd
+    end: intervalEnd,
   }
 }

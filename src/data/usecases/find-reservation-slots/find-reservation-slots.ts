@@ -1,14 +1,24 @@
-import { FindCompaniesRepository, ReservationSlot, FindReservationSlotsParams, IFindReservationSlots, FindServiceHoursRepository, FindReservationsRepository, getServiceHourTimeFormatted, TimeConflictChecker, UnformattedReservationSlot } from './find-reservation-slots.protocols'
+import {
+  FindCompaniesRepository,
+  FindReservationSlotsParams,
+  FindReservationsRepository,
+  FindServiceHoursRepository,
+  getServiceHourTimeFormatted,
+  IFindReservationSlots,
+  ReservationSlot,
+  TimeConflictChecker,
+  UnformattedReservationSlot,
+} from './find-reservation-slots.protocols'
 
 export class FindReservationSlots implements IFindReservationSlots {
-  constructor (
+  constructor(
     private readonly findServiceHoursRepository: FindServiceHoursRepository,
     private readonly findCompaniesRepository: FindCompaniesRepository,
     private readonly findReservationsRepository: FindReservationsRepository,
     private readonly timeConflictsChecker: TimeConflictChecker
   ) {}
 
-  async find ({ date, companyId }: FindReservationSlotsParams): Promise<ReservationSlot[] | Error> {
+  async find({ date, companyId }: FindReservationSlotsParams): Promise<ReservationSlot[] | Error> {
     const serviceHours = await this.findServiceHoursRepository.findBy({ companyId, weekday: date.getDay() })
 
     if (serviceHours.length === 0) {
@@ -16,7 +26,7 @@ export class FindReservationSlots implements IFindReservationSlots {
     }
 
     const [company] = await this.findCompaniesRepository.findBy({
-      companyId
+      companyId,
     })
 
     if (!company) {
@@ -26,7 +36,7 @@ export class FindReservationSlots implements IFindReservationSlots {
     const reservations = await this.findReservationsRepository.findBy({
       companyId,
       startAt: new Date(new Date(date.getTime()).setHours(0, 0, 0, 0)),
-      endAt: new Date(new Date(date.getTime()).setHours(23, 59, 59, 999))
+      endAt: new Date(new Date(date.getTime()).setHours(23, 59, 59, 999)),
     })
 
     let slots: UnformattedReservationSlot[] = []
@@ -41,7 +51,7 @@ export class FindReservationSlots implements IFindReservationSlots {
       reservations.forEach(reservation => {
         const formattedReservation = {
           start: reservation.reservationStartDateTime,
-          end: reservation.reservationEndDateTime
+          end: reservation.reservationEndDateTime,
         }
         if (this.timeConflictsChecker.areIntervalsOverlapping({ firstTime: formattedReservation, secondTime: slot })) {
           isOverlapping = true
@@ -50,20 +60,20 @@ export class FindReservationSlots implements IFindReservationSlots {
 
       return {
         ...slot,
-        isAvailable: !isOverlapping
+        isAvailable: !isOverlapping,
       }
     })
 
     const formattedSlots = checkedSlots.map(slot => ({
       ...slot,
       start: slot.start.toISOString().substring(11, 16),
-      end: slot.end.toISOString().substring(11, 16)
+      end: slot.end.toISOString().substring(11, 16),
     }))
 
     return formattedSlots
   }
 
-  private getSlots (start: Date, end: Date, intervalInMinutes: number): UnformattedReservationSlot[] {
+  private getSlots(start: Date, end: Date, intervalInMinutes: number): UnformattedReservationSlot[] {
     const slots: UnformattedReservationSlot[] = []
     let current = start
     let next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)
@@ -72,7 +82,7 @@ export class FindReservationSlots implements IFindReservationSlots {
       slots.push({
         start: current,
         end: next,
-        isAvailable: true
+        isAvailable: true,
       })
       current = next
       next = new Date(current.getTime() + intervalInMinutes * 60 * 1000)

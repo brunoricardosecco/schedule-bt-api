@@ -16,7 +16,7 @@ describe('Company Postgres Repository', () => {
       const params = {
         name: 'any_name',
         reservationPrice: 60,
-        reservationTimeInMinutes: 80
+        reservationTimeInMinutes: 80,
       }
       const company = await sut.add(params)
 
@@ -35,12 +35,12 @@ describe('Company Postgres Repository', () => {
         data: {
           name: 'any_name',
           reservationPrice: 1000,
-          reservationTimeInMinutes: 60
-        }
+          reservationTimeInMinutes: 60,
+        },
       })
 
       const params = {
-        companyId: createdCompany.id
+        companyId: createdCompany.id,
       }
 
       const companies = await sut.findBy(params)
@@ -52,7 +52,7 @@ describe('Company Postgres Repository', () => {
         reservationPrice: 1000,
         reservationTimeInMinutes: 60,
         createdAt: expect.any(Date),
-        updatedAt: expect.any(Date)
+        updatedAt: expect.any(Date),
       })
     })
   })

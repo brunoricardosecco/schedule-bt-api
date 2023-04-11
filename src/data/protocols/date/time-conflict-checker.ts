@@ -22,5 +22,8 @@ export type TimeOverlappingCheckerModel = {
 export interface TimeConflictChecker {
   hasConflicts: ({ newTime, existingTimes }: TimeConflictCheckerModel) => boolean
   isEndTimeGreaterThanStartTime: ({ startTime, endTime }: ServiceHourTimeModel) => boolean
-  areIntervalsOverlapping: ({ firstTime, secondTime }: TimeOverlappingCheckerModel, options?: { inclusive?: boolean }) => boolean
+  areIntervalsOverlapping: (
+    { firstTime, secondTime }: TimeOverlappingCheckerModel,
+    options?: { inclusive?: boolean }
+  ) => boolean
 }
