@@ -1,6 +1,6 @@
 import { Role } from '@/domain/models/role'
 import { IAuthorize } from '@/domain/usecases/authorize'
-import { ok, serverError, forbidden } from '@/presentation/helpers/http/httpHelper'
+import { forbidden, ok, serverError } from '@/presentation/helpers/http/httpHelper'
 import { HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Middleware } from '@/presentation/protocols/middleware'
 

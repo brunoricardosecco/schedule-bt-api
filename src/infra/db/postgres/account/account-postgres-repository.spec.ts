@@ -113,6 +113,7 @@ describe('Account Postgres Repository', () => {
       expect(account?.hashedPassword).toBe('any_password')
       expect(account?.companyId).toBe(createdCompany.id)
       expect(account?.role).toBe(RoleEnum.EMPLOYEE)
+      expect(account?.company).not.toBeNull()
     })
 
     it('should return null on loadById fails', async () => {

@@ -45,6 +45,9 @@ export class AccountPostgresRepository
       where: {
         id,
       },
+      include: {
+        company: true,
+      },
     })
 
     return account
