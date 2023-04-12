@@ -5,6 +5,7 @@ import {
   FindServiceHoursRepository,
   getServiceHourTimeFormatted,
   IFindReservationSlots,
+  NotFoundError,
   ReservationSlot,
   TimeConflictChecker,
   UnformattedReservationSlot,
@@ -22,7 +23,7 @@ export class FindReservationSlots implements IFindReservationSlots {
     const serviceHours = await this.findServiceHoursRepository.findBy({ companyId, weekday: date.getDay() })
 
     if (serviceHours.length === 0) {
-      return new Error('A empresa não possui horários de trabalhos cadastrados neste dia')
+      return new NotFoundError('A empresa não possui horários de trabalhos cadastrados neste dia')
     }
 
     const [company] = await this.findCompaniesRepository.findBy({
@@ -30,7 +31,7 @@ export class FindReservationSlots implements IFindReservationSlots {
     })
 
     if (!company) {
-      return new Error('Erro ao buscar empresa')
+      return new NotFoundError('Erro ao buscar empresa')
     }
 
     const reservations = await this.findReservationsRepository.findBy({
