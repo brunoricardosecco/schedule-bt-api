@@ -7,16 +7,14 @@ const makeSut = (): ServiceHourPostgresRepository => {
 
 describe('Service Hour Postgres Repository', () => {
   afterAll(async () => {
-    const deleteServiceHours = db.serviceHours.deleteMany()
-    const deleteCompanies = db.companies.deleteMany()
-    await db.$transaction([deleteServiceHours, deleteCompanies])
+    await db.$executeRawUnsafe('TRUNCATE TABLE "service_hours" CASCADE;')
+    await db.$executeRawUnsafe('TRUNCATE TABLE "companies" CASCADE;')
     await db.$disconnect()
   })
 
   afterEach(async () => {
-    const deleteServiceHours = db.serviceHours.deleteMany({})
-    const deleteCompanies = db.companies.deleteMany()
-    await db.$transaction([deleteServiceHours, deleteCompanies])
+    await db.$executeRawUnsafe('TRUNCATE TABLE "service_hours" CASCADE;')
+    await db.$executeRawUnsafe('TRUNCATE TABLE "companies" CASCADE;')
   })
 
   it('should return an service hour on success', async () => {

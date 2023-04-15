@@ -167,4 +167,26 @@ describe('Company Routes', () => {
         .expect(404)
     })
   })
+  describe('GET /company/reservation-slots', () => {
+    it('should return 200 on GET /company/reservation-slots', async () => {
+      const loginResponse = await request(app).post('/api/authenticate-by-password').send({
+        email: companyAdminEmail,
+        password,
+      })
+
+      await db.serviceHours.create({
+        data: {
+          startTime: '09:00',
+          endTime: '12:00',
+          weekday: new Date().getDay(),
+          companyId: createdCompany.id,
+        },
+      })
+
+      await request(app)
+        .get(`/api/company/reservation-slots?date=${new Date()}`)
+        .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
+        .expect(200)
+    })
+  })
 })

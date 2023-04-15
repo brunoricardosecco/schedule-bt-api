@@ -2,6 +2,7 @@ import {
   ServiceHourTimeModel,
   TimeConflictChecker,
   TimeConflictCheckerModel,
+  TimeOverlappingCheckerModel,
 } from '@/data/protocols/date/time-conflict-checker'
 import { areIntervalsOverlapping as areIntervalsOverlappingFunc } from 'date-fns'
 
@@ -71,5 +72,12 @@ export class DateFnsAdapter implements TimeConflictChecker {
     })
 
     return areIntervalsOverlapping
+  }
+
+  areIntervalsOverlapping(
+    { firstTime, secondTime }: TimeOverlappingCheckerModel,
+    { inclusive = true }: { inclusive: boolean }
+  ): boolean {
+    return areIntervalsOverlappingFunc(firstTime, secondTime, { inclusive })
   }
 }

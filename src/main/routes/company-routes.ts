@@ -11,6 +11,7 @@ import { makeAuthenticateMiddleware } from '@/main/factories/middlewares/authent
 import { makeAuthorizeMiddleware } from '@/main/factories/middlewares/authorize-middleware/authorize-middleware-factory'
 import { Router } from 'express'
 import { makeDeleteCompanyServiceHourController } from '../factories/controllers/delete-company-service-hour/delete-company-service-hour-factory'
+import { makeCompanyReservationSlotsController } from '../factories/controllers/find-company-reservation-slots/find-company-reservation-slots-factory'
 
 export default (router: Router): void => {
   router.post(
@@ -60,5 +61,12 @@ export default (router: Router): void => {
     expressMiddlewareAdapter(makeAuthenticateMiddleware()),
     expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN])),
     routeAdapter(makeDeleteCompanyServiceHourController())
+  )
+
+  router.get(
+    '/company/reservation-slots',
+    expressMiddlewareAdapter(makeAuthenticateMiddleware()),
+    expressMiddlewareAdapter(makeAuthorizeMiddleware([RoleEnum.COMPANY_ADMIN, RoleEnum.EMPLOYEE])),
+    routeAdapter(makeCompanyReservationSlotsController())
   )
 }

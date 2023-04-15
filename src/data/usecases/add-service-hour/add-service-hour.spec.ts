@@ -8,6 +8,7 @@ import {
   ServiceHour,
   ServiceHourTimeModel,
   TimeConflictChecker,
+  TimeOverlappingCheckerModel,
 } from './add-service-hour.protocols'
 
 const makeFakeServiceHour = (): ServiceHour => ({
@@ -60,6 +61,10 @@ const makeTimeConflictChecker = (): TimeConflictChecker => {
 
     isEndTimeGreaterThanStartTime({ startTime, endTime }: ServiceHourTimeModel): boolean {
       return true
+    }
+
+    areIntervalsOverlapping({ firstTime, secondTime }: TimeOverlappingCheckerModel): boolean {
+      return false
     }
   }
 

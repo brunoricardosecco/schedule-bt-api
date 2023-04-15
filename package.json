@@ -14,7 +14,7 @@
     "test": "dotenv -e .env.test -- npm run migrate:dev && jest --passWithNoTests --noStackTrace --runInBand -i",
     "test:verbose": "dotenv -e .env.test -- jest --passWithNoTests --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
-    "test:integration": "npm run docker:up && npx dotenv -e .env.test -- npm run migrate:dev && npm test -- --watch -c jest-integration-config.js",
+    "test:integration": "npm run docker:up && npm run migrate:dev && npm test -- --watch -c jest-integration-config.js",
     "test:staged": "dotenv -e .env.test npm test -- --findRelatedTests",
     "test:ci": "dotenv -e .env.test -- npm test -- --coverage",
     "migrate:reset": "npx prisma migrate reset --schema=src/infra/db/orm/prisma/schema.prisma",
