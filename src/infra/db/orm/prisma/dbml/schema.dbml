@@ -52,10 +52,11 @@ Table courts {
 
 Table reservations {
   id String [pk]
-  reservationPrice Int [not null]
-  reservationStatus ReservationStatus [not null, default: 'AWAITING_PAYMENT']
-  reservationStartDateTime DateTime [not null]
-  reservationEndDateTime DateTime [not null]
+  price Int [not null]
+  status ReservationStatus [not null, default: 'AWAITING_PAYMENT']
+  date DateTime [not null]
+  startTime String [not null]
+  endTime String [not null]
   description String
   accountId String [not null]
   account accounts [not null]

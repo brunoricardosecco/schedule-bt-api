@@ -71,18 +71,19 @@ model Courts {
 }
 
 model Reservations {
-  id                       String            @id @default(uuid())
-  reservationPrice         Int               @map("reservation_price")
-  reservationStatus        ReservationStatus @default(AWAITING_PAYMENT) @map("reservation_status")
-  reservationStartDateTime DateTime
-  reservationEndDateTime   DateTime
-  description              String?
-  accountId                String            @map("account_id")
-  account                  Accounts          @relation(fields: [accountId], references: [id])
-  createdAt                DateTime          @default(now()) @map("created_at")
-  updatedAt                DateTime          @default(now()) @map("updated_at")
-  company                  Companies         @relation(fields: [companyId], references: [id])
-  companyId                String
+  id          String            @id @default(uuid())
+  price       Int
+  status      ReservationStatus @default(AWAITING_PAYMENT)
+  date        DateTime
+  startTime   String
+  endTime     String
+  description String?
+  accountId   String            @map("account_id")
+  account     Accounts          @relation(fields: [accountId], references: [id])
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @default(now()) @map("updated_at")
+  company     Companies         @relation(fields: [companyId], references: [id])
+  companyId   String
 
   @@map("reservations")
 }

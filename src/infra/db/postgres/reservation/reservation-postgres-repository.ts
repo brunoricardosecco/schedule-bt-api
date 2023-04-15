@@ -10,7 +10,7 @@ export class ReservationPostgresRepository implements FindReservationsRepository
     return await db.reservations.findMany({
       where: {
         companyId: params.companyId,
-        reservationStartDateTime: {
+        date: {
           gte: params.startAt,
           lte: params.endAt,
         },
