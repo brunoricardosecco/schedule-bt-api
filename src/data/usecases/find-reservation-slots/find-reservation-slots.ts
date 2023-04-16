@@ -54,7 +54,6 @@ export class FindReservationSlots implements IFindReservationSlots {
           start: new Date([reservation.date.toISOString().slice(0, 10), reservation.startTime].join()),
           end: new Date([reservation.date.toISOString().slice(0, 10), reservation.endTime].join()),
         }
-        console.log(formattedReservation)
         if (this.timeConflictsChecker.areIntervalsOverlapping({ firstTime: formattedReservation, secondTime: slot })) {
           isOverlapping = true
         }
