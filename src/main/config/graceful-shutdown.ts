@@ -12,7 +12,7 @@ export default (server: Server): void => {
     process.on(exitSignal, async () => {
       try {
         server.close()
-        console.log('App exited with success')
+        console.warn('App exited with success')
         process.exit(ExitStatus.SUCCESS)
       } catch (error) {
         console.error(`App exited with error: ${error}`)

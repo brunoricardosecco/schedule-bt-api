@@ -4,10 +4,11 @@ import { ReservationStatus } from './reservation-status'
 
 export type Reservation = {
   id: string
-  reservationPrice: number
-  reservationStatus: ReservationStatus
-  reservationStartDateTime: Date
-  reservationEndDateTime: Date
+  price: number
+  status: ReservationStatus
+  date: Date
+  startTime: string
+  endTime: string
   description: string | null
   accountId: string
   account?: AccountModel
