@@ -8,7 +8,6 @@ describe('SignUpValidation Factory', () => {
   it('should call ValidationComposite with all validations', () => {
     makeAddCompanyValidation()
     const validations: Validation[] = []
-
     for (const field of ['name', 'reservationPrice', 'reservationTimeInMinutes']) {
       validations.push(new RequiredFieldValidation(field))
     }

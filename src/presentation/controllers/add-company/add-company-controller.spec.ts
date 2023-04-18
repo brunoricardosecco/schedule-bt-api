@@ -1,53 +1,11 @@
 import { MissingParamError, ServerError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { mockCompany, mockCompanyData } from '@/test/domain/models/mock-company'
+import { mockAddCompany } from '@/test/domain/usecases/mock-add-company'
+import { mockRequest } from '@/test/presentation/mock-http'
+import { mockValidation } from '@/test/validation/mock-validation'
 import { AddCompanyController } from './add-company-controller'
-import { AddCompany, AddCompanyModel, Company, HttpRequest, Validation } from './add-company-controller.protocols'
-
-const makeFakeCompany = (): Company => ({
-  id: 'valid_id',
-  name: 'any_name',
-  reservationPrice: 60,
-  reservationTimeInMinutes: 80,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const makeFakeCompanyData = (): AddCompanyModel => ({
-  name: 'verona',
-  reservationPrice: 60,
-  reservationTimeInMinutes: 60,
-})
-
-const company = makeFakeCompany()
-const addCompanyData = makeFakeCompanyData()
-
-const makeFakeRequest = (): HttpRequest => {
-  return {
-    body: addCompanyData,
-  }
-}
-
-const makeAddCompany = (): AddCompany => {
-  class AddCompanyStub implements AddCompany {
-    async add(): Promise<Company> {
-      return await new Promise(resolve => {
-        resolve(company)
-      })
-    }
-  }
-
-  return new AddCompanyStub()
-}
-
-const makeValidation = (): Validation => {
-  class ValidationStub implements Validation {
-    validate(input: any): Error | null {
-      return null
-    }
-  }
-
-  return new ValidationStub()
-}
+import { AddCompany, Validation } from './add-company-controller.protocols'
 
 type SutTypes = {
   sut: AddCompanyController
@@ -56,8 +14,8 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const validationStub = makeValidation()
-  const addCompanyStub = makeAddCompany()
+  const validationStub = mockValidation()
+  const addCompanyStub = mockAddCompany()
   const sut = new AddCompanyController(addCompanyStub, validationStub)
 
   return {
@@ -70,56 +28,40 @@ const makeSut = (): SutTypes => {
 describe('AddCompany Controller', () => {
   it('should call AddCompany with correct values', async () => {
     const { sut, addCompanyStub } = makeSut()
-
     const addSpy = jest.spyOn(addCompanyStub, 'add')
+    await sut.handle(mockRequest({ body: mockCompanyData() }))
 
-    await sut.handle(makeFakeRequest())
-
-    expect(addSpy).toHaveBeenCalledWith(addCompanyData)
+    expect(addSpy).toHaveBeenCalledWith(mockCompanyData())
   })
 
   it('should return 500 if AddCompany throws', async () => {
     const { sut, addCompanyStub } = makeSut()
-    jest.spyOn(addCompanyStub, 'add').mockImplementationOnce(async () => {
-      return await new Promise((resolve, reject) => {
-        reject(new Error())
-      })
-    })
+    jest.spyOn(addCompanyStub, 'add').mockRejectedValueOnce(new Error())
+    const httpResponse = await sut.handle(mockRequest())
 
-    const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(serverError(new ServerError()))
   })
 
   it('should return 200 if a valid data is provided', async () => {
     const { sut } = makeSut()
+    const httpResponse = await sut.handle(mockRequest())
 
-    const httpResponse = await sut.handle(makeFakeRequest())
-
-    expect(httpResponse).toEqual(
-      ok({
-        company,
-      })
-    )
+    expect(httpResponse).toEqual(ok({ company: mockCompany() }))
   })
 
   it('should call Validation with correct values', async () => {
     const { sut, validationStub } = makeSut()
-
     const validateSpy = jest.spyOn(validationStub, 'validate')
-
-    const httpRequest = makeFakeRequest()
-
-    await sut.handle(makeFakeRequest())
+    const httpRequest = mockRequest()
+    await sut.handle(httpRequest)
 
     expect(validateSpy).toHaveBeenCalledWith(httpRequest.body)
   })
 
   it('should return 400 if Validation returns an error', async () => {
     const { sut, validationStub } = makeSut()
-
     jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('any_field'))
-
-    const httpResponse = await sut.handle(makeFakeRequest())
+    const httpResponse = await sut.handle(mockRequest())
 
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })

@@ -8,7 +8,6 @@ describe('AddServiceHourValidation Factory', () => {
   it('should call ValidationComposite with all validations', () => {
     makeAddServiceHourValidation()
     const validations: Validation[] = []
-
     for (const field of ['weekday', 'startTime', 'endTime']) {
       validations.push(new RequiredFieldValidation(field))
     }

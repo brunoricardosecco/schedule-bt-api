@@ -18,5 +18,4 @@
     "jest-integration-config.js",
     "jest-unit-config.js",
   ],
-  "exclude": []
 }

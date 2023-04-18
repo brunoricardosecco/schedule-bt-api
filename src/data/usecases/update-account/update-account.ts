@@ -2,7 +2,6 @@ import {
   HashComparer,
   Hasher,
   IUpdateAccount,
-  LoadAccountByIdRepository,
   UpdateAccountParams,
   UpdateAccountRepository,
   UpdateAccountReturn,
@@ -14,8 +13,9 @@ const HAS_AT_LEAST_ONE_NUMBER_REGEX = /[0-9]/
 
 export class UpdateAccount implements IUpdateAccount {
   constructor(
-    private readonly hasher: Hasher & HashComparer,
-    private readonly accountRepository: UpdateAccountRepository & LoadAccountByIdRepository
+    private readonly hasher: Hasher,
+    private readonly hashComparer: HashComparer,
+    private readonly updateAccountRepository: UpdateAccountRepository
   ) {}
 
   async update(userId: string, params: UpdateAccountParams): UpdateAccountReturn {
@@ -31,7 +31,7 @@ export class UpdateAccount implements IUpdateAccount {
       }
 
       const hashedCurrentPassword = await this.hasher.hash(currentPassword)
-      const isCurrentPasswordCorrect = await this.hasher.isEqual(currentPassword, hashedCurrentPassword)
+      const isCurrentPasswordCorrect = await this.hashComparer.isEqual(currentPassword, hashedCurrentPassword)
 
       if (!isCurrentPasswordCorrect) {
         return new Error('Senha atual incorreta')
@@ -54,7 +54,7 @@ export class UpdateAccount implements IUpdateAccount {
       paramsToUpdate.hashedPassword = hashedPassword
     }
 
-    const account = await this.accountRepository.update(userId, paramsToUpdate)
+    const account = await this.updateAccountRepository.update(userId, paramsToUpdate)
 
     return account
   }

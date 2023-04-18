@@ -1,55 +1,8 @@
-import MockDate from 'mockdate'
+import { mockAccount } from '@/test/domain/models/mock-account'
+import { mockFindAccountById } from '@/test/domain/usecases/mock-find-account-by-id'
+import { mockRequest } from '@/test/presentation/mock-http'
 import { MeController } from './me-controller'
-import {
-  AccountModel,
-  Company,
-  HttpRequest,
-  IFindAccountById,
-  ok,
-  RoleEnum,
-  serverError,
-} from './me-controller.protocols'
-
-const makeFakeCompany = (): Company => ({
-  id: 'valid_id',
-  name: 'verona',
-  reservationPrice: 60,
-  reservationTimeInMinutes: 60,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const makeFakeAccount = (): AccountModel => ({
-  id: 'valid_id',
-  name: 'valid_name',
-  email: 'valid_email@mail.com',
-  hashedPassword: 'hashed_password',
-  role: RoleEnum.EMPLOYEE,
-  companyId: null,
-  company: makeFakeCompany(),
-  emailValidationToken: null,
-  emailValidationTokenExpiration: null,
-  isConfirmed: false,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const makeFakeRequest = (): HttpRequest => {
-  return {
-    user: makeFakeAccount(),
-  }
-}
-
-const makeFindAccountById = (): IFindAccountById => {
-  class FindAccountByIdStub implements IFindAccountById {
-    async findById(accountId: string): Promise<AccountModel> {
-      const fakeAccount = makeFakeAccount()
-      return await Promise.resolve(fakeAccount)
-    }
-  }
-
-  return new FindAccountByIdStub()
-}
+import { IFindAccountById, ok, serverError } from './me-controller.protocols'
 
 type SutTypes = {
   sut: MeController
@@ -57,7 +10,7 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const findAccountByIdStub = makeFindAccountById()
+  const findAccountByIdStub = mockFindAccountById()
   const sut = new MeController(findAccountByIdStub)
 
   return {
@@ -67,27 +20,19 @@ const makeSut = (): SutTypes => {
 }
 
 describe('Me Controller', () => {
-  beforeAll(() => {
-    MockDate.set(new Date())
-  })
-
-  afterAll(() => {
-    MockDate.reset()
-  })
-
   it('should call FindAccountById with correct values', async () => {
     const { sut, findAccountByIdStub } = makeSut()
     const findByIdSpy = jest.spyOn(findAccountByIdStub, 'findById')
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest({ user: mockAccount() })
     await sut.handle(httpRequest)
 
-    expect(findByIdSpy).toHaveBeenCalledWith('valid_id')
+    expect(findByIdSpy).toHaveBeenCalledWith('any_id')
   })
 
   it('should returns 500 if FindAccountById throws', async () => {
     const { sut, findAccountByIdStub } = makeSut()
     jest.spyOn(findAccountByIdStub, 'findById').mockRejectedValueOnce(new Error())
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest({ user: mockAccount() })
     const response = await sut.handle(httpRequest)
 
     expect(response).toEqual(serverError(new Error()))
@@ -95,8 +40,9 @@ describe('Me Controller', () => {
 
   it('should return 200 on success', async () => {
     const { sut } = makeSut()
-    const httpResponse = await sut.handle(makeFakeRequest())
+    const httpRequest = mockRequest({ user: mockAccount() })
+    const httpResponse = await sut.handle(httpRequest)
 
-    expect(httpResponse).toEqual(ok(makeFakeAccount()))
+    expect(httpResponse).toEqual(ok(mockAccount()))
   })
 })

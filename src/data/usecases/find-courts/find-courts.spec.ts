@@ -1,17 +1,7 @@
+import { mockFindCourtsRepository } from '@/test/data/db/mock-db-court'
+import { mockCourt } from '@/test/domain/models/mock-court'
 import { FindCourts } from './find-courts'
-import { Court, FindCourtsRepository } from './find-courts.protocols'
-
-const makeFindCourtsRepository = (): FindCourtsRepository => {
-  class FindCourtsRepositoryStub implements FindCourtsRepository {
-    async findMany(): Promise<Court[]> {
-      return await new Promise(resolve => {
-        resolve([])
-      })
-    }
-  }
-
-  return new FindCourtsRepositoryStub()
-}
+import { FindCourtsRepository } from './find-courts.protocols'
 
 type SutTypes = {
   sut: FindCourts
@@ -19,7 +9,7 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const findManyCourtsRepositoryStub = makeFindCourtsRepository()
+  const findManyCourtsRepositoryStub = mockFindCourtsRepository()
   const sut = new FindCourts(findManyCourtsRepositoryStub)
 
   return {
@@ -32,35 +22,11 @@ describe('FindCourts Usecase', () => {
   it('should find all user courts', async () => {
     const { sut, findManyCourtsRepositoryStub } = makeSut()
     const companyId = 'ID'
-
-    const courts = [
-      {
-        id: '1',
-        name: 'Quadra 1',
-        company: null,
-        companyId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: '2',
-        name: 'Quadra 2',
-        company: null,
-        companyId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]
-
-    const findManySpy = jest.spyOn(findManyCourtsRepositoryStub, 'findMany')
-
-    findManySpy.mockResolvedValue(courts)
-
+    const courts = [mockCourt(), mockCourt()]
+    const findManySpy = jest.spyOn(findManyCourtsRepositoryStub, 'findMany').mockResolvedValue(courts)
     const response = await sut.findMany({ companyId })
 
-    expect(findManySpy).toHaveBeenCalledWith({
-      companyId,
-    })
+    expect(findManySpy).toHaveBeenCalledWith({ companyId })
     expect(response).toStrictEqual(courts)
   })
 })

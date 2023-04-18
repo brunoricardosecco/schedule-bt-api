@@ -12,7 +12,6 @@ describe('Content Type Middleware', () => {
       res.type('xml')
       res.send()
     })
-
     await request(app).get('/test_content_type_xml').expect('content-type', /xml/)
   })
 })

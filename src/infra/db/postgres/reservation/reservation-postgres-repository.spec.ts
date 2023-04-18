@@ -21,7 +21,12 @@ describe('Reservation Postgres Repository', () => {
   })
 
   afterAll(async () => {
-    await db.$transaction([db.reservations.deleteMany({}), db.accounts.deleteMany({}), db.companies.deleteMany({})])
+    await db.$transaction([
+      db.courts.deleteMany(),
+      db.reservations.deleteMany({}),
+      db.accounts.deleteMany({}),
+      db.companies.deleteMany({}),
+    ])
   })
   afterEach(async () => {
     await db.$transaction([db.reservations.deleteMany({}), db.accounts.deleteMany({}), db.companies.deleteMany({})])

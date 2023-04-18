@@ -8,5 +8,5 @@ export const makeDbAddAccount = (): AddAccount => {
   const bcryptAdapter = new BcryptAdapter(salt)
   const accountPostgresRepository = new AccountPostgresRepository()
 
-  return new DbAddAccount(bcryptAdapter, accountPostgresRepository)
+  return new DbAddAccount(bcryptAdapter, accountPostgresRepository, accountPostgresRepository)
 }

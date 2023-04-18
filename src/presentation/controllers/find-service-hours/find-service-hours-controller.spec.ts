@@ -1,40 +1,12 @@
-import { FindServiceHoursModel, IFindServiceHours } from '@/domain/usecases/find-service-hours'
+import { IFindServiceHours } from '@/domain/usecases/find-service-hours'
 import { ServerError } from '@/presentation/errors'
+import { mockServiceHour } from '@/test/domain/models/mock-service-hour'
+import { mockFindServiceHours } from '@/test/domain/usecases/mock-find-service-hours'
+import { mockRequest } from '@/test/presentation/mock-http'
 import { ok, serverError } from '../../helpers/http/httpHelper'
-import { HttpRequest, ServiceHour } from '../add-service-hour/add-service-hour-controller.protocols'
 import { FindServiceHoursController } from './find-service-hours-controller'
 
-const makeFakeServiceHour = (): ServiceHour => ({
-  companyId: 'any_company_id',
-  endTime: 'any_start_time',
-  startTime: 'any_end_time',
-  weekday: 0,
-  id: 'any_id',
-})
-const fakeServiceHour = makeFakeServiceHour()
-
-const makeFakeRequest = (): HttpRequest => {
-  return {
-    body: {},
-    query: {
-      companyId: 'any_id',
-      weekday: '0',
-    },
-  }
-}
-const fakeRequest = makeFakeRequest()
-
-const makeFindServiceHours = (): IFindServiceHours => {
-  class FindServiceHoursStub implements IFindServiceHours {
-    async find({ companyId, weekday }: FindServiceHoursModel): Promise<ServiceHour[]> {
-      return await new Promise(resolve => {
-        resolve([fakeServiceHour])
-      })
-    }
-  }
-
-  return new FindServiceHoursStub()
-}
+const fakeRequest = mockRequest({ body: {}, query: { companyId: 'any_id', weekday: '0' } })
 
 type SutTypes = {
   sut: FindServiceHoursController
@@ -42,7 +14,7 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const findServiceHours = makeFindServiceHours()
+  const findServiceHours = mockFindServiceHours()
   const sut = new FindServiceHoursController(findServiceHours)
 
   return {
@@ -55,27 +27,14 @@ describe('FindServiceHours Controller', () => {
   it('should return 200 on success', async () => {
     const { sut, findServiceHours } = makeSut()
     const findSpy = jest.spyOn(findServiceHours, 'find')
-
     const httpResponse = await sut.handle(fakeRequest)
 
-    expect(findSpy).toHaveBeenCalledWith({
-      companyId: 'any_id',
-      weekday: 0,
-    })
-    expect(httpResponse).toEqual(
-      ok({
-        serviceHours: [fakeServiceHour],
-      })
-    )
+    expect(findSpy).toHaveBeenCalledWith({ companyId: 'any_id', weekday: 0 })
+    expect(httpResponse).toEqual(ok({ serviceHours: [mockServiceHour()] }))
   })
   it('should return 500 if FindServiceHour throws', async () => {
     const { sut, findServiceHours } = makeSut()
-    jest.spyOn(findServiceHours, 'find').mockImplementationOnce(async () => {
-      return await new Promise((resolve, reject) => {
-        reject(new Error())
-      })
-    })
-
+    jest.spyOn(findServiceHours, 'find').mockRejectedValueOnce(new Error())
     const httpResponse = await sut.handle(fakeRequest)
 
     expect(httpResponse).toEqual(serverError(new ServerError()))

@@ -7,14 +7,10 @@ const defaultPayload = { userId: 'any_id' }
 jest.mock('jsonwebtoken', () => ({
   ...jest.requireActual('jsonwebtoken'),
   async sign(): Promise<string> {
-    return await new Promise(resolve => {
-      resolve('any_token')
-    })
+    return await Promise.resolve('any_token')
   },
   async verify(): Promise<TokenPayload | null> {
-    return await new Promise(resolve => {
-      resolve(defaultPayload)
-    })
+    return await Promise.resolve(defaultPayload)
   },
 }))
 

@@ -1,69 +1,13 @@
-import { RoleEnum } from '@/domain/enums/role-enum'
 import { MissingParamError, ServerError } from '@/presentation/errors'
 import { badRequest, ok, serverError } from '@/presentation/helpers/http/httpHelper'
-import { HttpRequest, Validation } from '@/presentation/protocols'
+import { Validation } from '@/presentation/protocols'
+import { mockAccount } from '@/test/domain/models/mock-account'
+import { mockServiceHour, mockServiceHourData } from '@/test/domain/models/mock-service-hour'
+import { mockAddServiceHour } from '@/test/domain/usecases/mock-add-service-hour'
+import { mockRequest } from '@/test/presentation/mock-http'
+import { mockValidation } from '@/test/validation/mock-validation'
 import { AddServiceHourController } from './add-service-hour-controller'
-import { AddServiceHourModel, IAddServiceHour, ServiceHour } from './add-service-hour-controller.protocols'
-
-const makeFakeServiceHour = (): ServiceHour => ({
-  companyId: 'any_company_id',
-  endTime: 'any_start_time',
-  startTime: 'any_end_time',
-  weekday: 0,
-  id: 'any_id',
-})
-
-const makeAddServiceHour = (): IAddServiceHour => {
-  class AddServiceHourStub implements IAddServiceHour {
-    async add(serviceHour: AddServiceHourModel): Promise<ServiceHour | Error> {
-      return await new Promise(resolve => {
-        resolve(makeFakeServiceHour())
-      })
-    }
-  }
-
-  return new AddServiceHourStub()
-}
-
-const makeValidation = (): Validation => {
-  class ValidationStub implements Validation {
-    validate(input: any): Error | null {
-      return null
-    }
-  }
-
-  return new ValidationStub()
-}
-
-const makeFakeServiceHourData = (): AddServiceHourModel => ({
-  companyId: 'any_company_id',
-  endTime: 'any_start_time',
-  startTime: 'any_end_time',
-  weekday: 0,
-})
-
-const serviceHour = makeFakeServiceHour()
-const addServiceHourData = makeFakeServiceHourData()
-
-const makeFakeRequest = (): HttpRequest => {
-  return {
-    body: addServiceHourData,
-    user: {
-      id: 'valid_id',
-      name: 'valid_name',
-      email: 'valid_email@mail.com',
-      hashedPassword: 'valid_password',
-      role: RoleEnum.CLIENT,
-      companyId: 'any_company_id',
-      company: null,
-      emailValidationToken: null,
-      emailValidationTokenExpiration: null,
-      isConfirmed: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  }
-}
+import { IAddServiceHour } from './add-service-hour-controller.protocols'
 
 type SutTypes = {
   validationStub: Validation
@@ -72,8 +16,8 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const addServiceHourStub = makeAddServiceHour()
-  const validationStub = makeValidation()
+  const addServiceHourStub = mockAddServiceHour()
+  const validationStub = mockValidation()
 
   const sut = new AddServiceHourController(addServiceHourStub, validationStub)
 
@@ -87,65 +31,48 @@ const makeSut = (): SutTypes => {
 describe('AddServiceHour Controller', () => {
   it('should call AddServiceHour with correct values', async () => {
     const { addServiceHourStub, sut } = makeSut()
-
     const addSpy = jest.spyOn(addServiceHourStub, 'add')
+    await sut.handle(mockRequest({ body: mockServiceHour(), user: mockAccount({ companyId: 'any_company_id' }) }))
 
-    await sut.handle(makeFakeRequest())
-
-    expect(addSpy).toHaveBeenCalledWith(addServiceHourData)
+    expect(addSpy).toHaveBeenCalledWith(mockServiceHourData())
   })
+
   it('should return 500 if AddServiceHour throws', async () => {
     const { sut, addServiceHourStub } = makeSut()
-    jest.spyOn(addServiceHourStub, 'add').mockImplementationOnce(async () => {
-      return await new Promise((resolve, reject) => {
-        reject(new Error())
-      })
-    })
+    jest.spyOn(addServiceHourStub, 'add').mockRejectedValueOnce(new Error())
+    const httpResponse = await sut.handle(mockRequest())
 
-    const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(serverError(new ServerError()))
   })
+
   it('should return 200 if a valid data is provided', async () => {
     const { sut } = makeSut()
+    const httpResponse = await sut.handle(mockRequest())
 
-    const httpResponse = await sut.handle(makeFakeRequest())
-
-    expect(httpResponse).toEqual(
-      ok({
-        serviceHour,
-      })
-    )
+    expect(httpResponse).toEqual(ok({ serviceHour: mockServiceHour() }))
   })
+
   it('should call Validation with correct values', async () => {
     const { sut, validationStub } = makeSut()
-
     const validateSpy = jest.spyOn(validationStub, 'validate')
-
-    const httpRequest = makeFakeRequest()
-
-    await sut.handle(makeFakeRequest())
+    const httpRequest = mockRequest()
+    await sut.handle(mockRequest())
 
     expect(validateSpy).toHaveBeenCalledWith(httpRequest.body)
   })
+
   it('should return 400 if Validation returns an error', async () => {
     const { sut, validationStub } = makeSut()
-
     jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('any_field'))
-
-    const httpResponse = await sut.handle(makeFakeRequest())
+    const httpResponse = await sut.handle(mockRequest())
 
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })
+
   it('should return 400 if AddServiceHour returns an Error', async () => {
     const { sut, addServiceHourStub } = makeSut()
-
-    jest.spyOn(addServiceHourStub, 'add').mockReturnValueOnce(
-      new Promise(resolve => {
-        resolve(new Error('any_error'))
-      })
-    )
-
-    const httpResponse = await sut.handle(makeFakeRequest())
+    jest.spyOn(addServiceHourStub, 'add').mockResolvedValueOnce(new Error('any_error'))
+    const httpResponse = await sut.handle(mockRequest())
 
     expect(httpResponse).toEqual(badRequest(new Error('any_error')))
   })

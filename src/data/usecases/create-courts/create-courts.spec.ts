@@ -1,17 +1,6 @@
+import { mockCreateCourtsRepository } from '@/test/data/db/mock-db-court'
 import { CreateCourts } from './create-courts'
 import { CreateCourtsRepository } from './create-courts.protocols'
-
-const makeCreateCourtsRepository = (): CreateCourtsRepository => {
-  class CreateCourtsRepositoryStub implements CreateCourtsRepository {
-    async createMany(): Promise<number> {
-      return await new Promise(resolve => {
-        resolve(1)
-      })
-    }
-  }
-
-  return new CreateCourtsRepositoryStub()
-}
 
 type SutTypes = {
   sut: CreateCourts
@@ -19,7 +8,7 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const createCourtsRepositoryStub = makeCreateCourtsRepository()
+  const createCourtsRepositoryStub = mockCreateCourtsRepository()
   const sut = new CreateCourts(createCourtsRepositoryStub)
 
   return {
@@ -31,20 +20,12 @@ const makeSut = (): SutTypes => {
 describe('CreateCourts Usecase', () => {
   it('should create courts', async () => {
     const { sut, createCourtsRepositoryStub } = makeSut()
-
-    const companyId = 'company_id'
+    const companyId = 'any_company_id'
     const courts = [{ name: 'Quadra 1' }]
-
     const createManySpy = jest.spyOn(createCourtsRepositoryStub, 'createMany')
-
     const response = await sut.create(companyId, courts)
 
-    expect(createManySpy).toHaveBeenCalledWith([
-      {
-        name: courts[0].name,
-        companyId,
-      },
-    ])
+    expect(createManySpy).toHaveBeenCalledWith([{ name: courts[0].name, companyId }])
     expect(response).toBe(courts.length)
   })
 })

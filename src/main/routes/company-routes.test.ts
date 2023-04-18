@@ -1,28 +1,15 @@
 import { RoleEnum } from '@/domain/enums/role-enum'
-import { AddCompanyModel } from '@/domain/usecases/add-company'
-import { AddServiceHourModel } from '@/domain/usecases/add-service-hour'
 import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
 import { db } from '@/infra/db/orm/prisma'
 import app from '@/main/config/app'
+import { mockCompanyData } from '@/test/domain/models/mock-company'
+import { mockServiceHourData } from '@/test/domain/models/mock-service-hour'
 import request from 'supertest'
-
-const makeFakeCompanyData = (): AddCompanyModel => ({
-  name: 'verona',
-  reservationPrice: 60,
-  reservationTimeInMinutes: 60,
-})
-
-const makeFakeServiceHourData = (companyId: string): AddServiceHourModel => ({
-  companyId,
-  startTime: '09:00',
-  endTime: '12:00',
-  weekday: 0,
-})
 
 describe('Company Routes', () => {
   const password = 'password'
   const companyAdminEmail = 'company_admin@mail.com'
-  const generalAdminEmail = 'generala_dmin@mail.com'
+  const generalAdminEmail = 'general_admin@mail.com'
   let createdCompany
 
   beforeAll(async () => {
@@ -84,7 +71,7 @@ describe('Company Routes', () => {
       await request(app)
         .post('/api/company')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken}`)
-        .send(makeFakeCompanyData())
+        .send(mockCompanyData())
         .expect(200)
     })
   })
@@ -109,15 +96,14 @@ describe('Company Routes', () => {
         email: companyAdminEmail,
         password,
       })
-
       const company = await db.companies.create({
-        data: makeFakeCompanyData(),
+        data: mockCompanyData(),
       })
 
       await request(app)
         .post('/api/company/service-hour')
         .set('Authorization', `Bearer ${loginResponse.body.accessToken as string}`)
-        .send(makeFakeServiceHourData(company.id))
+        .send(mockServiceHourData({ companyId: company.id }))
         .expect(200)
     })
   })

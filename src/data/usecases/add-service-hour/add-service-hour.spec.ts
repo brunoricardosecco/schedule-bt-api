@@ -1,75 +1,17 @@
+import { mockTimeConflictChecker } from '@/test/data/date/mock-date'
+import {
+  mockAddServiceHourRepository,
+  mockLoadServiceHoursByCompanyIdAndWeekdayRepository,
+} from '@/test/data/db/mock-db-service-hour'
+import { mockServiceHour, mockServiceHourData } from '@/test/domain/models/mock-service-hour'
 import { AddServiceHour } from './add-service-hour'
 import {
   AddServiceHourRepository,
   AddServiceHourRepositoryModel,
   IAddServiceHour,
   LoadServiceHoursByCompanyIdAndWeekdayRepository,
-  LoadServiceHoursByCompanyIdRepositoryModel,
-  ServiceHour,
-  ServiceHourTimeModel,
   TimeConflictChecker,
-  TimeOverlappingCheckerModel,
 } from './add-service-hour.protocols'
-
-const makeFakeServiceHour = (): ServiceHour => ({
-  id: 'valid_id',
-  companyId: 'company_id',
-  startTime: '09:00',
-  endTime: '12:00',
-  weekday: 0,
-})
-
-const makeFakeServiceHourData = (): AddServiceHourRepositoryModel => ({
-  weekday: 0,
-  startTime: '09:00',
-  endTime: '12:00',
-  companyId: 'company_id',
-})
-
-const makeAddServiceHourRepository = (): AddServiceHourRepository => {
-  class AddServiceHourRepositoryStub implements AddServiceHourRepository {
-    async add(serviceHourData: AddServiceHourRepositoryModel): Promise<ServiceHour> {
-      return await new Promise(resolve => {
-        resolve(makeFakeServiceHour())
-      })
-    }
-  }
-
-  return new AddServiceHourRepositoryStub()
-}
-
-const makeLoadServiceHoursByCompanyIdAndWeekday = (): LoadServiceHoursByCompanyIdAndWeekdayRepository => {
-  class LoadServiceHoursByCompanyIdAndWeekdayRepositoryStub implements LoadServiceHoursByCompanyIdAndWeekdayRepository {
-    async loadByCompanyIdAndWeekday({
-      companyId,
-      weekday,
-    }: LoadServiceHoursByCompanyIdRepositoryModel): Promise<ServiceHour[]> {
-      return await new Promise(resolve => {
-        resolve([makeFakeServiceHour()])
-      })
-    }
-  }
-
-  return new LoadServiceHoursByCompanyIdAndWeekdayRepositoryStub()
-}
-
-const makeTimeConflictChecker = (): TimeConflictChecker => {
-  class TimeConflictCheckerStub implements TimeConflictChecker {
-    hasConflicts({ newDateTime, storedDateTimes }: any): boolean {
-      return false
-    }
-
-    isEndTimeGreaterThanStartTime({ startTime, endTime }: ServiceHourTimeModel): boolean {
-      return true
-    }
-
-    areIntervalsOverlapping({ firstTime, secondTime }: TimeOverlappingCheckerModel): boolean {
-      return false
-    }
-  }
-
-  return new TimeConflictCheckerStub()
-}
 
 type SutTypes = {
   addServiceHourRepository: AddServiceHourRepository
@@ -79,9 +21,9 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const addServiceHourRepository = makeAddServiceHourRepository()
-  const loadServiceHoursByCompanyIdAndWeekdayRepository = makeLoadServiceHoursByCompanyIdAndWeekday()
-  const timeConflictChecker = makeTimeConflictChecker()
+  const addServiceHourRepository = mockAddServiceHourRepository()
+  const loadServiceHoursByCompanyIdAndWeekdayRepository = mockLoadServiceHoursByCompanyIdAndWeekdayRepository()
+  const timeConflictChecker = mockTimeConflictChecker()
   const sut = new AddServiceHour(
     addServiceHourRepository,
     loadServiceHoursByCompanyIdAndWeekdayRepository,
@@ -99,63 +41,52 @@ const makeSut = (): SutTypes => {
 describe('AddServiceHour UseCase', () => {
   it('should call AddServiceHourRepository with correct values', async () => {
     const { addServiceHourRepository, sut } = makeSut()
-
     const addSpy = jest.spyOn(addServiceHourRepository, 'add')
-    await sut.add(makeFakeServiceHourData())
+    await sut.add(mockServiceHourData())
 
-    expect(addSpy).toHaveBeenCalledWith(makeFakeServiceHourData())
+    expect(addSpy).toHaveBeenCalledWith(mockServiceHourData())
   })
+
   it('should throw if AddServiceHourRepository throws', async () => {
     const { addServiceHourRepository, sut } = makeSut()
-
-    jest.spyOn(addServiceHourRepository, 'add').mockImplementationOnce(
-      async () =>
-        await new Promise((resolve, reject) => {
-          reject(new Error())
-        })
-    )
-
-    const promise = sut.add(makeFakeServiceHourData())
+    jest.spyOn(addServiceHourRepository, 'add').mockRejectedValueOnce(new Error())
+    const promise = sut.add(mockServiceHourData())
 
     await expect(promise).rejects.toThrow()
   })
+
   it('should returns an service hour on success', async () => {
     const { sut } = makeSut()
+    const serviceHour = await sut.add(mockServiceHourData())
 
-    const serviceHour = await sut.add(makeFakeServiceHourData())
-
-    expect(serviceHour).toEqual(makeFakeServiceHour())
+    expect(serviceHour).toEqual(mockServiceHour())
   })
+
   it('should returns an error on trying to add a schedule that conflicts with another one on the same day', async () => {
     const { sut, timeConflictChecker } = makeSut()
-
     jest.spyOn(timeConflictChecker, 'hasConflicts').mockReturnValueOnce(true)
-
     const conflictingServiceHour: AddServiceHourRepositoryModel = {
-      companyId: 'company_id',
+      companyId: 'any_company_id',
       startTime: '10:00',
       endTime: '14:00',
       weekday: 0,
     }
-
     const error = await sut.add(conflictingServiceHour)
 
     expect(error).toEqual(
       new Error('O intervalo de tempo não pode conflitar com outro intervalo de tempo já cadastrado')
     )
   })
+
   it('should returns an error on trying to add an service hour with the start time greater than the end time', async () => {
     const { sut, timeConflictChecker } = makeSut()
-
     jest.spyOn(timeConflictChecker, 'isEndTimeGreaterThanStartTime').mockReturnValueOnce(false)
-
     const conflictingServiceHour: AddServiceHourRepositoryModel = {
-      companyId: 'company_id',
+      companyId: 'any_company_id',
       startTime: '10:00',
       endTime: '14:00',
       weekday: 0,
     }
-
     const error = await sut.add(conflictingServiceHour)
 
     expect(error).toEqual(new Error('O tempo de início precisa ser menor que o tempo de término'))

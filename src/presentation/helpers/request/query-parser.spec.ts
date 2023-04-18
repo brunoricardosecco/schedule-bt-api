@@ -6,7 +6,6 @@ describe('QueryParser Helper', () => {
       test1: 'abc',
       test2: '0',
     }
-
     const parsedParams = queryParser(params)
 
     expect(parsedParams).toEqual({

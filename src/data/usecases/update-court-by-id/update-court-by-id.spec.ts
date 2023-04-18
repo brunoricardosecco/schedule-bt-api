@@ -1,41 +1,11 @@
+import { mockFindCourtByIdAndCompanyIdRepository, mockUpdateCourtByIdRepository } from '@/test/data/db/mock-db-court'
+import { mockCourt } from '@/test/domain/models/mock-court'
 import { UpdateCourtById } from './update-court-by-id'
 import {
-  Court,
   FindCourtByIdAndCompanyIdRepository,
   NotFoundError,
-  UpdateCourtByIdParamsToRepository,
   UpdateCourtByIdRepository,
 } from './update-court-by-id.protocols'
-
-const mockCourt = (): Court => ({
-  id: 'any_id',
-  companyId: 'any_id',
-  name: 'any_name',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const makeUpdateCourtByIdRepository = (): UpdateCourtByIdRepository => {
-  class UpdateCourtByIdRepositoryStub implements UpdateCourtByIdRepository {
-    async updateById({ id, data }: UpdateCourtByIdParamsToRepository): Promise<Court> {
-      const fakeCourt = mockCourt()
-      return await Promise.resolve(fakeCourt)
-    }
-  }
-
-  return new UpdateCourtByIdRepositoryStub()
-}
-
-const makeFindCourtByIdAndCompanyIdRepository = (): FindCourtByIdAndCompanyIdRepository => {
-  class FindCourtByIdAndCompanyIdRepositoryStub implements FindCourtByIdAndCompanyIdRepository {
-    async findByIdAndCompanyId(courtId: string, companyId: string): Promise<Court | null> {
-      const fakeCourt = mockCourt()
-      return await Promise.resolve(fakeCourt)
-    }
-  }
-
-  return new FindCourtByIdAndCompanyIdRepositoryStub()
-}
 
 type SutTypes = {
   sut: UpdateCourtById
@@ -44,8 +14,8 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const updateCourtByIdRepositoryStub = makeUpdateCourtByIdRepository()
-  const findCourtByIdAndCompanyIdRepositoryStub = makeFindCourtByIdAndCompanyIdRepository()
+  const updateCourtByIdRepositoryStub = mockUpdateCourtByIdRepository()
+  const findCourtByIdAndCompanyIdRepositoryStub = mockFindCourtByIdAndCompanyIdRepository()
   const sut = new UpdateCourtById(updateCourtByIdRepositoryStub, findCourtByIdAndCompanyIdRepositoryStub)
 
   return {
@@ -82,9 +52,7 @@ describe('DbUpdateCourtById Usecase', () => {
 
   it('should throw an exception if FindCourtByIdAndCompanyIdRepository throws an expection', async () => {
     const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut()
-    jest
-      .spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId')
-      .mockReturnValueOnce(Promise.reject(new Error()))
+    jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockRejectedValueOnce(new Error())
     const promise = sut.updateById({ id: 'any_id', companyId: 'any_company_id', data: { name: 'any_name' } })
 
     await expect(promise).rejects.toThrow()
@@ -92,9 +60,7 @@ describe('DbUpdateCourtById Usecase', () => {
 
   it('should return NotFoundError if FindCourtByIdAndCompanyIdRepository returns null', async () => {
     const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut()
-    jest
-      .spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId')
-      .mockReturnValueOnce(Promise.resolve(null))
+    jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockResolvedValueOnce(null)
     const error = await sut.updateById({ id: 'invalid_id', companyId: 'any_company_id', data: { name: 'any_name' } })
 
     expect(error).toEqual(new NotFoundError('Quadra não encontrada'))

@@ -8,5 +8,5 @@ export const updateAccountFactory = (): IUpdateAccount => {
   const bcryptAdapter = new BcryptAdapter(salt)
   const accountPostgresRepository = new AccountPostgresRepository()
 
-  return new UpdateAccount(bcryptAdapter, accountPostgresRepository)
+  return new UpdateAccount(bcryptAdapter, bcryptAdapter, accountPostgresRepository)
 }

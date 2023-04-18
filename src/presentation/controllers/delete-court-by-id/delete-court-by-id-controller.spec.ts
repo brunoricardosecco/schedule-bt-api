@@ -1,48 +1,9 @@
-import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
 import { noContent, notFound, serverError } from '@/presentation/helpers/http/httpHelper'
+import { mockAccount } from '@/test/domain/models/mock-account'
+import { mockDeleteCourtById } from '@/test/domain/usecases/mock-delete-court-by-id'
+import { mockRequest } from '@/test/presentation/mock-http'
 import { DeleteCourtByIdController } from './delete-court-by-id-controller'
-import { AccountModel, Court, IDeleteCourtById, NotFoundError, RoleEnum } from './delete-court-by-id.protocols'
-
-const makeFakeAccount = (): AccountModel => ({
-  id: 'valid_id',
-  name: 'valid_name',
-  email: 'valid_email@mail.com',
-  hashedPassword: 'hashed_password',
-  role: RoleEnum.COMPANY_ADMIN,
-  companyId: 'any_company_id',
-  company: null,
-  emailValidationToken: null,
-  emailValidationTokenExpiration: null,
-  isConfirmed: false,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const mockCourt = (): Court => ({
-  id: 'any_id',
-  companyId: 'any_id',
-  name: 'any_name',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const makeFakeRequest = (courtId?: string): HttpRequest => {
-  return {
-    user: makeFakeAccount(),
-    params: { courtId },
-  }
-}
-
-const makeDeleteCourtById = (): IDeleteCourtById => {
-  class DeleteCourtByIdStub implements IDeleteCourtById {
-    async deleteById(courtId: string): Promise<Court> {
-      const fakeCourt = mockCourt()
-      return await Promise.resolve(fakeCourt)
-    }
-  }
-
-  return new DeleteCourtByIdStub()
-}
+import { IDeleteCourtById, NotFoundError } from './delete-court-by-id.protocols'
 
 type SutTypes = {
   sut: DeleteCourtByIdController
@@ -50,7 +11,7 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const deleteCourtByIdStub = makeDeleteCourtById()
+  const deleteCourtByIdStub = mockDeleteCourtById()
   const sut = new DeleteCourtByIdController(deleteCourtByIdStub)
 
   return {
@@ -63,7 +24,7 @@ describe('DeleteCourtByIdController', () => {
   it('should returns 500 if DeleteCourtById throws', async () => {
     const { sut, deleteCourtByIdStub } = makeSut()
     jest.spyOn(deleteCourtByIdStub, 'deleteById').mockRejectedValueOnce(new Error())
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest({ user: mockAccount(), params: { courtId: 'court_id' } })
     const response = await sut.handle(httpRequest)
 
     expect(response).toEqual(serverError(new Error()))
@@ -72,7 +33,7 @@ describe('DeleteCourtByIdController', () => {
   it('should call DeleteCourtById with correct values', async () => {
     const { sut, deleteCourtByIdStub } = makeSut()
     const deleteByIdSpy = jest.spyOn(deleteCourtByIdStub, 'deleteById')
-    const httpRequest = makeFakeRequest('any_court_id')
+    const httpRequest = mockRequest({ user: mockAccount(), params: { courtId: 'any_court_id' } })
     await sut.handle(httpRequest)
 
     expect(deleteByIdSpy).toHaveBeenCalledWith('any_court_id', 'any_company_id')
@@ -80,10 +41,8 @@ describe('DeleteCourtByIdController', () => {
 
   it('should return 404 if court_id not exists', async () => {
     const { sut, deleteCourtByIdStub } = makeSut()
-    const httpRequest = makeFakeRequest()
-    jest
-      .spyOn(deleteCourtByIdStub, 'deleteById')
-      .mockReturnValueOnce(Promise.resolve(new NotFoundError('Quadra não encontrada')))
+    const httpRequest = mockRequest({ user: mockAccount(), params: { courtId: 'court_id' } })
+    jest.spyOn(deleteCourtByIdStub, 'deleteById').mockResolvedValueOnce(new NotFoundError('Quadra não encontrada'))
     const response = await sut.handle(httpRequest)
 
     expect(response).toStrictEqual(notFound('Quadra não encontrada'))
@@ -91,7 +50,7 @@ describe('DeleteCourtByIdController', () => {
 
   it('should return 204 on success', async () => {
     const { sut } = makeSut()
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest({ user: mockAccount(), params: { courtId: 'court_id' } })
     const response = await sut.handle(httpRequest)
 
     expect(response).toStrictEqual(noContent())

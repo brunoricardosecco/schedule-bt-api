@@ -8,7 +8,6 @@ describe('CreateCourtsValidation Factory', () => {
   it('should call ValidationComposite with all validations', () => {
     createCourtsValidation()
     const validations: Validation[] = []
-
     for (const field of ['courts']) {
       validations.push(new RequiredFieldValidation(field))
     }

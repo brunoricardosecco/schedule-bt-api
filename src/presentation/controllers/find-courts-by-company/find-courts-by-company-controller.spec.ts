@@ -1,51 +1,12 @@
-import { RoleEnum } from '@/domain/enums/role-enum'
-import { AccountModel } from '@/domain/models/account'
-import { Court } from '@/domain/models/court'
-import { FindCourtsReturn, IFindCourts } from '@/domain/usecases/find-courts'
-import { HttpRequest } from '@/presentation/controllers/signup/signup-controller.protocols'
+import { IFindCourts } from '@/domain/usecases/find-courts'
 import { ok, serverError } from '@/presentation/helpers/http/httpHelper'
+import { mockAccount } from '@/test/domain/models/mock-account'
+import { mockCourt } from '@/test/domain/models/mock-court'
+import { mockFindCourts } from '@/test/domain/usecases/mock-find-courts'
+import { mockRequest } from '@/test/presentation/mock-http'
 import { FindCourtsByCompanyController } from './find-courts-by-company-controller'
 
-const makeFakeAccount = (): AccountModel => ({
-  id: 'valid_id',
-  name: 'valid_name',
-  email: 'valid_email@mail.com',
-  hashedPassword: 'hashed_password',
-  role: RoleEnum.COMPANY_ADMIN,
-  companyId: 'company_id',
-  company: null,
-  emailValidationToken: null,
-  emailValidationTokenExpiration: null,
-  isConfirmed: false,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const makeFakeCourt = (): Court => ({
-  id: 'valid_id',
-  name: 'any_name',
-  companyId: 'company_id',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const makeFakeRequest = (): HttpRequest => {
-  return {
-    user: makeFakeAccount(),
-  }
-}
-
-const makeFindCourts = (): IFindCourts => {
-  class FindCourtsStub implements IFindCourts {
-    async findMany(): FindCourtsReturn {
-      return await new Promise(resolve => {
-        resolve([])
-      })
-    }
-  }
-
-  return new FindCourtsStub()
-}
+const fakeRequest = mockRequest({ user: mockAccount() })
 
 type SutTypes = {
   sut: FindCourtsByCompanyController
@@ -53,7 +14,7 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const findManyCourtsStub = makeFindCourts()
+  const findManyCourtsStub = mockFindCourts()
   const sut = new FindCourtsByCompanyController(findManyCourtsStub)
 
   return {
@@ -65,31 +26,19 @@ const makeSut = (): SutTypes => {
 describe('FindCourtsController', () => {
   it('should returns 500 if FindCourts throws', async () => {
     const { sut, findManyCourtsStub } = makeSut()
-
     jest.spyOn(findManyCourtsStub, 'findMany').mockRejectedValueOnce(new Error())
-
-    const httpRequest = makeFakeRequest()
-
-    const response = await sut.handle(httpRequest)
+    const response = await sut.handle(fakeRequest)
 
     expect(response).toEqual(serverError(new Error()))
   })
 
   it('should return 200 on success', async () => {
     const { sut, findManyCourtsStub } = makeSut()
+    const courts = [mockCourt(), mockCourt()]
+    const findManyCourtsSpy = jest.spyOn(findManyCourtsStub, 'findMany').mockResolvedValueOnce(courts)
+    const response = await sut.handle(fakeRequest)
 
-    const httpRequest = makeFakeRequest()
-    const courts = [makeFakeCourt(), makeFakeCourt()]
-    const findManyCourtsSpy = jest.spyOn(findManyCourtsStub, 'findMany')
-    findManyCourtsSpy.mockResolvedValueOnce(courts)
-
-    const response = await sut.handle(httpRequest)
-
-    expect(findManyCourtsSpy).toHaveBeenCalledWith({ companyId: httpRequest.user?.companyId })
-    expect(response).toStrictEqual(
-      ok({
-        courts,
-      })
-    )
+    expect(findManyCourtsSpy).toHaveBeenCalledWith({ companyId: fakeRequest.user?.companyId })
+    expect(response).toStrictEqual(ok({ courts }))
   })
 })

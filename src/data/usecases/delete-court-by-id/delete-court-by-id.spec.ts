@@ -1,36 +1,8 @@
 import { NotFoundError } from '@/domain/errors/not-found-error'
+import { mockDeleteCourtByIdRepository, mockFindCourtByIdAndCompanyIdRepository } from '@/test/data/db/mock-db-court'
+import { mockCourt } from '@/test/domain/models/mock-court'
 import { DeleteCourtById } from './delete-court-by-id'
-import { Court, DeleteCourtByIdRepository, FindCourtByIdAndCompanyIdRepository } from './delete-court-by-id.protocols'
-
-const mockCourt = (): Court => ({
-  id: 'any_id',
-  companyId: 'any_id',
-  name: 'any_name',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-const makeDeleteCourtByIdRepository = (): DeleteCourtByIdRepository => {
-  class DeleteCourtByIdRepositoryStub implements DeleteCourtByIdRepository {
-    async deleteById(courtId: string): Promise<Court> {
-      const fakeCourt = mockCourt()
-      return await Promise.resolve(fakeCourt)
-    }
-  }
-
-  return new DeleteCourtByIdRepositoryStub()
-}
-
-const makeFindCourtByIdAndCompanyIdRepository = (): FindCourtByIdAndCompanyIdRepository => {
-  class FindCourtByIdAndCompanyIdRepositoryStub implements FindCourtByIdAndCompanyIdRepository {
-    async findByIdAndCompanyId(courtId: string, companyId: string): Promise<Court | null> {
-      const fakeCourt = mockCourt()
-      return await Promise.resolve(fakeCourt)
-    }
-  }
-
-  return new FindCourtByIdAndCompanyIdRepositoryStub()
-}
+import { DeleteCourtByIdRepository, FindCourtByIdAndCompanyIdRepository } from './delete-court-by-id.protocols'
 
 type SutTypes = {
   sut: DeleteCourtById
@@ -39,8 +11,8 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const deleteCourtByIdRepositoryStub = makeDeleteCourtByIdRepository()
-  const findCourtByIdAndCompanyIdRepositoryStub = makeFindCourtByIdAndCompanyIdRepository()
+  const deleteCourtByIdRepositoryStub = mockDeleteCourtByIdRepository()
+  const findCourtByIdAndCompanyIdRepositoryStub = mockFindCourtByIdAndCompanyIdRepository()
   const sut = new DeleteCourtById(deleteCourtByIdRepositoryStub, findCourtByIdAndCompanyIdRepositoryStub)
 
   return {
@@ -69,7 +41,7 @@ describe('DeleteCourtById Usecase', () => {
 
   it('should throw an exception if DeleteCourtByIdRepository throws an expection', async () => {
     const { sut, deleteCourtByIdRepositoryStub } = makeSut()
-    jest.spyOn(deleteCourtByIdRepositoryStub, 'deleteById').mockReturnValueOnce(Promise.reject(new Error()))
+    jest.spyOn(deleteCourtByIdRepositoryStub, 'deleteById').mockRejectedValueOnce(new Error())
     const promise = sut.deleteById('any_id', 'any_company_id')
 
     await expect(promise).rejects.toThrow()
@@ -77,9 +49,7 @@ describe('DeleteCourtById Usecase', () => {
 
   it('should throw an exception if FindCourtByIdAndCompanyIdRepository throws an expection', async () => {
     const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut()
-    jest
-      .spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId')
-      .mockReturnValueOnce(Promise.reject(new Error()))
+    jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockRejectedValueOnce(new Error())
     const promise = sut.deleteById('any_id', 'any_company_id')
 
     await expect(promise).rejects.toThrow()
@@ -87,9 +57,7 @@ describe('DeleteCourtById Usecase', () => {
 
   it('should return NotFoundError if FindCourtByIdAndCompanyIdRepository returns null', async () => {
     const { sut, findCourtByIdAndCompanyIdRepositoryStub } = makeSut()
-    jest
-      .spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId')
-      .mockReturnValueOnce(Promise.resolve(null))
+    jest.spyOn(findCourtByIdAndCompanyIdRepositoryStub, 'findByIdAndCompanyId').mockResolvedValueOnce(null)
     const error = await sut.deleteById('any_id', 'any_company_id')
 
     expect(error).toEqual(new NotFoundError('Quadra não encontrada'))
