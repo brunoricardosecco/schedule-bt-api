@@ -75,15 +75,15 @@ model Reservations {
   price       Int
   status      ReservationStatus @default(AWAITING_PAYMENT)
   date        DateTime
-  startTime   String
-  endTime     String
+  startTime   String            @map("start_time")
+  endTime     String            @map("end_time")
   description String?
   accountId   String            @map("account_id")
   account     Accounts          @relation(fields: [accountId], references: [id])
   createdAt   DateTime          @default(now()) @map("created_at")
   updatedAt   DateTime          @default(now()) @map("updated_at")
   company     Companies         @relation(fields: [companyId], references: [id])
-  companyId   String
+  companyId   String            @map("company_id")
 
   @@map("reservations")
 }
